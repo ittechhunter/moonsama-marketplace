@@ -25,7 +25,7 @@ const CollectionPage = () => {
   }[]>([]);
   const { address, type } = useParams<{ address: string; type: string }>();
   const assetType = stringToStringAssetType(type);
-  const [take, setTake] = useState<number>(0)
+  const [take, setTake] = useState<number>(1)
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false)
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const { placeholderContainer, container } = useStyles()
