@@ -358,7 +358,7 @@ export const PurchaseDialog = () => {
           {fillTx && (
             <ExternalLink
               href={getExplorerLink(
-                chainId ?? ChainId.EWC,
+                chainId ?? ChainId.MOONRIVER,
                 fillTx.hash,
                 'transaction'
               )}

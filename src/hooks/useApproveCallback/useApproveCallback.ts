@@ -106,7 +106,7 @@ export function useApproveCallback(
   const erc721 = useERC721Contract(assetAddress, true);
 
   const operator =
-    query.operator ?? (WAREHOUSE_ADDRESS[chainId ?? ChainId.EWC] as string);
+    query.operator ?? (WAREHOUSE_ADDRESS[chainId ?? ChainId.MOONRIVER] as string);
   const toApprove = BigNumber.from(amountToApprove ?? MaxUint256);
   const currentAllowance = useAllowance(query, operator);
   const assetType = query.assetType ?? StringAssetType.ERC20;

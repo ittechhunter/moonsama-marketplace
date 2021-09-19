@@ -476,7 +476,7 @@ export const BidDialog = () => {
           {orderTx && (
             <ExternalLink
               href={getExplorerLink(
-                chainId ?? ChainId.EWC,
+                chainId ?? ChainId.MOONRIVER,
                 orderTx.hash,
                 'transaction'
               )}

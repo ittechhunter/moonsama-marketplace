@@ -25,7 +25,7 @@ export const Transaction = ({ hash }: { hash: string }) => {
   return (
     <div>
       <ExternalLink
-        href={getExplorerLink(chainId ?? ChainId.EWC, hash, 'transaction')}
+        href={getExplorerLink(chainId ?? ChainId.MOONRIVER, hash, 'transaction')}
       >
         <Typography>{summary ?? hash} ↗</Typography>
         <div className={styles.iconWrapper}>

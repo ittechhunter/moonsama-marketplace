@@ -46,7 +46,7 @@ export function useMarketplaceV1Contract(
   const { chainId } = useActiveWeb3React();
   return useContract(
     chainId
-      ? MARKETPLACE_V1_ADDRESS[(chainId as ChainId) ?? ChainId.EWC]
+      ? MARKETPLACE_V1_ADDRESS[(chainId as ChainId) ?? ChainId.MOONRIVER]
       : undefined,
     MARKETPLACE_V1_ABI,
     withSignerIfPossible
@@ -59,7 +59,7 @@ export function useRecognizedCollectionsContract(
   const { chainId } = useActiveWeb3React();
   return useContract(
     chainId
-      ? RECOGNIZED_COLLECTIONS_ADDRESS[(chainId as ChainId) ?? ChainId.EWC]
+      ? RECOGNIZED_COLLECTIONS_ADDRESS[(chainId as ChainId) ?? ChainId.MOONRIVER]
       : undefined,
     RECOGNIZED_COLLECTIONS_ABI,
     withSignerIfPossible
@@ -70,7 +70,7 @@ export function useWarehouseContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
     chainId
-      ? WAREHOUSE_ADDRESS[(chainId as ChainId) ?? ChainId.EWC]
+      ? WAREHOUSE_ADDRESS[(chainId as ChainId) ?? ChainId.MOONRIVER]
       : undefined,
     WAREHOUSE_ABI,
     false
@@ -83,7 +83,7 @@ export function useMulticall2Contract(
 ): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? MULTICALL_NETWORKS[chainId ?? ChainId.EWC] : undefined,
+    chainId ? MULTICALL_NETWORKS[chainId ?? ChainId.MOONRIVER] : undefined,
     MULTICALL2_ABI,
     withSignerIfPossible
   );

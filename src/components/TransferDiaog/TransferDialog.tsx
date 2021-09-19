@@ -203,7 +203,7 @@ export const TransferDialog = () => {
           {transferTx && (
             <ExternalLink
               href={getExplorerLink(
-                chainId ?? ChainId.EWC,
+                chainId ?? ChainId.MOONRIVER,
                 transferTx.hash,
                 'transaction'
               )}

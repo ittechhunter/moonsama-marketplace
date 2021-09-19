@@ -94,7 +94,7 @@ export const CancelDialog = () => {
           {cancelTx && (
             <ExternalLink
               href={getExplorerLink(
-                chainId ?? ChainId.EWC,
+                chainId ?? ChainId.MOONRIVER,
                 cancelTx.hash,
                 'transaction'
               )}

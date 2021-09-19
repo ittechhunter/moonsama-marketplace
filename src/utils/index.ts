@@ -85,6 +85,7 @@ const EXPLORER_PREFIXES: { [chainId in ChainId]: string } = {
   56: 'bscscan.com',
   246: 'explorer.energyweb.org',
   73799: 'volta-explorer.energyweb.org',
+  1285: 'blockscout.moonriver.moonbeam.network',
 };
 
 export function getExplorerLink(

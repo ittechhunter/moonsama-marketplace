@@ -287,7 +287,7 @@ const TokenPage = () => {
               <TableCell title={seller}>
                 <ExternalLink
                   href={getExplorerLink(
-                    chainId ?? ChainId.EWC,
+                    chainId ?? ChainId.MOONRIVER,
                     seller,
                     'address'
                   )}
@@ -473,7 +473,7 @@ const TokenPage = () => {
               </ExternalLink>
             )}
             <ExternalLink href={getExplorerLink(
-              chainId ?? ChainId.EWC,
+              chainId ?? ChainId.MOONRIVER,
               asset?.assetAddress,
               'address'
             )}>

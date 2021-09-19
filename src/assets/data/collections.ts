@@ -40,10 +40,10 @@ export const collections = {
   indexing: ['none', 'sequential'],
   collections: [
     {
-      chainId: 73799,
-      address: '0xC9016D2E189f3D9aBa48D627A7c8653B0663C291',
-      display_name: 'Moonsama',
-      symbol: 'MSAMA',
+      chainId: 1285,
+      address: '0xaF1F85aD24Bc45fb19f5F8B5166e1Aed41c60844',
+      display_name: 'SamaMoo',
+      symbol: 'SAMAMOO',
       type: 'ERC721',
       indexing: 'sequential',
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',

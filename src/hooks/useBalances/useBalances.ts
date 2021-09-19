@@ -20,9 +20,9 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
 
   const [balances, setBalances] = useState<(BigNumber | undefined)[]>([]);
 
-  const erc20 = useERC20Contract(WMOVR_ADDRESS[ChainId.EWC] as string, true);
-  const erc1155 = useERC1155Contract(WMOVR_ADDRESS[ChainId.EWC] as string, true);
-  const erc721 = useERC721Contract(WMOVR_ADDRESS[ChainId.EWC] as string, true);
+  const erc20 = useERC20Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
+  const erc1155 = useERC1155Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
+  const erc721 = useERC721Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
 
   const fetchBalances = useCallback(async () => {
     const inputs: any[] = assets

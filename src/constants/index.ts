@@ -13,7 +13,7 @@ export const SUBGRAPH_MAX_BLOCK_DELAY = 2;
 
 export const PINATA_GATEWAY =
   process.env.REACT_APP_PINATA_IPFS_URL ??
-  'https://carbonswap.mypinata.cloud/ipfs/';
+  'https://moonsama.mypinata.cloud/ipfs/';
 
 console.log('YOLO SUBGRAPH_URL', { SUBGRAPH_URL, CHAIN_ID });
 
@@ -26,6 +26,7 @@ export enum ChainId {
   BSC = 56,
   EWC = 246,
   VOLTA = 73799,
+  MOONRIVER = 1285
 }
 
 export const MULTICALL_NETWORKS: { [chainId: number]: string } = {
@@ -35,7 +36,7 @@ export const MULTICALL_NETWORKS: { [chainId: number]: string } = {
   [ChainId.RINKEBY]: '0x42Ad527de7d4e9d9d011aC45B31D8551f8Fe9821',
   [ChainId.GÖRLI]: '0x77dCa2C955b15e9dE4dbBCf1246B4B85b651e50e',
   [ChainId.VOLTA]: '0xf097d0eAb2dC8B6396a6433978567C443a691815', // latest multicall 2 deployments
-  [ChainId.EWC]: '0x1fD82C3060d9941273fae7ac6712676d2F9eFA0a', // latest multicall 2 deployments
+  [ChainId.MOONRIVER]: '0x8B60499C8e99d1218Df15ba6e8f0937e1878b86c', // latest multicall 2 deployments
 };
 
 export enum SUPPORTED_CONTRACTS {
@@ -44,37 +45,31 @@ export enum SUPPORTED_CONTRACTS {
 
 export const MARKETPLACE_V1_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: '0xE1681925E9d1fa2c735184835b348a98c34017C7',
-  [ChainId.EWC]: '0xdEfdc3C84cfdd7aC3fE5630A58c280Aa045a9D49',
+  [ChainId.MOONRIVER]: '0x56f33FaAc598f6761bE886506bD41eC2304D74af',
 };
 
 export const WAREHOUSE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: '0xE796e4CC54856b5d88E44aAca85e3B7D633c34a1',
-  [ChainId.EWC]: '0x122FADdb4e0396805A4e44D399fB36846aF26fF8',
+  [ChainId.MOONRIVER]: '0xe41509E3034f3f1C7Ea918423Da60B2bA6F14087',
 };
 
-export const RECOGNIZED_COLLECTIONS_ADDRESS: { [chainId in ChainId]?: string } =
-  {
+export const RECOGNIZED_COLLECTIONS_ADDRESS: { [chainId in ChainId]?: string } = {
     [ChainId.VOLTA]: '0xe35D9ACD226165d21d8bC7cf2C6D71b0deCb67d6',
-    [ChainId.EWC]: '0x70CC4FE9E48a836f6188c6286dDeaDD5B67aC8C2',
+    [ChainId.MOONRIVER]: '0x45613dAd51D4262dB6c0F94Fc96435D8800500cD',
   };
 
 export const WMOVR_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: '0xcBe8903EFA22711608D2f0B9aA09852f9B30DBdc', //0xFF3e85e33A8Cfc73fe08F437bFAEADFf7C95e285
-  [ChainId.EWC]: '0x9cd9CAECDC816C3E7123A4F130A91A684D01f4Dc',
+  [ChainId.MOONRIVER]: '0x98878B06940aE243284CA214f92Bb71a2b032B8A',
 };
 
-// wrapped native tokens
-export const WNATIVE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.VOLTA]: '0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c',
-  [ChainId.EWC]: '0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd',
-};
 
 export const EXPLORER_URL: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: 'https://volta-explorer.energyweb.org',
-  [ChainId.EWC]: 'https://explorer.energyweb.org',
+  [ChainId.MOONRIVER]: 'https://blockscout.moonriver.moonbeam.network',
 };
 
-export const PROTOCOL_FEE_BPS = '100';
+export const PROTOCOL_FEE_BPS = '200';
 export const FRACTION_TO_BPS = '10000';
 
 export const STRATEGY_SIMPLE =
