@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
+import { ChainId, MULTICALL_NETWORKS, WMOVR_ADDRESS } from '../../constants';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
 import {
   useERC1155Contract,
@@ -12,6 +12,7 @@ import { FunctionFragment } from 'ethers/lib/utils';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback, useEffect, useState } from 'react';
 import { Asset } from 'hooks/marketplace/types';
+import { useBlockNumber } from 'state/application/hooks';
 
 export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
   const { chainId, account } = useActiveWeb3React();
@@ -35,6 +36,16 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
         ) {
           return undefined;
         }
+        
+        if (asset.assetType?.valueOf() === StringAssetType.NATIVE) {
+          return [
+            [multi?.interface.getFunction('getEthBalance') as FunctionFragment],
+            multi?.address,
+            'getEthBalance',
+            [account],
+          ];
+        }
+        
         if (asset.assetType?.valueOf() === StringAssetType.ERC20) {
           return [
             [erc20?.interface.getFunction('balanceOf') as FunctionFragment],
@@ -96,3 +107,25 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
 
   return balances;
 };
+
+export const useNativeBalance = () => {
+  const { chainId, account, library } = useActiveWeb3React();
+  const [balance, setBalance] = useState<BigNumber | undefined>(undefined);
+  const blocknumber = useBlockNumber()
+
+  const fetchBalance = useCallback(async () => {
+    if (account && library) {
+      const b = await library?.getBalance(account)
+      setBalance(b)
+    }
+  }, [chainId, library, account, blocknumber]);
+
+  useEffect(() => {
+    if (chainId && account && library) {
+      fetchBalance();
+    }
+  }, [chainId, account, library, blocknumber]);
+
+  return balance;
+};
+

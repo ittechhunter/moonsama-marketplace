@@ -35,6 +35,7 @@ import { Box, Grid } from '@material-ui/core';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import { Fraction } from 'utils/Fraction';
+import { AddressZero } from '@ethersproject/constants';
 
 export const PurchaseDialog = () => {
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
@@ -72,7 +73,7 @@ export const PurchaseDialog = () => {
   }
 
   const title = 'Fill order';
-  let symbol: string | undefined = 'XXXX';
+  let symbol: string | undefined = 'MSAMA';
   let assetAddress: string | undefined;
   let assetId: string | undefined;
   let assetType: StringAssetType | undefined;
@@ -105,8 +106,8 @@ export const PurchaseDialog = () => {
   const userAsset = order?.buyAsset;
   const getAsset = order?.sellAsset;
 
-  const isGetAssetErc20 = getAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf()
-  const isGiveAssetErc20 = userAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf()
+  const isGetAssetErc20OrNative = getAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf() || getAsset?.assetType?.valueOf() === StringAssetType.NATIVE.valueOf()
+  const isGiveAssetErc20OrNative = userAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf() || userAsset?.assetType?.valueOf() === StringAssetType.NATIVE.valueOf()
 
 
   const total = getQuantity(orderType, quantity, askPerUnitNominator, askPerUnitDenominator)
@@ -135,12 +136,12 @@ export const PurchaseDialog = () => {
     assetType = userAsset?.assetType;
 
     // user asset desides
-    [inputUnit, unitOptions] = isGiveAssetErc20
+    [inputUnit, unitOptions] = isGiveAssetErc20OrNative
       ? [UNIT.ETHER, [[1, 'in ether']]]
       : [UNIT.WEI, [[2, 'in units']]];
     
     // we sell our erc20 into a buy order
-    if (isGiveAssetErc20) {
+    if (isGiveAssetErc20OrNative) {
       
       // how much we want to sell from our erc20 in ether
       try {
@@ -171,7 +172,7 @@ export const PurchaseDialog = () => {
       sendAmount = ppu?.mul(sendAmount) ?? BigNumber.from('0');
       //usergive = sendAmount
       userget = sendAmount ?? BigNumber.from('0');
-      userGetDisplay = isGetAssetErc20 ? Fraction.from(userget?.toString(), 18)?.toFixed(5) : userget?.toString()
+      userGetDisplay = isGetAssetErc20OrNative ? Fraction.from(userget?.toString(), 18)?.toFixed(5) : userget?.toString()
     }
     
   } else {
@@ -184,12 +185,12 @@ export const PurchaseDialog = () => {
     assetType = getAsset?.assetType;
 
     // other asset decides
-    [inputUnit, unitOptions] = isGetAssetErc20
+    [inputUnit, unitOptions] = isGetAssetErc20OrNative
       ? [UNIT.ETHER, [[1, 'in ether']]]
       : [UNIT.WEI, [[2, 'in wei']]];
 
     // we buy into a sell order, which is an erc20 token
-    if (isGetAssetErc20) {
+    if (isGetAssetErc20OrNative) {
 
       // input amount to buy is in ether
       try {
@@ -248,7 +249,7 @@ export const PurchaseDialog = () => {
 
   const hasEnough = userAssetBalance?.gte(usergive);
 
-  const displayBalance = isGiveAssetErc20 ? Fraction.from(userAssetBalance?.toString(), 18)?.toFixed(5) : userAssetBalance?.toString()
+  const displayBalance = isGiveAssetErc20OrNative ? Fraction.from(userAssetBalance?.toString(), 18)?.toFixed(5) : userAssetBalance?.toString()
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
@@ -266,8 +267,8 @@ export const PurchaseDialog = () => {
     ppu: ppu?.toString(),
     askPerUnitDenominator: askPerUnitDenominator?.toString(),
     askPerUnitNominator: askPerUnitNominator?.toString(),
-    isGetAssetErc20,
-    isGiveAssetErc20
+    isGetAssetErc20OrNative,
+    isGiveAssetErc20OrNative
   })
 
   const {
@@ -275,9 +276,14 @@ export const PurchaseDialog = () => {
     callback: fillOrderCallback,
     error,
   } = useFillOrderCallback(orderHash, {
-    buyer: account,
-    quantity: sendAmount
-  });
+      buyer: account,
+      quantity: sendAmount
+    },
+    {
+      native: userAsset?.assetAddress === AddressZero && userAsset?.assetType.valueOf() === StringAssetType.NATIVE,
+      usergive
+    }
+  );
 
   const { fillSubmitted, fillTx } = useSubmittedFillTx(order?.id);
 
@@ -411,7 +417,7 @@ export const PurchaseDialog = () => {
                     justifyContent: 'flex-end',
                   }}
                 >
-                  {displayppu} WMOVR
+                  {displayppu} MOVR
                 </div>
               </div>
               <div className={col}>
@@ -475,7 +481,7 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>You get</Typography>
                   <Typography className={formValueGet}>
-                    {userGetDisplay} WMOVR
+                    {userGetDisplay} MOVR
                   </Typography>
                 </div>
               </>
@@ -518,14 +524,14 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
-                    {displayBalance ?? '?'} WMOVR
+                    {displayBalance ?? '?'} MOVR
                   </Typography>
                 </div>
 
                 <div className={infoContainer}>
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
-                    {Fraction.from(usergive?.toString(), 18)?.toFixed(5)} WMOVR
+                    {Fraction.from(usergive?.toString(), 18)?.toFixed(5)} MOVR
                   </Typography>
                 </div>
               </>

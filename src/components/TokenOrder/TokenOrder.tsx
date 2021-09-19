@@ -47,7 +47,7 @@ export const TokenOrder = ({ order, meta, staticData }: {
   const totalSupplyString = isErc721 ? "unique" : (sup ? `${sup} pieces` : undefined)
   const ppu = getUnitPrice(order.strategy?.askPerUnitNominator, order.strategy?.askPerUnitDenominator)
 
-  const ppuDisplay = ppu ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} WMOVR`: action
+  const ppuDisplay = ppu ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`: action
 
   return (
     <Paper className={container}>

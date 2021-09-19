@@ -7,9 +7,10 @@ import { AddressZero } from '@ethersproject/constants';
 
 export enum AssetType {
   UNKNOWN = 0,
-  ERC20 = 1,
-  ERC721 = 2,
-  ERC1155 = 3,
+  NATIVE = 1,
+  ERC20 = 2,
+  ERC721 = 3,
+  ERC1155 = 4,
 }
 
 export const Strategy = {
@@ -51,6 +52,9 @@ export interface CreateSimpleStrategyData {
 export function stringAssetTypeToAssetType(
   assetType?: StringAssetType
 ): AssetType {
+  if (StringAssetType.NATIVE === assetType?.valueOf()) {
+    return AssetType.NATIVE;
+  }
   if (StringAssetType.ERC20 === assetType?.valueOf()) {
     return AssetType.ERC20;
   }
@@ -283,8 +287,8 @@ export function sanityCheckOrder(order: Partial<CreateOrderData>) {
   }
 
   if (
-    order.sellAsset.addr === AddressZero ||
-    order.buyAsset.addr === AddressZero
+    (order.sellAsset.addr === AddressZero && order.sellAsset.assetType !== AssetType.NATIVE) ||
+    (order.buyAsset.addr === AddressZero && order.buyAsset.assetType !== AssetType.NATIVE)
   ) {
     return false;
   }

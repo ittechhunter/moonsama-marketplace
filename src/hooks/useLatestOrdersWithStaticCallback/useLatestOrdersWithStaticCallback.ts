@@ -13,6 +13,7 @@ export const useLatestOrdersWithStaticCallback = () => {
   const staticCallback = useTokenStaticDataCallbackArray()
 
   const fetchLatestOrdersWithStatic = useCallback(async (num : number, offset: number) => {
+    console.log('order query', offset, num)
     const query = QUERY_LATEST_ORDERS(
       offset,
       num

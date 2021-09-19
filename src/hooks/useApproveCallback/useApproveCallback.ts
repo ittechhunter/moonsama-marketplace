@@ -50,7 +50,10 @@ export function useAllowance(
       return;
     }
 
-    if (StringAssetType.ERC20.valueOf() === type.valueOf()) {
+    if (StringAssetType.NATIVE.valueOf() === type.valueOf()) {
+      setAllowance(MaxUint256)
+      return
+    } else if (StringAssetType.ERC20.valueOf() === type.valueOf()) {
       if (!erc20) {
         console.error('ERC20) contract null');
         setAllowance(undefined);
@@ -143,6 +146,10 @@ export function useApproveCallback(
   const addTransaction = useTransactionAdder();
 
   const approve = useCallback(async (): Promise<void> => {
+    if (assetType.valueOf() === StringAssetType.NATIVE) {
+      return
+    }
+
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
       return;

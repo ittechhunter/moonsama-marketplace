@@ -8,11 +8,15 @@ import FreshTradesPage from './freshtrades';
 import { PurchaseDialog, BidDialog } from 'components';
 import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
+import { CollectionListPage } from './collection-list';
 
 export const Routing = () => (
   <Switch>
     <Route exact path="/">
       <HomePage />
+    </Route>
+    <Route path="/collections">
+      <CollectionListPage />
     </Route>
     <Route path="/collection/:type/:address">
       <CollectionPage />

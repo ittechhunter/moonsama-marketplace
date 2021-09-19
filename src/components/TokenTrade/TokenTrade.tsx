@@ -50,7 +50,7 @@ export const TokenTrade = ({ fill, meta, staticData }: {
 
   const unit = ot == OrderType.BUY ? fill.buyerSendsAmountFull: fill.order.strategy?.askPerUnitDenominator.mul(fill.buyerSendsAmountFull).div(fill.order.strategy?.askPerUnitNominator)
 
-  const ppuDisplay = ppu ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} WMOVR`: action
+  const ppuDisplay = ppu ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`: action
 
   return (
     <Paper className={container}>

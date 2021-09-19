@@ -42,7 +42,7 @@ import {
 } from 'utils/subgraph';
 import { appStyles } from '../../app.styles';
 import { ExternalLink, Media } from '../../components';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
+import { ChainId } from '../../constants';
 import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import {
@@ -82,8 +82,11 @@ const TokenPage = () => {
   if (assetType.valueOf() === StringAssetType.UNKNOWN.valueOf())
     throw Error('Token type was not recognized');
 
-  if (address.toLowerCase() === WMOVR_ADDRESS[chainId ?? ChainId.EWC])
-    throw Error('WMOVR is a payment token');
+  if (address.toLowerCase() === AddressZero)
+    throw Error('Nonexistant token');
+
+  if (assetType.valueOf() === StringAssetType.ERC20.valueOf())
+    throw Error('ERC20 trades are not enabled yet');
 
   //console.log('ID!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', id);
   if (!id) {
@@ -147,15 +150,7 @@ const TokenPage = () => {
   const { setTransferData, setTransferDialogOpen } = useTransferDialog();
 
   const assets = useMemo(() => {
-    return [
-      asset,
-      {
-        assetAddress: WMOVR_ADDRESS[chainId ?? ChainId.EWC] as string,
-        assetId: '0',
-        assetType: StringAssetType.ERC20,
-        id: '1',
-      },
-    ];
+    return [asset];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
@@ -224,8 +219,8 @@ const TokenPage = () => {
           const ot = orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
 
           const qty = (
-            sellAsset.assetType.valueOf() == StringAssetType.ERC20
-            && buyAsset.assetType.valueOf() == StringAssetType.ERC20) ? quantityLeft : getDisplayQuantity(ot, quantityLeft, askPerUnitNominator, askPerUnitDenominator)
+            (sellAsset.assetType.valueOf() == StringAssetType.ERC20 || sellAsset.assetType.valueOf() == StringAssetType.NATIVE)
+            && (buyAsset.assetType.valueOf() == StringAssetType.ERC20 || buyAsset.assetType.valueOf() == StringAssetType.NATIVE)) ? quantityLeft : getDisplayQuantity(ot, quantityLeft, askPerUnitNominator, askPerUnitDenominator)
 
           const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
 
@@ -409,7 +404,7 @@ const TokenPage = () => {
                     }}
                   >
                     <span className={assetActionsBidTokenAmount}>
-                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} WMOVR
+                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} MOVR
                     </span>
                     {/** TODO USD PRICE 
                   <span className={assetActionsBidCurrency}>

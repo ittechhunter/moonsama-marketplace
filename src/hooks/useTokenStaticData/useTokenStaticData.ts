@@ -1,9 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Interface } from '@ethersproject/abi';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
 import {
-  useERC20Contract,
   useMulticall2Contract,
 } from 'hooks/useContracts/useContracts';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
@@ -33,12 +30,7 @@ export const useTokenStaticData = (assets: Asset[]) => {
       calls = [...calls, ...getTokenStaticCalldata(asset)];
     });
 
-
-    console.error('ERRRORORS',calls)
-
     const results = await tryMultiCallCore(multi, calls, false);
-
-    console.error('ERRRORORS', results)
 
     if (!results) {
       setDatas([]);

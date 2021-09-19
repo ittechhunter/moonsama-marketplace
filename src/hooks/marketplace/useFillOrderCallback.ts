@@ -2,6 +2,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { calculateGasMargin, getSigner } from '../../utils';
 import {
+  Asset,
+  AssetType,
   encodeFillOrderData,
   encodeFillOrderDataSig,
   FillOrderData,
@@ -72,7 +74,11 @@ export interface FillOrderCallbackData {
 
 export function useFillOrderCallback(
   orderHash?: string,
-  fillData?: FillOrderCallbackData
+  fillData?: FillOrderCallbackData,
+  nativeOptions?: {
+    usergive?: BigNumber,
+    native: boolean
+  }
 ): {
   state: FillOrderCallbackState;
   callback: null | (() => Promise<string>);
@@ -88,6 +94,8 @@ export function useFillOrderCallback(
   const quantity = fillData?.quantity;
 
   const addTransaction = useTransactionAdder();
+
+  const inputOptions = nativeOptions?.native && nativeOptions?.usergive ? {value: nativeOptions.usergive.toString()} : {}
 
   return useMemo(() => {
     if (!library || !account || !chainId || !contract) {
@@ -115,7 +123,6 @@ export function useFillOrderCallback(
       state: FillOrderCallbackState.VALID,
       callback: async function onCreateOrder(): Promise<string> {
         const args = inputParams;
-        const options = {};
         const methodName = 'fillOrder';
 
         const call = {
@@ -128,14 +135,14 @@ export function useFillOrderCallback(
 
         const gasEstimate = await contract.estimateGas[methodName](
           ...args,
-          options
+          inputOptions
         ).catch((gasError: any) => {
           console.debug(
             'Gas estimate failed for order fill, trying eth_call to extract error',
             call
           );
 
-          return contract.callStatic[methodName](...args, options)
+          return contract.callStatic[methodName](...args, inputOptions)
             .then((result: any) => {
               console.debug(
                 'Unexpected successful fill order call after failed estimate gas',
@@ -163,6 +170,7 @@ export function useFillOrderCallback(
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           from: account,
+          ...inputOptions
         })
           .then((response: any) => {
             const sum = `Fill order ${orderHash}`;
@@ -195,6 +203,7 @@ export function useFillOrderCallback(
     orderHash,
     buyer,
     quantity,
+    inputOptions.value,
     addTransaction,
   ]);
 }

@@ -41,6 +41,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   <NavLink href="/" className={navItem}>
                     Welcome
                   </NavLink>
+                  <NavLink href="/collections" className={navItem}>
+                    Collections
+                  </NavLink>
                   <NavLink href="/freshorders" className={navItem}>
                     Latest orders
                   </NavLink>
@@ -60,6 +63,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   <Box>
                     <NavLink href="/" className={navItemDrawer}>
                       Welcome
+                    </NavLink>
+                    <NavLink href="/collections" className={navItem}>
+                      Collections
                     </NavLink>
                     <NavLink href="/freshorders" className={navItemDrawer}>
                       Latest orders

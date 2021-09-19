@@ -32,7 +32,6 @@ import {
 import { OrderType, StringAssetType } from 'utils/subgraph';
 import { AddressZero } from '@ethersproject/constants';
 import {
-  WMOVR_ADDRESS,
   ChainId,
   PROTOCOL_FEE_BPS,
   FRACTION_TO_BPS,
@@ -157,7 +156,7 @@ export const BidDialog = () => {
 
   let title: string;
   const name = 'yadabada';
-  let symbol: string | undefined = 'XXXX';
+  let symbol: string | undefined = 'MSAMA';
   let sellAssetType: StringAssetType | undefined;
   let action: string;
   let orderAmount: BigNumber;
@@ -190,13 +189,13 @@ export const BidDialog = () => {
 
   const orderType = bidData?.orderType;
 
-  const isAssetErc20 = assetType?.valueOf() === StringAssetType.ERC20.valueOf()
+  const isAssetNative = assetType?.valueOf() === StringAssetType.NATIVE.valueOf()
 
   const [quantityUnit, unitOptions] = useMemo(() => {
-    return isAssetErc20
+    return isAssetNative
       ? [UNIT.ETHER, [[1, 'in ether']]]
       : [UNIT.WEI, [[2, 'units']]];
-  }, [isAssetErc20]);
+  }, [isAssetNative]);
 
   // buy- PPU is always in ether!
     try {
@@ -213,12 +212,12 @@ export const BidDialog = () => {
     availableLabel = 'Total requested';
 
     sellAssetContract = {
-      addr: WMOVR_ADDRESS[chainId ?? ChainId.EWC] as string,
+      addr: AddressZero,
       id: '0',
-      assetType: AssetType.ERC20,
+      assetType: AssetType.NATIVE,
     };
 
-    sellAssetType = StringAssetType.ERC20;
+    sellAssetType = StringAssetType.NATIVE;
 
     buyAssetContract = {
       addr: assetAddress ?? AddressZero,
@@ -227,7 +226,7 @@ export const BidDialog = () => {
     };
 
     // buy- quantity input field is Ether
-    if (isAssetErc20) {
+    if (isAssetNative) {
 
       // buy quantity is the amount of ERC20 to buy in ether
       try {
@@ -271,7 +270,7 @@ export const BidDialog = () => {
         quantityError = 'Invalid quantity value';
       }
 
-      // order amount in WMOVR
+      // order amount in MOVR
       orderAmount = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
       amountToApprove = orderAmount
 
@@ -301,13 +300,13 @@ export const BidDialog = () => {
     sellAssetType = assetType;
 
     buyAssetContract = {
-      addr: WMOVR_ADDRESS[chainId ?? ChainId.EWC] as string,
+      addr: AddressZero,
       id: '0',
-      assetType: AssetType.ERC20,
+      assetType: AssetType.NATIVE,
     };
 
     // sell- quantity input field is Ether
-    if (isAssetErc20) {
+    if (isAssetNative) {
 
       // sell- quantity the amount of ERC20 to sell in ether
       try {
@@ -424,9 +423,7 @@ export const BidDialog = () => {
 
   const { orderSubmitted, orderTx } = useSubmittedOrderTx(orderHash);
 
-  //console.warn({orderSubmitted, orderTx, orderHash, finalTxSubmitted})
-
-  //console.log('CREATE ORDER STATE', { createOrderState })
+  console.warn('CREATE ORDER STATE', {orderSubmitted, orderTx, orderHash, finalTxSubmitted, createOrderState})
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
@@ -437,7 +434,7 @@ export const BidDialog = () => {
   const showApproveFlow =
     approvalState === ApprovalState.NOT_APPROVED ||
     approvalState === ApprovalState.PENDING;
-  //console.log('approveflow', { showApproveFlow, approvalState });
+  console.log('APPROVE FLOW', { showApproveFlow, approvalState, hasEnough });
 
   const renderBody = () => {
     if (!orderLoaded) {
@@ -558,7 +555,7 @@ export const BidDialog = () => {
                   className={`${formValue}`}
                 >
                   <Grid item>
-                    <Typography className={formLabel}>WMOVR</Typography>
+                    <Typography className={formLabel}>MOVR</Typography>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -682,7 +679,7 @@ export const BidDialog = () => {
                       You get brutto
                     </Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)} WMOVR
+                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)} MOVR
                     </Typography>
                   </div>
 
@@ -693,7 +690,7 @@ export const BidDialog = () => {
                       </Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        WMOVR
+                        MOVR
                       </Typography>
                     </div>
                   )}
@@ -703,7 +700,7 @@ export const BidDialog = () => {
                       <Typography className={formLabel}>Royalty fee</Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        WMOVR
+                        MOVR
                       </Typography>
                     </div>
                   )}
@@ -711,7 +708,7 @@ export const BidDialog = () => {
                   <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} WMOVR
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
                     </Typography>
                   </div>
                 </>
@@ -726,7 +723,7 @@ export const BidDialog = () => {
                     <Typography className={`${formValue} ${spaceOnLeft}`}>
                       {Fraction.from(sellBalance?.toString(), 18)?.toFixed(5) ??
                         '?'}{' '}
-                      WMOVR
+                      MOVR
                     </Typography>
                   </div>
 
@@ -742,7 +739,7 @@ export const BidDialog = () => {
                     </Typography>
                     <Typography className={`${formValue} ${spaceOnLeft}`}>
                       {Fraction.from(orderAmount.toString(), 18)?.toFixed(5)}{' '}
-                      WMOVR
+                      MOVR
                     </Typography>
                   </div>
 
@@ -753,7 +750,7 @@ export const BidDialog = () => {
                       </Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        WMOVR
+                        MOVR
                       </Typography>
                     </div>
                   )}
@@ -763,7 +760,7 @@ export const BidDialog = () => {
                       <Typography className={formLabel}>Royalty fee</Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        WMOVR
+                        MOVR
                       </Typography>
                     </div>
                   )}
@@ -773,7 +770,7 @@ export const BidDialog = () => {
                       You give netto
                     </Typography>
                     <Typography className={`${formValueGive} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} WMOVR
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
                     </Typography>
                   </div>
                 </>

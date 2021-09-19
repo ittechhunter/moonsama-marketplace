@@ -43,18 +43,18 @@ export enum SUPPORTED_CONTRACTS {
 }
 
 export const MARKETPLACE_V1_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.VOLTA]: '0x13348C9284EF39cf988fc28D909cd0975a60d1a8',
+  [ChainId.VOLTA]: '0xE1681925E9d1fa2c735184835b348a98c34017C7',
   [ChainId.EWC]: '0xdEfdc3C84cfdd7aC3fE5630A58c280Aa045a9D49',
 };
 
 export const WAREHOUSE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.VOLTA]: '0x29A7aAaaFe096d4FBE2c8f63CFc8B5A347946Ee5',
+  [ChainId.VOLTA]: '0xE796e4CC54856b5d88E44aAca85e3B7D633c34a1',
   [ChainId.EWC]: '0x122FADdb4e0396805A4e44D399fB36846aF26fF8',
 };
 
 export const RECOGNIZED_COLLECTIONS_ADDRESS: { [chainId in ChainId]?: string } =
   {
-    [ChainId.VOLTA]: '0xA247de051069A9305eCeFfb0dCC9AE2bABE53ed8',
+    [ChainId.VOLTA]: '0xe35D9ACD226165d21d8bC7cf2C6D71b0deCb67d6',
     [ChainId.EWC]: '0x70CC4FE9E48a836f6188c6286dDeaDD5B67aC8C2',
   };
 

@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
-import { ChainId, DEFAULT_ORDERBOOK_PAGINATION, SUBGRAPH_URL, WMOVR_ADDRESS } from '../../constants';
+import { ChainId, DEFAULT_ORDERBOOK_PAGINATION, SUBGRAPH_URL } from '../../constants';
 import { request } from 'graphql-request';
 import { getAssetEntityId, parseOrder, StringAssetType } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';

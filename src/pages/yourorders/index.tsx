@@ -42,7 +42,7 @@ import {
 } from 'utils/subgraph';
 import { appStyles } from '../../app.styles';
 import { ExternalLink, Media } from '../../components';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
+import { ChainId } from '../../constants';
 import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import {
@@ -108,18 +108,6 @@ export const MyOrdersPage = () => {
 
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
   const { setCancelData, setCancelDialogOpen } = useCancelDialog();
-
-  const assets = useMemo(() => {
-    return [
-      {
-        assetAddress: WMOVR_ADDRESS[chainId ?? ChainId.EWC] as string,
-        assetId: '0',
-        assetType: StringAssetType.ERC20,
-        id: '1',
-      },
-    ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId]);
 
   const ordersMap = useUserOrders({
     from: 0,

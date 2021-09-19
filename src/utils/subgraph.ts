@@ -10,7 +10,8 @@ import {
   SimpleOrderStrategy,
 } from '../hooks/marketplace/types';
 import { AssetType } from './marketplace';
-import { ChainId, WMOVR_ADDRESS } from '../constants';
+import { ChainId } from '../constants';
+import { AddressZero } from '@ethersproject/constants';
 
 export enum StringOrderType {
   UNKNOWN = 'UNKNOWN',
@@ -25,6 +26,7 @@ export const enum OrderType {
 
 export enum StringAssetType {
   UNKNOWN = 'UNKNOWN',
+  NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
   ERC721 = 'ERC721',
   ERC1155 = 'ERC1155',
@@ -39,6 +41,9 @@ export function stringToStringAssetType(
   assetTypeString?: string
 ): StringAssetType {
   const upper = assetTypeString?.toUpperCase();
+  if (StringAssetType.NATIVE.valueOf() === upper) {
+    return StringAssetType.NATIVE;
+  }
   if (StringAssetType.ERC20.valueOf() === upper) {
     return StringAssetType.ERC20;
   }
@@ -54,6 +59,9 @@ export function stringToStringAssetType(
 export function assetTypeToStringAssetType(
   assetType?: AssetType
 ): StringAssetType {
+  if (AssetType.NATIVE === assetType) {
+    return StringAssetType.NATIVE;
+  }
   if (AssetType.ERC20 === assetType) {
     return StringAssetType.ERC20;
   }
@@ -293,16 +301,14 @@ export const inferOrderTYpe = (
   sellAsset?: Asset,
   buyAsset?: Asset
 ): OrderType | undefined => {
-  const WMOVR = WMOVR_ADDRESS[chainId ?? ChainId.EWC];
-
   if (sellAsset && sellAsset.assetAddress) {
-    return sellAsset.assetAddress.toLowerCase() === WMOVR?.toLowerCase()
+    return sellAsset.assetAddress.toLowerCase() === AddressZero
       ? OrderType.BUY
       : OrderType.SELL;
   }
 
   if (buyAsset && buyAsset.assetAddress) {
-    return buyAsset.assetAddress.toLowerCase() === WMOVR?.toLowerCase()
+    return buyAsset.assetAddress.toLowerCase() === AddressZero
       ? OrderType.SELL
       : OrderType.BUY;
   }

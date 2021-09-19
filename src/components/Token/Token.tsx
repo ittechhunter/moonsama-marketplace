@@ -59,7 +59,7 @@ export const Token = ({
       <div className={stockContainer}>
         {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
         {ltp && <PriceBox margin={false} size="small" color={color}>
-          {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} WMOVR
+          {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} MOVR
         </PriceBox>}
         {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
       </div>
@@ -68,7 +68,7 @@ export const Token = ({
           Last trade
         </Typography>
         <PriceBox margin={true} size="small" color='white'>
-          {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} WMOVR
+          {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} MOVR
         </PriceBox>
       </div>}*/}
     </Paper>

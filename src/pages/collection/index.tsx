@@ -130,7 +130,6 @@ const CollectionPage = () => {
         <div className={placeholderContainer}>
           <Placeholder style={{ width: '30%' }} />
         </div>
-
       )}
     </>
   );

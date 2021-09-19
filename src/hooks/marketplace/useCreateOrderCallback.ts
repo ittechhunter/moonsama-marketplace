@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { calculateGasMargin, getSigner } from '../../utils';
 import {
+  AssetType,
   calculateOrderHash,
   CreateOrderData,
   CreateSimpleStrategyData,
@@ -13,6 +14,8 @@ import {
 import { useMarketplaceV1Contract } from '../../hooks/useContracts/useContracts';
 import { useActiveWeb3React } from '../../hooks';
 import { useTransactionAdder } from '../../state/transactions/hooks';
+import { AddressZero } from '@ethersproject/constants';
+import { StringAssetType } from 'utils/subgraph';
 
 export enum CreateOrderCallbackState {
   INVALID,
@@ -75,8 +78,11 @@ export function useCreateOrderCallback(
   const contract = useMarketplaceV1Contract(true);
 
   const inputParams = useCreateOrderArguments(createOrderData, strategyData);
+  const inputOptions = createOrderData.sellAsset.addr === AddressZero && createOrderData.sellAsset.assetType === AssetType.NATIVE ? {value: strategyData.quantity.toString()} : {}
 
   const addTransaction = useTransactionAdder();
+
+  console.warn('YOLO ORDER', {inputParams, inputOptions})
 
   return useMemo(() => {
     if (!library || !account || !chainId || !contract || !inputParams) {
@@ -88,6 +94,7 @@ export function useCreateOrderCallback(
     }
 
     if (!sanityCheckOrder(createOrderData)) {
+      console.error('Order sanity check failed')
       return {
         state: CreateOrderCallbackState.INVALID,
         callback: null,
@@ -96,6 +103,7 @@ export function useCreateOrderCallback(
     }
 
     if (!sanityCheckStrategy(strategyData)) {
+      console.error('Strategy sanity check failed')
       return {
         state: CreateOrderCallbackState.INVALID,
         callback: null,
@@ -107,7 +115,6 @@ export function useCreateOrderCallback(
       state: CreateOrderCallbackState.VALID,
       callback: async function onCreateOrder(): Promise<string> {
         const args = inputParams;
-        const options = {};
         const methodName = 'createOrder';
 
         const call = {
@@ -120,14 +127,14 @@ export function useCreateOrderCallback(
 
         const gasEstimate = await contract.estimateGas[methodName](
           ...args,
-          options
+          inputOptions
         ).catch((gasError: any) => {
           console.debug(
             'Gas estimate failed, trying eth_call to extract error',
             call
           );
 
-          return contract.callStatic[methodName](...args, options)
+          return contract.callStatic[methodName](...args, inputOptions)
             .then((result: any) => {
               console.debug(
                 'Unexpected successful call after failed estimate gas',
@@ -155,6 +162,7 @@ export function useCreateOrderCallback(
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           from: account,
+          ...inputOptions
         })
           .then((response: any) => {
             const orderHash = calculateOrderHash(createOrderData);
@@ -180,5 +188,5 @@ export function useCreateOrderCallback(
       },
       error: null,
     };
-  }, [library, account, chainId, inputParams, addTransaction]);
+  }, [library, account, chainId, inputParams, inputOptions.value, addTransaction]);
 }

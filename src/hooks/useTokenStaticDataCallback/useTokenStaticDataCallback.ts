@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
+import { ChainId } from '../../constants';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
 import {
   useERC20Contract,

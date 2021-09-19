@@ -17,7 +17,7 @@ const FreshOrdersPage = () => {
     staticData: StaticTokenData;
     order: Order
   }[]>([]);
-  const [take, setTake] = useState<number>(1)
+  const [take, setTake] = useState<number>(0)
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false)
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const { placeholderContainer, container } = useStyles()
@@ -36,6 +36,8 @@ const FreshOrdersPage = () => {
       setPageLoading(true)
       const data = await getPaginatedItems(PAGE_SIZE, take)
       setPageLoading(false)
+
+      console.log('latest',data)
       const isEnd = data.some(({ meta }) => !meta)
 
       //console.log('IS END', {paginationEnded, isEnd, pieces, data})
