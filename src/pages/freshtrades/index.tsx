@@ -18,7 +18,7 @@ const FreshTradesPage = () => {
     staticData: StaticTokenData;
     fill: FillWithOrder
   }[]>([]);
-  const [take, setTake] = useState<number>(1)
+  const [take, setTake] = useState<number>(0)
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false)
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const { placeholderContainer, container } = useStyles()
