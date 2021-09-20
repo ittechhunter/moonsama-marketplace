@@ -55,12 +55,13 @@ export const Token = ({
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
         {ltp && <PriceBox margin={false} size="small" color={color}>
           {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} MOVR
         </PriceBox>}
+      </div>
+      <div className={stockContainer}>
+        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
+
         {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
       </div>
       {/*{ltp && <div className={lastPriceContainer}>

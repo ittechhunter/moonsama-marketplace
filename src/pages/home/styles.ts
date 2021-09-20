@@ -32,5 +32,15 @@ export const useStyles = makeStyles(theme => ({
     fontSize: '0.825rem',
     color: theme.palette.text.disabled,
     margin: `${theme.spacing(2)}px ${theme.spacing(32)}px`,
+  },
+  pageContent: {
+    margin: '80px 0',
+
+    '& a': {
+      textDecoration: 'none !important',
+    },
+  },
+  exploreButton: {
+    height: '50px',
   }
 }))

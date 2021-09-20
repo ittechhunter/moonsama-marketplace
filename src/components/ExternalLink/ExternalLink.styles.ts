@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 export const useStyles = makeStyles((theme) => ({
   externalLink: {
-    color: theme.palette.primary.main,
+    color: '#d2023e',
+    fontSize: '12px',
   },
 }));

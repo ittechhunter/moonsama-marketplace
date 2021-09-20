@@ -2,8 +2,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { fontWeight } from 'theme/typography';
 
-import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
-
 export const useStyles = makeStyles((theme) => ({
   pageContainer: {
     paddingTop: theme.spacing(8),
@@ -23,9 +21,9 @@ export const useStyles = makeStyles((theme) => ({
   image: {
     width: '70%',
     height: 'auto',
-    borderRadius: '4px',
+    borderRadius: 0,
     objectFit: 'contain',
-    background: `url(${tokenBackgroundImage}) no-repeat center center`,
+    background: '#111',
     backgroundSize: 'cover',
   },
   name: {
@@ -39,7 +37,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   card: {
     background: 'none',
-    borderRadius: '4px',
+    borderRadius: 0,
     padding: 0,
     display: 'flex',
     flexDirection: 'column',
@@ -56,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
     width: theme.spacing(6),
   },
   tabsContainer: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(12),
     width: '100%',
   },
   tabs: {
@@ -98,7 +96,7 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     // marginTop: theme.spacing(4),
     flexDirection: 'column',
-    gap: 8
+    gap: 16
   },
   subHeader: {
     fontSize: 22,
@@ -116,12 +114,18 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: '0.4rem',
     color: theme.palette.grey[600],
   },
+  smallText: {
+    fontSize: '14px',
+  },
   transferButton: {
-
+    '&:hover': {
+      backgroundColor: '#dcdcdc',
+      color: 'black'
+    }
   },
   newSellButton: {
     '&:hover': {
-      backgroundColor: theme.palette.text.secondary,
+      backgroundColor: '#dcdcdc',
       color: 'black'
     }
   },

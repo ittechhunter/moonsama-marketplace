@@ -120,7 +120,7 @@ const CollectionPage = () => {
         {collection.map(
           (token) =>
             token && (
-              <Grid item key={token.staticData.asset.id} xl={3} md={4} sm={6} xs={12}>
+              <Grid item key={token.staticData.asset.id} xl={3} md={3} sm={6} xs={12}>
                 <TokenComponent {...token} />
               </Grid>
             )

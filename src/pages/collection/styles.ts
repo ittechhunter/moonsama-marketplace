@@ -5,7 +5,7 @@ export const useStyles = makeStyles(theme => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
-    padding: 20,
+    padding: 8,
     margin: '20 0'
   },
   container: {

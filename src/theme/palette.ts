@@ -30,7 +30,7 @@ export const palette: PaletteOptions = {
   },
   background: {
     default: v2_black,
-    paper: v2_lightBlack,
+    paper: 'transparent',
   },
   text: {
     primary: v2_white,

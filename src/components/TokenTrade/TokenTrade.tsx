@@ -26,7 +26,8 @@ export const TokenTrade = ({ fill, meta, staticData }: {
     stockContainer,
     tokenName,
     mr,
-    lastPriceContainer
+    lastPriceContainer,
+    smallText
   } = useStyles();
   const { push } = useHistory();
 
@@ -65,17 +66,17 @@ export const TokenTrade = ({ fill, meta, staticData }: {
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
+      </div>
+      <div className={stockContainer}>
+        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
         {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
       </div>
       <div className={lastPriceContainer}>
 
-        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}><Typography color="textSecondary" noWrap>
+        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}><Typography className={smallText} noWrap>
           {unit?.toString()} taken
         </Typography></ExternalLink>
         <Typography color="textSecondary" noWrap className={mr}>
@@ -84,7 +85,7 @@ export const TokenTrade = ({ fill, meta, staticData }: {
         {/*<Typography color="textSecondary" noWrap>
           {truncateHexString(order.seller)}
         </Typography>*/}
-        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}><Typography color="textSecondary" noWrap>
+        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}><Typography className={smallText} noWrap>
           {truncateHexString(fill.buyer)}
         </Typography></ExternalLink>
       </div>

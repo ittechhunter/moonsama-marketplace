@@ -1,7 +1,5 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
-
 export const collectionListStyles = makeStyles((theme) => ({
   card: {
     borderRadius: 4,
@@ -16,11 +14,11 @@ export const collectionListStyles = makeStyles((theme) => ({
     maxHeight: 300,
     maxWidth: 330,
     alignItems: 'center',
-    borderRadius: '4px',
+    borderRadius: 0,
     flexDirection: 'column',
     justifyContent: 'center',
     '& > img': {
-      background: `url(${tokenBackgroundImage}) no-repeat center center`,
+      background: '#111',
       backgroundSize: 'cover',
       height: '100%',
       width: '100%',
