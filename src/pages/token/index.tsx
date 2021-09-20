@@ -131,7 +131,6 @@ const TokenPage = () => {
     newSellButton,
     tradeContainer,
     tradeRow,
-    copyAddressButton,
     smallText
   } = useStyles();
 
@@ -392,7 +391,6 @@ const TokenPage = () => {
                       <AddressDisplayComponent
                         className={`${formValue} ${formValueTokenDetails}`}
                         charsShown={5}
-                        buttonClassName={copyAddressButton}
                       >
                         {ltp?.user}
                       </AddressDisplayComponent>

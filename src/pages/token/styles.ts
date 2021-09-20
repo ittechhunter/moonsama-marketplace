@@ -142,7 +142,4 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-  copyAddressButton: {
-    marginTop: -27,
-  },
 }));
