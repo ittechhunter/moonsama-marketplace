@@ -1,5 +1,6 @@
 export { NavLink } from './NavLink/NavLink';
 export { Header } from './Header/Header';
+export { Footer } from './Footer/Footer';
 export { Input } from './Input/Input';
 export { Button } from './Button/Button';
 export { GlitchText } from './GlitchText/GlitchText';
@@ -18,3 +19,4 @@ export { Video } from './Video/Video';
 export { Image } from './Image/Image';
 export { Placeholder } from './MediaPlaceholder/MediaPlaceholder';
 export { Drawer } from './Drawer/Drawer';
+export { Loader } from './Loader/Loader'

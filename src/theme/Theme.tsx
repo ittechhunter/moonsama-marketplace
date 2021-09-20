@@ -21,7 +21,7 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
   overrides: {
     MuiButton: {
       root: {
-        borderRadius: defaultTheme.spacing(2.5),
+        borderRadius: '4px',
         textTransform: 'none',
         height: defaultTheme.spacing(5),
         fontSize: defaultTheme.typography.fontSize,
@@ -50,8 +50,11 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
     },
     MuiOutlinedInput: {
       root: {
-        borderRadius: defaultTheme.spacing(1),
+        borderRadius: '4px',
         height: defaultTheme.spacing(5),
+        minWidth: '380px',
+        maxWidth: '100%',
+        paddingRight: '0 !important'
       },
       notchedOutline: {
         borderColor: colors.text?.disabled || 'white',

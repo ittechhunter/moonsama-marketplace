@@ -1,12 +1,12 @@
 export const fontWeight = {
   regular: 400,
-  semiBold: 500,
-  bold: 600,
+  semiBold: 400,
+  bold: 700,
   bolder: 700,
 };
 
 export const typography = {
-  fontFamily: 'Sora, sans-serif',
+  fontFamily: 'Space Mono, monospace',
   fontWeightRegular: fontWeight['regular'],
   fontWeightBold: fontWeight['bold'],
   fontWeightBolder: fontWeight['bolder'],
@@ -25,15 +25,15 @@ export const typography = {
     fontWeight: fontWeight.regular,
   },
   h4: {
-    fontSize: 14,
-    fontWeight: fontWeight.regular,
+    fontSize: 28,
+    fontWeight: fontWeight.bold,
   },
   h5: {
-    fontSize: 12,
+    fontSize: 22,
     fontWeight: fontWeight.regular,
   },
   h6: {
-    fontSize: 10,
+    fontSize: 18,
     fontWeight: fontWeight.regular,
   },
   subtitle1: {

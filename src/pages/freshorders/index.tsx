@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
-import { GlitchText, Placeholder } from 'ui';
+import { GlitchText, Loader } from 'ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Order } from 'hooks/marketplace/types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -91,8 +91,26 @@ const FreshOrdersPage = () => {
       </Grid>
       {pageLoading && (
         <div className={placeholderContainer}>
-          <Placeholder style={{ width: '30%' }} />
+          <Loader />
         </div>
+        // <Grid container spacing={1} style={{ marginTop: 12 }}>
+        //   <Grid item xl={3} md={4} sm={6} xs={12}>
+        //     <div>Test</div>
+        //   </Grid>
+        //   <Grid item xl={3} md={4} sm={6} xs={12}>
+        //     <div>Test</div>
+        //   </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
+        //   <div>Test</div>
+        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
+        //   <div>Test</div>
+        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
+        //   <div>Test</div>
+        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
+        //   <div>Test</div>
+        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
+        //   <div>Test</div>
+        // </Grid>
+        // </Grid>
       )}
     </>
   );

@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GlitchText } from 'ui';
@@ -71,6 +71,7 @@ const CollectionListItem = (
     collectionSymbol,
     collectionType,
     card,
+    collectionDescription,
   } = collectionListStyles();
 
   //console.warn('META', { meta });
@@ -129,8 +130,8 @@ const CollectionListItem = (
           </CardContent>
 
           <Collapse in={isCollectionExpanded} timeout="auto" unmountOnExit>
-            <CardContent style={{ padding: '8px 16px' }}>
-              <Typography paragraph>{meta?.description}</Typography>
+            <CardContent style={{ padding: '8px 16px'}}>
+              <Typography paragraph className={collectionDescription}>{meta?.description}</Typography>
               {meta?.external_link && (
                 <ExternalLink href={meta?.external_link}>
                   External site↗

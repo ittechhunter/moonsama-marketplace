@@ -7,8 +7,8 @@ import TableHead, { TableHeadProps } from '@material-ui/core/TableHead';
 import MaterialTableRow, { TableRowProps } from '@material-ui/core/TableRow';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Paper from '@material-ui/core/Paper';
 import { tableStyles } from './Table.styles';
 

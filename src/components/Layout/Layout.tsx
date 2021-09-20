@@ -2,18 +2,19 @@ import { useCallback, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { useMediaQuery } from 'beautiful-react-hooks';
-import MenuIcon from '@material-ui/icons/Menu';
+import { useMediaQuery } from 'beautiful-react-hooks'
+import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@material-ui/core/IconButton';
 
-import { Header, NavLink, Drawer } from 'ui';
+
+import { Header, NavLink, Drawer, Footer } from 'ui';
 
 import { LayoutProps } from './Layout.types';
 import { useStyles } from './Layout.styles';
 
-import WhiteLogo from 'assets/images/gsw.png';
+import WhiteLogo from 'assets/images/Moonsama_White.png';
 import { Account } from 'components';
-import { HeaderBalance } from 'components/HeaderBalance/HeaderBalance';
+
 import { MAX_WIDTH_TO_SHOW_NAVIGATION } from '../../constants';
 
 export const Layout = ({ children }: LayoutProps) => {
@@ -26,24 +27,22 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <Header>
-        <Container maxWidth="lg">
+        <Container maxWidth={false}>
           <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item className={nav}>
-              {showRegularMenu && (
-                <IconButton onClick={() => setIsDrawerOpened(true)}>
-                  <MenuIcon />
-                </IconButton>
-              )}
+            <Grid item xl={3} className={nav}>
+              {showRegularMenu && <IconButton onClick={() => setIsDrawerOpened(true)}><MenuIcon /></IconButton>}
               <NavLink href="/" className={navItem}>
                 <div className={logo}>
                   <img src={WhiteLogo} alt="" />
                 </div>
               </NavLink>
+            </Grid>
+            <Grid item className={buttonContainer}>
               {!showRegularMenu ? (
                 <Box style={{ display: 'flex ' }}>
-                  <NavLink href="/" className={navItem}>
-                    Welcome
-                  </NavLink>
+                  {/*<NavLink href="/" className={navItem}>*/}
+                  {/*  Welcome*/}
+                  {/*</NavLink>*/}
                   <NavLink href="/collections" className={navItem}>
                     Collections
                   </NavLink>
@@ -92,15 +91,15 @@ export const Layout = ({ children }: LayoutProps) => {
                   </Box>
                 </Drawer>
               )}
-            </Grid>
-            <Grid item xl={3} className={buttonContainer}>
-              <HeaderBalance />
+
               <Account />
             </Grid>
           </Grid>
         </Container>
       </Header>
       <Container maxWidth="lg">{children}</Container>
+      <Footer />
     </>
   );
 };
+

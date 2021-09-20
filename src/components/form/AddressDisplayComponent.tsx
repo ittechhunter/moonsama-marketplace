@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import Button from '@material-ui/core/Button';
 import { Box, Tooltip, Typography } from '@material-ui/core';
-import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
 import { useStyles } from './AddressDisplayComponent.styles';
 import { getExplorerLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
