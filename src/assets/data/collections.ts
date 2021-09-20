@@ -48,6 +48,16 @@ export const collections = {
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
       tags: ['native', 'green'],
     },
+    {
+      chainId: 1285,
+      address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
+      display_name: 'Moonsama',
+      symbol: 'MSAMA',
+      type: 'ERC721',
+      indexing: 'sequential',
+      contractURI: 'ipfs://QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5',
+      tags: ['native', 'green'],
+    }
   ],
 };
 
