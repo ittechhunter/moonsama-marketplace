@@ -81,4 +81,9 @@ export const useStyles = makeStyles<Theme>((theme) => ({
   walletOption: {
     background: '#fff'
   },
+  walletPendingText: {
+    textAlign: 'center',
+    marginTop: '8px',
+    fontSize: '12px',
+  }
 }));

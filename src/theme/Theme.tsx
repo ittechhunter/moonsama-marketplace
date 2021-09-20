@@ -154,6 +154,11 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
         justifyContent: 'center'
       },
     },
+    MuiCircularProgress: {
+      root: {
+        margin: '0 auto',
+      }
+    }
   },
 });
 

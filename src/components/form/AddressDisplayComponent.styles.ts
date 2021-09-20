@@ -2,13 +2,16 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const useStyles = makeStyles((theme) => ({
   copyButton: {
-    minWidth: 20,
     fontSize: '13px',
-    marginLeft: 7.5,
-    padding: '0 5px',
-    border: '1px solid ',
-    borderColor: theme.palette.grey[900],
+    margin: '5px 0 0 -5px',
+    border: 0,
     borderRadius: 0,
+    padding: 0,
+
+    '& svg': {
+      width: '16px',
+      height: '16px',
+    },
     '& path': {
       color: '#d2023e',
     }

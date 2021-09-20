@@ -383,9 +383,9 @@ export const AccountDialog = () => {
           <>
             <CircularProgress />
             {error ? (
-              <Typography>Error connecting</Typography>
+              <Typography className={styles.walletPendingText}>Error connecting</Typography>
             ) : (
-              <Typography>Initializing...</Typography>
+              <Typography className={styles.walletPendingText}>Initializing...</Typography>
             )}
           </>
         ) : (
