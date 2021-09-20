@@ -51,31 +51,6 @@ export const CoinQuantityField = (props: any) => {
           onChange={onValueChange}
           value={value}
           labelWidth={0}
-          startAdornment={
-            <InputAdornment position="start">
-              <FormControl variant="outlined" className={props.className}>
-                {/* <InputLabel id="coin-quantity-field-label" di>
-                  ETH
-                </InputLabel> */}
-                <Select
-                  // labelId="coin-quantity-field-label"
-                  id="coin-quantity-field"
-                  value={unit}
-                  className={coinSelect}
-                  onChange={onUnitChange}
-                  disabled
-                >
-                  {unitOptions.map((x) => (
-                    <MenuItem value={x[0]}>{x[1]}</MenuItem>
-                  ))}
-                  {/*
-                  {options.map(x => <MenuItem value={x[0]}>{x[1]}</MenuItem>)}
-                  <MenuItem value={1}>Ethers</MenuItem>
-                  <MenuItem value={2}>Wei</MenuItem>*/}
-                </Select>
-              </FormControl>
-            </InputAdornment>
-          }
           endAdornment={
             withMaxButton ? (
               <InputAdornment position="end">

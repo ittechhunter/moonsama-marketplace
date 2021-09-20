@@ -394,7 +394,7 @@ const TokenPage = () => {
                         charsShown={5}
                         buttonClassName={copyAddressButton}
                       >
-                        {truncateHexString(ltp?.user)}
+                        {ltp?.user}
                       </AddressDisplayComponent>
                     </Grid>
                   </Grid>
