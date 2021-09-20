@@ -10,7 +10,7 @@ import { useMediaQuery } from 'beautiful-react-hooks';
 export const Account = () => {
   const { account, error } = useActiveWeb3React();
   const { setAccountDialogOpen } = useAccountDialog();
-  const hideAddress = useMediaQuery(`(max-width: 500px)`)
+  const hideAddress = useMediaQuery(`(max-width: 500px)`);
 
   const showError = error ? true : false;
   const errMessage =
@@ -19,27 +19,35 @@ export const Account = () => {
   return (
     <>
       <Button
-        variant={hideAddress ? "text" :"outlined"}
+        variant={hideAddress ? 'text' : 'outlined'}
         color="primary"
         onClick={() => setAccountDialogOpen(true)}
         fullWidth={true}
         startIcon={
           showError ? (
             <Activity />
-          ) : account ? !hideAddress && (
-            <div style={{ fontSize: 0 }}>
-              <Identicon />
-            </div>
+          ) : account ? (
+            !hideAddress && (
+              <div style={{ fontSize: 0 }}>
+                <Identicon />
+              </div>
+            )
           ) : (
             <Power />
           )
         }
       >
-        {showError
-          ? errMessage
-          : account
-          ? hideAddress ? <Identicon /> : truncateAddress(account)
-          : 'Connect'}
+        {showError ? (
+          errMessage
+        ) : account ? (
+          hideAddress ? (
+            <Identicon />
+          ) : (
+            truncateAddress(account)
+          )
+        ) : (
+          'Connect'
+        )}
       </Button>
     </>
   );

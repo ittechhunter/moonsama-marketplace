@@ -97,7 +97,7 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     // marginTop: theme.spacing(4),
     flexDirection: 'column',
-    gap: 8
+    gap: 8,
   },
   subHeader: {
     fontSize: 22,
@@ -118,25 +118,25 @@ export const useStyles = makeStyles((theme) => ({
   transferButton: {
     borderColor: '#079AA2',
     '&:hover': {
-      backgroundColor: '#079AA2'
-    }
+      backgroundColor: '#079AA2',
+    },
   },
   newSellButton: {
     '&:hover': {
       backgroundColor: theme.palette.text.secondary,
-      color: 'black'
-    }
+      color: 'black',
+    },
   },
   tradeContainer: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   tradeRow: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   copyAddressButton: {
-    marginTop: -27
-  }
+    marginTop: -27,
+  },
 }));

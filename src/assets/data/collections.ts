@@ -15,8 +15,7 @@ export const collections = {
     'green',
     'sustainable',
   ],
-  logoURI:
-    'https://',
+  logoURI: 'https://',
   tags: {
     wrapped: {
       name: 'wrapped',
@@ -48,7 +47,7 @@ export const collections = {
       indexing: 'sequential',
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
       tags: ['native', 'green'],
-    }
+    },
   ],
 };
 

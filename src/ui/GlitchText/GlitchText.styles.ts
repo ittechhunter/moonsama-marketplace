@@ -12,7 +12,8 @@ export const useStyles = makeStyles((theme) => ({
 
     animation: '$glitch 500ms infinite',
     [theme.breakpoints.down('md')]: {
-      fontSize: ({ fontSize }: { fontSize?: number }) => fontSize ? fontSize / 2 : '4rem'
+      fontSize: ({ fontSize }: { fontSize?: number }) =>
+        fontSize ? fontSize / 2 : '4rem',
     },
     '& span': {
       position: 'absolute',

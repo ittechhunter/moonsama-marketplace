@@ -3,8 +3,6 @@ import { useFetchUrlCallback } from 'hooks/useFetchUrlCallback/useFetchUrlCallba
 import uriToHttp from 'utils/uriToHttp';
 import { TokenMeta } from './useFetchTokenUri.types';
 
-
-
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useFetchTokenUri(
   uris: ({ tokenURI?: string } | undefined)[] | undefined
@@ -22,11 +20,11 @@ export function useFetchTokenUri(
     const promises = uris.map(async (uri) => {
       const rawmeta = await cb<TokenMeta>(uri?.tokenURI, false);
 
-      let meta
+      let meta;
       if (typeof rawmeta === 'string' || rawmeta instanceof String) {
-        meta = JSON.parse(rawmeta as string)
+        meta = JSON.parse(rawmeta as string);
       } else {
-        meta = rawmeta
+        meta = rawmeta;
       }
 
       //console.log('ONE META', {meta, rawmeta})

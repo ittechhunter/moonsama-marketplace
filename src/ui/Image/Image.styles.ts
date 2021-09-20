@@ -6,6 +6,6 @@ export const useStyles = makeStyles(() => ({
     height: 'auto',
   },
   imageNotShow: {
-    display: 'none'
-  }
+    display: 'none',
+  },
 }));

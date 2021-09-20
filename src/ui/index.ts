@@ -17,4 +17,4 @@ export {
 export { Video } from './Video/Video';
 export { Image } from './Image/Image';
 export { Placeholder } from './MediaPlaceholder/MediaPlaceholder';
-export { Drawer } from './Drawer/Drawer'
+export { Drawer } from './Drawer/Drawer';

@@ -75,16 +75,30 @@ const CollectionListItem = (
 
   //console.warn('META', { meta });
 
-  const isErc20 = collection.type.valueOf() === StringAssetType.ERC20.valueOf()
+  const isErc20 = collection.type.valueOf() === StringAssetType.ERC20.valueOf();
 
   return (
     <>
-      <Grid item key={`${collection?.address ?? 'collection'}-${i}`} xl={3} md={4} sm={6} xs={12}>
+      <Grid
+        item
+        key={`${collection?.address ?? 'collection'}-${i}`}
+        xl={3}
+        md={4}
+        sm={6}
+        xs={12}
+      >
         <Card className={card}>
-          <Link style={{
-            display: 'flex',
-            justifyContent: 'center'
-          }} to={isErc20 ? `/token/${collection.type}/${collection.address}/0` :`/collection/${collection.type}/${collection.address}`}>
+          <Link
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+            to={
+              isErc20
+                ? `/token/${collection.type}/${collection.address}/0`
+                : `/collection/${collection.type}/${collection.address}`
+            }
+          >
             <div className={mediaContainer}>
               <Media uri={meta?.image} />
             </div>
@@ -113,9 +127,9 @@ const CollectionListItem = (
               </ExternalLink>
             )}
           </CardContent>
-          
+
           <Collapse in={isCollectionExpanded} timeout="auto" unmountOnExit>
-            <CardContent style={{ padding: '8px 16px'}}>
+            <CardContent style={{ padding: '8px 16px' }}>
               <Typography paragraph>{meta?.description}</Typography>
               {meta?.external_link && (
                 <ExternalLink href={meta?.external_link}>
@@ -130,7 +144,7 @@ const CollectionListItem = (
               onClick={handleExpandClick}
               aria-expanded={isCollectionExpanded}
               aria-label="show more"
-              style={{ marginTop: '-32px'}}
+              style={{ marginTop: '-32px' }}
             >
               <ExpandMoreIcon />
             </IconButton>

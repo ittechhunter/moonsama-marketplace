@@ -59,7 +59,9 @@ export function useRecognizedCollectionsContract(
   const { chainId } = useActiveWeb3React();
   return useContract(
     chainId
-      ? RECOGNIZED_COLLECTIONS_ADDRESS[(chainId as ChainId) ?? ChainId.MOONRIVER]
+      ? RECOGNIZED_COLLECTIONS_ADDRESS[
+          (chainId as ChainId) ?? ChainId.MOONRIVER
+        ]
       : undefined,
     RECOGNIZED_COLLECTIONS_ABI,
     withSignerIfPossible

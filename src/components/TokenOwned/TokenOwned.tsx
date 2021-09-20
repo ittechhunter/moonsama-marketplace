@@ -1,31 +1,24 @@
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Media } from 'components';
-import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { useActiveWeb3React } from 'hooks';
-import { Order } from 'hooks/marketplace/types';
+import { Asset } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useHistory } from 'react-router-dom';
-import { GlitchText, PriceBox } from 'ui';
-import { getExplorerLink, truncateHexString } from 'utils';
-import { Fraction } from 'utils/Fraction';
-import {
-  getUnitPrice,
-  inferOrderTYpe,
-  OrderType,
-  StringAssetType,
-} from 'utils/subgraph';
-import { useStyles } from './TokenOrder.styles';
+import { GlitchText } from 'ui';
+import { truncateHexString } from 'utils';
+import { StringAssetType } from 'utils/subgraph';
+import { useStyles } from './TokenOwned.styles';
 
-export const TokenOrder = ({
-  order,
+export const TokenOwned = ({
   meta,
   staticData,
+  asset,
 }: {
   meta: TokenMeta | undefined;
   staticData: StaticTokenData;
-  order: Order;
+  asset: Asset;
 }) => {
   const {
     container,
@@ -40,10 +33,6 @@ export const TokenOrder = ({
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
-  const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
-  const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
-  const action = ot == OrderType.BUY ? 'BUY' : 'SELL';
-  const actionColor = ot == OrderType.BUY ? 'green' : 'red';
 
   //console.log('FRESH', {asset, action, actionColor})
 
@@ -59,14 +48,6 @@ export const TokenOrder = ({
     : sup
     ? `${sup} pieces`
     : undefined;
-  const ppu = getUnitPrice(
-    order.strategy?.askPerUnitNominator,
-    order.strategy?.askPerUnitDenominator
-  );
-
-  const ppuDisplay = ppu
-    ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
-    : action;
 
   return (
     <Paper className={container}>
@@ -88,28 +69,9 @@ export const TokenOrder = ({
         {staticData?.symbol && (
           <Typography color="textSecondary">{staticData.symbol}</Typography>
         )}
-        <PriceBox margin={false} size="small" color={actionColor}>
-          {ppuDisplay}
-        </PriceBox>
         {totalSupplyString && (
           <Typography color="textSecondary">{totalSupplyString}</Typography>
         )}
-      </div>
-      <div className={lastPriceContainer}>
-        <Typography color="textSecondary" noWrap className={mr}>
-          {truncateHexString(order?.id, 5)}
-        </Typography>
-        <Typography color="textSecondary" noWrap className={mr}>
-          by
-        </Typography>
-        {/*<Typography color="textSecondary" noWrap>
-          {truncateHexString(order.seller)}
-        </Typography>*/}
-        <ExternalLink href={getExplorerLink(chainId, order?.seller, 'address')}>
-          <Typography color="textSecondary" noWrap>
-            {truncateHexString(order.seller)}
-          </Typography>
-        </ExternalLink>
       </div>
     </Paper>
   );

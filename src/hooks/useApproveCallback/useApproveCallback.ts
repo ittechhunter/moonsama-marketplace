@@ -51,8 +51,8 @@ export function useAllowance(
     }
 
     if (StringAssetType.NATIVE.valueOf() === type.valueOf()) {
-      setAllowance(MaxUint256)
-      return
+      setAllowance(MaxUint256);
+      return;
     } else if (StringAssetType.ERC20.valueOf() === type.valueOf()) {
       if (!erc20) {
         console.error('ERC20) contract null');
@@ -106,7 +106,8 @@ export function useApproveCallback(
   const erc721 = useERC721Contract(assetAddress, true);
 
   const operator =
-    query.operator ?? (WAREHOUSE_ADDRESS[chainId ?? ChainId.MOONRIVER] as string);
+    query.operator ??
+    (WAREHOUSE_ADDRESS[chainId ?? ChainId.MOONRIVER] as string);
   const toApprove = BigNumber.from(amountToApprove ?? MaxUint256);
   const currentAllowance = useAllowance(query, operator);
   const assetType = query.assetType ?? StringAssetType.ERC20;
@@ -147,7 +148,7 @@ export function useApproveCallback(
 
   const approve = useCallback(async (): Promise<void> => {
     if (assetType.valueOf() === StringAssetType.NATIVE) {
-      return
+      return;
     }
 
     if (approvalState !== ApprovalState.NOT_APPROVED) {

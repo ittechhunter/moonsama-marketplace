@@ -28,7 +28,7 @@ export const CoinQuantityField = (props: any) => {
   const { outlinedInput, coinSelect } = CoinQuantityFieldStyles();
 
   const _setMaxNumber = () => {
-    setMaxValue?.()
+    setMaxValue?.();
   };
 
   const onUnitChange = (event: any) => {

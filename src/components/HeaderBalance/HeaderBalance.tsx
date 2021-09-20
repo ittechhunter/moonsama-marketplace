@@ -6,9 +6,8 @@ import { Fraction } from 'utils/Fraction';
 export const HeaderBalance = () => {
   const { balanceContainer, balance } = useStyles();
 
-  const bal = useNativeBalance()
+  const bal = useNativeBalance();
   let formattedBalance = Fraction.from(bal, 18);
-
 
   return (
     <>

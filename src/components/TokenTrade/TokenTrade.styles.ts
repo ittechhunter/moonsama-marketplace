@@ -56,6 +56,6 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: 14,
   },
   mr: {
-    marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));

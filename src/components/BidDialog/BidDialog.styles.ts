@@ -24,8 +24,8 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column',
-      alignItems: 'flex-start'
-    }
+      alignItems: 'flex-start',
+    },
   },
   loadingContainer: {
     display: 'flex',

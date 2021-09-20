@@ -11,9 +11,7 @@ import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { useActiveWeb3React, useBidDialog } from 'hooks';
 import { LastTradedPrice, Order } from 'hooks/marketplace/types';
-import {
-  useTokenPageOrders,
-} from 'hooks/marketplace/useTokenPageOrders';
+import { useTokenPageOrders } from 'hooks/marketplace/useTokenPageOrders';
 import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
 import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
@@ -82,8 +80,7 @@ const TokenPage = () => {
   if (assetType.valueOf() === StringAssetType.UNKNOWN.valueOf())
     throw Error('Token type was not recognized');
 
-  if (address.toLowerCase() === AddressZero)
-    throw Error('Nonexistant token');
+  if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
 
   if (assetType.valueOf() === StringAssetType.ERC20.valueOf())
     throw Error('ERC20 trades are not enabled yet');
@@ -114,13 +111,7 @@ const TokenPage = () => {
     assetAddress: address?.toLowerCase(),
   }) as LastTradedPrice;
 
-
-  const {
-    formBox,
-    formLabel,
-    formValue,
-    formValueTokenDetails,
-  } = appStyles();
+  const { formBox, formLabel, formValue, formValueTokenDetails } = appStyles();
 
   const {
     image,
@@ -140,7 +131,7 @@ const TokenPage = () => {
     newSellButton,
     tradeContainer,
     tradeRow,
-    copyAddressButton
+    copyAddressButton,
   } = useStyles();
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
@@ -153,7 +144,6 @@ const TokenPage = () => {
     return [asset];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
-
 
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
@@ -173,9 +163,9 @@ const TokenPage = () => {
 
   let userBalanceString = isErc20
     ? Fraction.from(
-      balanceData?.[0]?.userBalance?.toString() ?? '0',
-      18
-    )?.toFixed(5) ?? '0'
+        balanceData?.[0]?.userBalance?.toString() ?? '0',
+        18
+      )?.toFixed(5) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0';
   let totalSupplyString =
     balanceData?.[0]?.totalSupply?.toString() ??
@@ -189,140 +179,162 @@ const TokenPage = () => {
   ) => {
     return (
       <TableBody>
-        {orders && orders.length > 0 ? orders.map((order) => {
-          const {
-            id,
-            seller,
-            createdAt,
-            strategyType,
-            strategy,
-            sellAsset,
-            buyAsset,
-          } = order;
-          const {
-            quantityLeft,
-            askPerUnitDenominator,
-            askPerUnitNominator,
-            expiresAt,
-            onlyTo,
-            partialAllowed,
-          } = strategy || { };
+        {orders && orders.length > 0 ? (
+          orders.map((order) => {
+            const {
+              id,
+              seller,
+              createdAt,
+              strategyType,
+              strategy,
+              sellAsset,
+              buyAsset,
+            } = order;
+            const {
+              quantityLeft,
+              askPerUnitDenominator,
+              askPerUnitNominator,
+              expiresAt,
+              onlyTo,
+              partialAllowed,
+            } = strategy || {};
 
-          const unitPrice = getUnitPrice(
-            askPerUnitNominator,
-            askPerUnitDenominator
-          );
-          const expiration = formatExpirationDateString(expiresAt);
+            const unitPrice = getUnitPrice(
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
+            const expiration = formatExpirationDateString(expiresAt);
 
-          const sellerShort = truncateHexString(seller);
+            const sellerShort = truncateHexString(seller);
 
-          const ot = orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
+            const ot =
+              orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
 
-          const qty = (
-            (sellAsset.assetType.valueOf() == StringAssetType.ERC20 || sellAsset.assetType.valueOf() == StringAssetType.NATIVE)
-            && (buyAsset.assetType.valueOf() == StringAssetType.ERC20 || buyAsset.assetType.valueOf() == StringAssetType.NATIVE)) ? quantityLeft : getDisplayQuantity(ot, quantityLeft, askPerUnitNominator, askPerUnitDenominator)
+            const qty =
+              (sellAsset.assetType.valueOf() == StringAssetType.ERC20 ||
+                sellAsset.assetType.valueOf() == StringAssetType.NATIVE) &&
+              (buyAsset.assetType.valueOf() == StringAssetType.ERC20 ||
+                buyAsset.assetType.valueOf() == StringAssetType.NATIVE)
+                ? quantityLeft
+                : getDisplayQuantity(
+                    ot,
+                    quantityLeft,
+                    askPerUnitNominator,
+                    askPerUnitDenominator
+                  );
 
-          const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
+            const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
 
-          return (
-            <TableRow
-              key={id}
-              renderExpand={() => {
-                return (
-                  <div>
-                    <Typography className={subHeader}>Order Details</Typography>
+            return (
+              <TableRow
+                key={id}
+                renderExpand={() => {
+                  return (
+                    <div>
+                      <Typography className={subHeader}>
+                        Order Details
+                      </Typography>
 
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Order ID
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Order ID
+                            </Grid>
+                            <Grid item>{id}</Grid>
                           </Grid>
-                          <Grid item>{id}</Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Maker
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Maker
+                            </Grid>
+                            <Grid item>{seller}</Grid>
                           </Grid>
-                          <Grid item>{seller}</Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Created at
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Created at
+                            </Grid>
+                            <Grid item>
+                              {formatExpirationDateString(createdAt)}
+                            </Grid>
                           </Grid>
-                          <Grid item>
-                            {formatExpirationDateString(createdAt)}
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Available to
+                            </Grid>
+                            <Grid item>
+                              {onlyTo === AddressZero ? 'everyone' : onlyTo}
+                            </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Available to
-                          </Grid>
-                          <Grid item>
-                            {onlyTo === AddressZero ? 'everyone' : onlyTo}
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Partial fills allowed
-                          </Grid>
-                          <Grid item>
-                            {partialAllowed ? (
-                              <DoneOutlineIcon aria-label="yes" />
-                            ) : (
-                              'no'
-                            )}
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Partial fills allowed
+                            </Grid>
+                            <Grid item>
+                              {partialAllowed ? (
+                                <DoneOutlineIcon aria-label="yes" />
+                              ) : (
+                                'no'
+                              )}
+                            </Grid>
                           </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
-                  </div>
-                );
-              }}
-            >
-              <TableCell title={id}> {truncateHexString(id)}</TableCell>
-              <TableCell>{displayUnitPrice?.toString()}</TableCell>
-              <TableCell>{qty?.toString()}</TableCell>
-              <TableCell>{expiration}</TableCell>
-              <TableCell title={seller}>
-                <ExternalLink
-                  href={getExplorerLink(
-                    chainId ?? ChainId.MOONRIVER,
-                    seller,
-                    'address'
-                  )}
-                >{truncateHexString(sellerShort)}</ExternalLink>
-              </TableCell>
+                    </div>
+                  );
+                }}
+              >
+                <TableCell title={id}> {truncateHexString(id)}</TableCell>
+                <TableCell>{displayUnitPrice?.toString()}</TableCell>
+                <TableCell>{qty?.toString()}</TableCell>
+                <TableCell>{expiration}</TableCell>
+                <TableCell title={seller}>
+                  <ExternalLink
+                    href={getExplorerLink(
+                      chainId ?? ChainId.MOONRIVER,
+                      seller,
+                      'address'
+                    )}
+                  >
+                    {truncateHexString(sellerShort)}
+                  </ExternalLink>
+                </TableCell>
 
-              <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
-              <TableCell>
-                {seller.toLowerCase() === account?.toLowerCase() ? (
-                  <Button
-                    onClick={() => {
-                      setCancelDialogOpen(true);
-                      setCancelData({ orderHash: order.id });
-                    }}
-                    variant="contained"
-                    color="secondary"
-                  >
-                    Cancel
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setPurchaseDialogOpen(true);
-                      setPurchaseData({ order, orderType: ot });
-                    }}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Fill
-                  </Button>
-                )}
-              </TableCell>
-            </TableRow>
-          );
-        }) : <TableRow><TableCell style={{ textAlign: 'center' }} colSpan={7}>No records available...</TableCell></TableRow>}
+                <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
+                <TableCell>
+                  {seller.toLowerCase() === account?.toLowerCase() ? (
+                    <Button
+                      onClick={() => {
+                        setCancelDialogOpen(true);
+                        setCancelData({ orderHash: order.id });
+                      }}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Cancel
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setPurchaseDialogOpen(true);
+                        setPurchaseData({ order, orderType: ot });
+                      }}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Fill
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })
+        ) : (
+          <TableRow>
+            <TableCell style={{ textAlign: 'center' }} colSpan={7}>
+              No records available...
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     );
   };
@@ -334,7 +346,9 @@ const TokenPage = () => {
       </Grid>
       <Grid item md={4} xs={12}>
         <GlitchText fontSize={36} className={name}>
-          {assetMeta?.name ?? assetMeta?.title ?? truncateHexString(asset?.assetAddress)}
+          {assetMeta?.name ??
+            assetMeta?.title ??
+            truncateHexString(asset?.assetAddress)}
         </GlitchText>
         {!isErc20 && (
           <GlitchText fontSize={24} className={name}>
@@ -342,7 +356,7 @@ const TokenPage = () => {
           </GlitchText>
         )}
         <Box className={price}>
-          <PriceBox variant='primary'>{assetType}</PriceBox>
+          <PriceBox variant="primary">{assetType}</PriceBox>
           {isErc20 ? (
             <Typography color="textSecondary" variant="subtitle1">
               BALANCE: {userBalanceString}
@@ -353,7 +367,9 @@ const TokenPage = () => {
             </Typography>
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
-              {`OWNED ${userBalanceString}${totalSupplyString ? ` OF ${totalSupplyString}`: ''}`}
+              {`OWNED ${userBalanceString}${
+                totalSupplyString ? ` OF ${totalSupplyString}` : ''
+              }`}
             </Typography>
           )}
         </Box>
@@ -366,7 +382,7 @@ const TokenPage = () => {
             <Box className={formBox} style={{ marginBottom: 32 }}>
               <div className={tradeContainer}>
                 <div className={tradeRow}>
-                  <Grid container alignItems='center'>
+                  <Grid container alignItems="center">
                     <Grid item style={{ marginRight: '0.3rem' }}>
                       <AccountCircleIcon style={{ fontSize: 60 }} />
                     </Grid>
@@ -384,13 +400,19 @@ const TokenPage = () => {
                 </div>
                 <div className={tradeRow}>
                   <div className={formLabel}>Token Type: </div>
-                  <div className={`${formValue} ${formValueTokenDetails}`} style={{ marginLeft: 8 }}>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
                     {`${assetType}`}
                   </div>
                 </div>
                 <div className={tradeRow}>
                   <div className={formLabel}>Order Type:</div>
-                  <div className={`${formValue} ${formValueTokenDetails}`} style={{ marginLeft: 8 }}>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
                     {`${ltp?.orderType ?? ''}`}
                   </div>
                 </div>
@@ -400,7 +422,7 @@ const TokenPage = () => {
                     className={`${formValue} ${formValueTokenDetails}`}
                     style={{
                       justifyContent: 'flex-end',
-                      marginLeft: 8
+                      marginLeft: 8,
                     }}
                   >
                     <span className={assetActionsBidTokenAmount}>
@@ -460,30 +482,25 @@ const TokenPage = () => {
           <Box className={externals}>
             {assetMeta?.external_url && (
               <ExternalLink href={assetMeta?.external_url}>
-                <Button variant='contained'>
-                  External site↗
-                </Button>
+                <Button variant="contained">External site↗</Button>
               </ExternalLink>
             )}
             {staticData?.[0]?.tokenURI && (
               <ExternalLink href={staticData?.[0].tokenURI}>
-                <Button variant='contained'>
-                  Full metadata↗
-                </Button>
+                <Button variant="contained">Full metadata↗</Button>
               </ExternalLink>
             )}
-            <ExternalLink href={getExplorerLink(
-              chainId ?? ChainId.MOONRIVER,
-              asset?.assetAddress,
-              'address'
-            )}>
-              <Button variant='contained'>
-                Check the contract↗
-              </Button>
+            <ExternalLink
+              href={getExplorerLink(
+                chainId ?? ChainId.MOONRIVER,
+                asset?.assetAddress,
+                'address'
+              )}
+            >
+              <Button variant="contained">Check the contract↗</Button>
             </ExternalLink>
           </Box>
         </Paper>
-
       </Grid>
       <Tabs
         containerClassName={tabsContainer}
@@ -496,7 +513,7 @@ const TokenPage = () => {
                 {geTableHeader()}
                 {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
               </Table>
-            )
+            ),
           },
           {
             label: 'Sell Orders',

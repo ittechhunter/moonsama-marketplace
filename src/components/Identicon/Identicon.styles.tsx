@@ -9,6 +9,6 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     backgroundColor: theme.palette.background.default,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 }));

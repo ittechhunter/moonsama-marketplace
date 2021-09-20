@@ -2,7 +2,11 @@ export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID ?? '246', 10);
 
 export const SUBGRAPH_URL =
   process.env.REACT_APP_SUBGRAPH_URL ??
-  'http://localhost:8000/subgraphs/name/carbonswap/marketplace';
+  'http://localhost:8000/subgraphs/name/moonriver/marketplace';
+
+export const NFT_SUBGRAPH_URL =
+  process.env.REACT_APP_NFT_SUBGRAPH_URL ??
+  'http://localhost:8000/subgraphs/name/moonriver/testnft';
 
 export const NetworkContextName = 'NETWORK';
 
@@ -26,7 +30,7 @@ export enum ChainId {
   BSC = 56,
   EWC = 246,
   VOLTA = 73799,
-  MOONRIVER = 1285
+  MOONRIVER = 1285,
 }
 
 export const MULTICALL_NETWORKS: { [chainId: number]: string } = {
@@ -53,7 +57,8 @@ export const WAREHOUSE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MOONRIVER]: '0xe41509E3034f3f1C7Ea918423Da60B2bA6F14087',
 };
 
-export const RECOGNIZED_COLLECTIONS_ADDRESS: { [chainId in ChainId]?: string } = {
+export const RECOGNIZED_COLLECTIONS_ADDRESS: { [chainId in ChainId]?: string } =
+  {
     [ChainId.VOLTA]: '0xe35D9ACD226165d21d8bC7cf2C6D71b0deCb67d6',
     [ChainId.MOONRIVER]: '0x45613dAd51D4262dB6c0F94Fc96435D8800500cD',
   };
@@ -62,7 +67,6 @@ export const WMOVR_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: '0xcBe8903EFA22711608D2f0B9aA09852f9B30DBdc', //0xFF3e85e33A8Cfc73fe08F437bFAEADFf7C95e285
   [ChainId.MOONRIVER]: '0x98878B06940aE243284CA214f92Bb71a2b032B8A',
 };
-
 
 export const EXPLORER_URL: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: 'https://volta-explorer.energyweb.org',
@@ -81,4 +85,4 @@ export const IPFS_GATEWAYS = [
   'https://ipfs.io',
 ];
 
-export const MAX_WIDTH_TO_SHOW_NAVIGATION = 1000
+export const MAX_WIDTH_TO_SHOW_NAVIGATION = 1000;

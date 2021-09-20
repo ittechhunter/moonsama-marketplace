@@ -6,13 +6,13 @@ export const PriceBox = ({
   variant = 'primary',
   size = 'medium',
   margin = true,
-  color
+  color,
 }: {
   children: ReactNode;
   variant?: 'primary' | 'secondary';
   size?: 'small' | 'medium';
   margin?: boolean;
-  color?: string
+  color?: string;
 }) => {
   const { priceBox } = useStyles({ variant, size, margin, color });
   return (

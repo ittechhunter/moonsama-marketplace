@@ -1,5 +1,7 @@
-import SwipeableDrawer, { SwipeableDrawerProps } from '@material-ui/core/SwipeableDrawer';
+import SwipeableDrawer, {
+  SwipeableDrawerProps,
+} from '@material-ui/core/SwipeableDrawer';
 
 export const Drawer = ({ children, ...props }: SwipeableDrawerProps) => {
-  return <SwipeableDrawer {...props}>{children}</SwipeableDrawer>
-}
+  return <SwipeableDrawer {...props}>{children}</SwipeableDrawer>;
+};

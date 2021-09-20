@@ -8,47 +8,48 @@ import { QUERY_LATEST_ORDERS } from 'subgraph/orderQueries';
 import { useTokenStaticDataCallbackArray } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 
 export const useLatestOrdersWithStaticCallback = () => {
+  const { chainId } = useActiveWeb3React();
+  const staticCallback = useTokenStaticDataCallbackArray();
 
-  const {chainId} = useActiveWeb3React()
-  const staticCallback = useTokenStaticDataCallbackArray()
+  const fetchLatestOrdersWithStatic = useCallback(
+    async (num: number, offset: number) => {
+      console.log('order query', offset, num);
+      const query = QUERY_LATEST_ORDERS(offset, num);
+      const response = await request(SUBGRAPH_URL, query);
 
-  const fetchLatestOrdersWithStatic = useCallback(async (num : number, offset: number) => {
-    console.log('order query', offset, num)
-    const query = QUERY_LATEST_ORDERS(
-      offset,
-      num
-    );
-    const response = await request(SUBGRAPH_URL, query);
+      console.debug('YOLO useLatestOrdersWithStaticCallback', response);
 
-    console.debug('YOLO useLatestOrdersWithStaticCallback', response);
+      if (!response) {
+        return [];
+      }
 
-    if (!response) {
-      return [];
-    }
-    
-    let assets: Asset[] = []
-    const latestOrders: Order[] = (response.latestOrders ?? [])
-      .map((x: any) => {
-            const po = parseOrder(x)
-            if (po) {
-                const ot = inferOrderTYpe(chainId, po.sellAsset, po.buyAsset) ?? OrderType.SELL
-                assets.push(ot === OrderType.BUY ? po.buyAsset: po.sellAsset)
-            }
-            return po
+      let assets: Asset[] = [];
+      const latestOrders: Order[] = (response.latestOrders ?? [])
+        .map((x: any) => {
+          const po = parseOrder(x);
+          if (po) {
+            const ot =
+              inferOrderTYpe(chainId, po.sellAsset, po.buyAsset) ??
+              OrderType.SELL;
+            assets.push(ot === OrderType.BUY ? po.buyAsset : po.sellAsset);
+          }
+          return po;
         })
-      .filter((item: Order | undefined) => !!item);
+        .filter((item: Order | undefined) => !!item);
 
-    const staticDatas = await staticCallback(assets)
+      const staticDatas = await staticCallback(assets);
 
-    const datas = staticDatas.map((sd, i) => {
+      const datas = staticDatas.map((sd, i) => {
         return {
-            meta: sd.meta,
-            staticData: sd.staticData,
-            order: latestOrders[i]
-        }
-    })
-    return datas;
-  }, [chainId])
+          meta: sd.meta,
+          staticData: sd.staticData,
+          order: latestOrders[i],
+        };
+      });
+      return datas;
+    },
+    [chainId]
+  );
 
-  return fetchLatestOrdersWithStatic
-}
+  return fetchLatestOrdersWithStatic;
+};

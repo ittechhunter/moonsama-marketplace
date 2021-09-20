@@ -9,6 +9,7 @@ import { PurchaseDialog, BidDialog } from 'components';
 import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
 import { CollectionListPage } from './collection-list';
+import MyCollectionPage from './mycollection';
 
 export const Routing = () => (
   <Switch>
@@ -34,10 +35,13 @@ export const Routing = () => (
     <Route path="/freshtrades">
       <FreshTradesPage />
     </Route>
-    <Route path="/yourorders">
+    <Route path="/myorders">
       <CancelDialog />
       <PurchaseDialog />
       <MyOrdersPage />
+    </Route>
+    <Route path="/mycollection">
+      <MyCollectionPage />
     </Route>
   </Switch>
 );

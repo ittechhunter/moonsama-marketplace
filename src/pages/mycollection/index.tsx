@@ -1,67 +1,48 @@
 import Grid from '@material-ui/core/Grid';
-import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
 import { GlitchText, Placeholder } from 'ui';
-import { useCallback, useEffect, useState } from 'react';
-import { FillWithOrder, Order } from 'hooks/marketplace/types';
+import { useEffect, useState } from 'react';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
-import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
-import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
-import { TokenTrade } from 'components/TokenTrade/TokenTrade';
+import { useUserCollection } from 'hooks/useUserCollection/useUserCollection';
+import { useActiveWeb3React } from 'hooks';
+import { AddressZero } from '@ethersproject/constants';
+import { TokenOwned } from 'components/TokenOwned/TokenOwned';
+import { Asset } from 'hooks/marketplace/types';
 
 const PAGE_SIZE = 10;
 
-const FreshTradesPage = () => {
+const MyCollectionPage = () => {
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
       staticData: StaticTokenData;
-      fill: FillWithOrder;
+      asset: Asset;
     }[]
   >([]);
-  const [take, setTake] = useState<number>(0);
-  const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const { placeholderContainer, container } = useStyles();
 
-  const getPaginatedItems = useLatestTradesWithStaticCallback();
+  const { account } = useActiveWeb3React();
 
-  const handleScrollToBottom = useCallback(() => {
-    setTake((state) => (state += PAGE_SIZE));
-  }, []);
-
-  useBottomScrollListener(handleScrollToBottom, { offset: 400 });
+  const getPaginatedItems = useUserCollection();
 
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      const data = await getPaginatedItems(PAGE_SIZE, take);
+      const data = await getPaginatedItems(account ?? AddressZero);
       setPageLoading(false);
-      const isEnd = data.some(({ meta }) => !meta);
-
-      //console.log('IS END', {paginationEnded, isEnd, pieces, data})
-
-      //console.log('FRESH', {data, PAGE_SIZE, take, isEnd})
-
-      if (isEnd) {
-        const pieces = data.filter(({ meta }) => !!meta);
-        setPaginationEnded(true);
-        setCollection((state) => state.concat(pieces));
-        return;
-      }
-      setCollection((state) => state.concat(data));
+      setCollection(data);
     };
-    if (!paginationEnded) {
-      getCollectionById();
-    }
+
+    getCollectionById();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [take, paginationEnded]);
+  }, [account]);
 
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>Latest trades</GlitchText>
+        <GlitchText fontSize={48}>My collection</GlitchText>
       </div>
       <div
         style={{
@@ -82,7 +63,7 @@ const FreshTradesPage = () => {
                   sm={6}
                   xs={12}
                 >
-                  <TokenTrade {...token} />
+                  <TokenOwned {...token} />
                 </Grid>
               )
           )
@@ -97,4 +78,4 @@ const FreshTradesPage = () => {
   );
 };
 
-export default FreshTradesPage;
+export default MyCollectionPage;

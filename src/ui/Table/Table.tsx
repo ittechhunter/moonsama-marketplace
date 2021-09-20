@@ -87,10 +87,13 @@ export const Table = ({
   ...props
 }: TableProps & { isExpandable?: boolean }) => {
   return (
-    <TableContainer component={Paper} style={{
-      borderLeft: '1px solid white',
-      borderRight: '1px solid white'
-    }}>
+    <TableContainer
+      component={Paper}
+      style={{
+        borderLeft: '1px solid white',
+        borderRight: '1px solid white',
+      }}
+    >
       <MaterialTable {...props} size="small">
         <TableContext.Provider value={{ isExpandable }}>
           {children}

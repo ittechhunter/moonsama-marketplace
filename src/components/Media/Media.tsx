@@ -16,7 +16,7 @@ export const Media = ({
   const mediaType = getMediaType();
 
   if (!mediaUrl) {
-    return null
+    return null;
   }
 
   if (isLoading) {
@@ -34,5 +34,5 @@ export const Media = ({
   if ((mediaType === 'video' || mediaType === 'audio') && mediaUrl) {
     return <Video src={mediaUrl} {...props} />;
   }
-  return null
+  return null;
 };

@@ -1,4 +1,4 @@
-import { StaticTokenData } from "hooks/useTokenStaticDataCallback/useTokenStaticDataCallback";
+import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 
 export type TokenMeta = {
   description?: string;
@@ -19,6 +19,6 @@ export type TokenMeta = {
 };
 
 export type TokenData = {
-    meta: TokenMeta | undefined;
-    staticData: StaticTokenData;
-}
+  meta: TokenMeta | undefined;
+  staticData: StaticTokenData;
+};

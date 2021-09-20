@@ -5,6 +5,6 @@ export const useCurrencyLogo = (address?: string) => {
     if (!address) {
       return undefined;
     }
-    return `https://raw.githubusercontent.com/carbonswap/assets/master/carbonswap/logo/${address}.png`
+    return `https://raw.githubusercontent.com/carbonswap/assets/master/carbonswap/logo/${address}.png`;
   }, [address]);
 };

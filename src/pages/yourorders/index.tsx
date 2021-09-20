@@ -11,9 +11,7 @@ import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { useActiveWeb3React, useBidDialog } from 'hooks';
 import { LastTradedPrice, Order } from 'hooks/marketplace/types';
-import {
-  useTokenPageOrders,
-} from 'hooks/marketplace/useTokenPageOrders';
+import { useTokenPageOrders } from 'hooks/marketplace/useTokenPageOrders';
 import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
 import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
@@ -77,13 +75,7 @@ const geTableHeader = () => {
 export const MyOrdersPage = () => {
   const { chainId, account } = useActiveWeb3React();
 
-
-  const {
-    formBox,
-    formLabel,
-    formValue,
-    formValueTokenDetails,
-  } = appStyles();
+  const { formBox, formLabel, formValue, formValueTokenDetails } = appStyles();
 
   const {
     image,
@@ -103,7 +95,7 @@ export const MyOrdersPage = () => {
     newSellButton,
     tradeContainer,
     tradeRow,
-    copyAddressButton
+    copyAddressButton,
   } = useStyles();
 
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
@@ -120,158 +112,176 @@ export const MyOrdersPage = () => {
   ) => {
     return (
       <TableBody>
-        {orders && orders.length > 0 ? orders.map((order) => {
-          const {
-            id,
-            seller,
-            createdAt,
-            strategyType,
-            strategy,
-            sellAsset,
-            buyAsset,
-          } = order;
-          const {
-            quantityLeft,
-            askPerUnitDenominator,
-            askPerUnitNominator,
-            expiresAt,
-            onlyTo,
-            partialAllowed,
-          } = strategy || { };
+        {orders && orders.length > 0 ? (
+          orders.map((order) => {
+            const {
+              id,
+              seller,
+              createdAt,
+              strategyType,
+              strategy,
+              sellAsset,
+              buyAsset,
+            } = order;
+            const {
+              quantityLeft,
+              askPerUnitDenominator,
+              askPerUnitNominator,
+              expiresAt,
+              onlyTo,
+              partialAllowed,
+            } = strategy || {};
 
-          const unitPrice = getUnitPrice(
-            askPerUnitNominator,
-            askPerUnitDenominator
-          );
-          const expiration = formatExpirationDateString(expiresAt);
-          const sellerShort = truncateHexString(seller);
-          const ot = orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
-          const orderAsset =  ot === OrderType.BUY ? buyAsset : sellAsset
+            const unitPrice = getUnitPrice(
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
+            const expiration = formatExpirationDateString(expiresAt);
+            const sellerShort = truncateHexString(seller);
+            const ot =
+              orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
+            const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
 
-          const qty = (
-            sellAsset.assetType.valueOf() == StringAssetType.ERC20
-            && buyAsset.assetType.valueOf() == StringAssetType.ERC20) ? quantityLeft : getDisplayQuantity(ot, quantityLeft, askPerUnitNominator, askPerUnitDenominator)
+            const qty =
+              sellAsset.assetType.valueOf() == StringAssetType.ERC20 &&
+              buyAsset.assetType.valueOf() == StringAssetType.ERC20
+                ? quantityLeft
+                : getDisplayQuantity(
+                    ot,
+                    quantityLeft,
+                    askPerUnitNominator,
+                    askPerUnitDenominator
+                  );
 
-          const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
+            const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
 
-          return (
-            <TableRow
-              key={id}
-              renderExpand={() => {
-                return (
-                  <div>
-                    <Typography className={subHeader}>Order Details</Typography>
+            return (
+              <TableRow
+                key={id}
+                renderExpand={() => {
+                  return (
+                    <div>
+                      <Typography className={subHeader}>
+                        Order Details
+                      </Typography>
 
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Order ID
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Order ID
+                            </Grid>
+                            <Grid item>{id}</Grid>
                           </Grid>
-                          <Grid item>{id}</Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Maker
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Maker
+                            </Grid>
+                            <Grid item>{seller}</Grid>
                           </Grid>
-                          <Grid item>{seller}</Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Created at
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Created at
+                            </Grid>
+                            <Grid item>
+                              {formatExpirationDateString(createdAt)}
+                            </Grid>
                           </Grid>
-                          <Grid item>
-                            {formatExpirationDateString(createdAt)}
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Available to
+                            </Grid>
+                            <Grid item>
+                              {onlyTo === AddressZero ? 'everyone' : onlyTo}
+                            </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Available to
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Partial fills allowed
+                            </Grid>
+                            <Grid item>
+                              {partialAllowed ? (
+                                <DoneOutlineIcon aria-label="yes" />
+                              ) : (
+                                'no'
+                              )}
+                            </Grid>
                           </Grid>
-                          <Grid item>
-                            {onlyTo === AddressZero ? 'everyone' : onlyTo}
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Asset type
+                            </Grid>
+                            <Grid item>{orderAsset?.assetType}</Grid>
                           </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Partial fills allowed
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Asset address
+                            </Grid>
+                            <Grid item>{orderAsset?.assetAddress}</Grid>
                           </Grid>
-                          <Grid item>
-                            {partialAllowed ? (
-                              <DoneOutlineIcon aria-label="yes" />
-                            ) : (
-                              'no'
-                            )}
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Asset type
-                          </Grid>
-                          <Grid item>
-                            {orderAsset?.assetType}
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Asset address
-                          </Grid>
-                          <Grid item>
-                            {orderAsset?.assetAddress}
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                          <Grid item className={subItemTitleCell}>
-                            Asset ID
-                          </Grid>
-                          <Grid item>
-                            {orderAsset?.assetId}
+                          <Grid container spacing={2}>
+                            <Grid item className={subItemTitleCell}>
+                              Asset ID
+                            </Grid>
+                            <Grid item>{orderAsset?.assetId}</Grid>
                           </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
-                  </div>
-                );
-              }}
-            >
-              <TableCell title={id}>{truncateHexString(id)}</TableCell>
-              <TableCell title={orderAsset?.id}>
-                <Link to={`/token/${orderAsset?.assetType}/${orderAsset?.assetAddress}/${orderAsset?.assetId}`}>{truncateHexString(orderAsset?.id, 5)}</Link>
-              </TableCell>
-              <TableCell>{ot ? (OrderType.BUY === ot ? 'BUY' : 'SELL') : '?' }</TableCell>
-              <TableCell>{displayUnitPrice?.toString()}</TableCell>
-              <TableCell>{qty?.toString()}</TableCell>
-              <TableCell>{expiration}</TableCell>
+                    </div>
+                  );
+                }}
+              >
+                <TableCell title={id}>{truncateHexString(id)}</TableCell>
+                <TableCell title={orderAsset?.id}>
+                  <Link
+                    to={`/token/${orderAsset?.assetType}/${orderAsset?.assetAddress}/${orderAsset?.assetId}`}
+                  >
+                    {truncateHexString(orderAsset?.id, 5)}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  {ot ? (OrderType.BUY === ot ? 'BUY' : 'SELL') : '?'}
+                </TableCell>
+                <TableCell>{displayUnitPrice?.toString()}</TableCell>
+                <TableCell>{qty?.toString()}</TableCell>
+                <TableCell>{expiration}</TableCell>
 
-              <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
-              <TableCell>
-                {seller.toLowerCase() === account?.toLowerCase() ? (
-                  <Button
-                    onClick={() => {
-                      setCancelDialogOpen(true);
-                      setCancelData({ orderHash: order.id });
-                    }}
-                    variant="contained"
-                    color="secondary"
-                  >
-                    Cancel
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setPurchaseDialogOpen(true);
-                      setPurchaseData({ order, orderType: ot });
-                    }}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Fill
-                  </Button>
-                )}
-              </TableCell>
-            </TableRow>
-          );
-        }) : <TableRow><TableCell style={{ textAlign: 'center' }} colSpan={7}>No records available...</TableCell></TableRow>}
+                <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
+                <TableCell>
+                  {seller.toLowerCase() === account?.toLowerCase() ? (
+                    <Button
+                      onClick={() => {
+                        setCancelDialogOpen(true);
+                        setCancelData({ orderHash: order.id });
+                      }}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Cancel
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setPurchaseDialogOpen(true);
+                        setPurchaseData({ order, orderType: ot });
+                      }}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Fill
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })
+        ) : (
+          <TableRow>
+            <TableCell style={{ textAlign: 'center' }} colSpan={7}>
+              No records available...
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     );
   };

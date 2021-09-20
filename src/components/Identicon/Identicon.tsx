@@ -9,12 +9,14 @@ export default function Identicon() {
   const styles = useStyles();
   const { account } = useActiveWeb3React();
   const ref = useRef<HTMLDivElement>();
-  const hideAddress = useMediaQuery(`(max-width: 500px)`)
+  const hideAddress = useMediaQuery(`(max-width: 500px)`);
 
   useEffect(() => {
     if (account && ref.current) {
       ref.current.innerHTML = '';
-      ref.current.appendChild(Jazzicon(hideAddress ? 32 : 16, parseInt(account.slice(2, 10), 16)));
+      ref.current.appendChild(
+        Jazzicon(hideAddress ? 32 : 16, parseInt(account.slice(2, 10), 16))
+      );
     }
   }, [account]);
 

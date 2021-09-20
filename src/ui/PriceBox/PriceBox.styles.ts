@@ -5,24 +5,26 @@ export const useStyles = makeStyles((theme) => ({
     variant,
     size,
     margin,
-    color
+    color,
   }: {
     variant: 'primary' | 'secondary';
     size: 'small' | 'medium';
     margin: boolean;
-    color?: string
+    color?: string;
   }) => ({
     borderWidth: theme.spacing(0.25),
     borderStyle: 'solid',
-    borderColor: color ? color
+    borderColor: color
+      ? color
       : variant === 'primary'
-        ? theme.palette.primary.main
-        : theme.palette.text.secondary,
+      ? theme.palette.primary.main
+      : theme.palette.text.secondary,
     borderRadius: theme.spacing(0.5),
-    color: color ? color
+    color: color
+      ? color
       : variant === 'primary'
-          ? theme.palette.primary.main
-          : theme.palette.text.primary,
+      ? theme.palette.primary.main
+      : theme.palette.text.primary,
     padding: `0 ${theme.spacing(1)}px`,
     textTransform: 'uppercase',
     fontWeight: 600,

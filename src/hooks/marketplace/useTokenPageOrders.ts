@@ -106,6 +106,5 @@ export const useTokenPageOrders = ({
     fetchAssetOrders();
   }, [fetchAssetOrders, blockNumber, account]);
 
-
   return result;
 };

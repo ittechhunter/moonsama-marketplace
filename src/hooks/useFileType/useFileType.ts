@@ -15,7 +15,7 @@ export const useFileType = (uri?: string) => {
   );
   const [mediaUrl, setMediaUrl] = useState<string | undefined>(undefined);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const url = useUriToHttp(uri);
 
@@ -36,7 +36,7 @@ export const useFileType = (uri?: string) => {
   useEffect(() => {
     const getFileType = async () => {
       setMediaUrl(url);
-      setIsLoading(true)
+      setIsLoading(true);
       const res = url ? await fetch(url) : undefined;
       if (res?.body) {
         const type = await fromStream(res?.body);
@@ -56,7 +56,7 @@ export const useFileType = (uri?: string) => {
             throw e;
           }
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
         setFileType(type);
       }

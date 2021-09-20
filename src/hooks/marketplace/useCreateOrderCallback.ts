@@ -78,11 +78,15 @@ export function useCreateOrderCallback(
   const contract = useMarketplaceV1Contract(true);
 
   const inputParams = useCreateOrderArguments(createOrderData, strategyData);
-  const inputOptions = createOrderData.sellAsset.addr === AddressZero && createOrderData.sellAsset.assetType === AssetType.NATIVE ? {value: strategyData.quantity.toString()} : {}
+  const inputOptions =
+    createOrderData.sellAsset.addr === AddressZero &&
+    createOrderData.sellAsset.assetType === AssetType.NATIVE
+      ? { value: strategyData.quantity.toString() }
+      : {};
 
   const addTransaction = useTransactionAdder();
 
-  console.warn('YOLO ORDER', {inputParams, inputOptions})
+  console.warn('YOLO ORDER', { inputParams, inputOptions });
 
   return useMemo(() => {
     if (!library || !account || !chainId || !contract || !inputParams) {
@@ -94,7 +98,7 @@ export function useCreateOrderCallback(
     }
 
     if (!sanityCheckOrder(createOrderData)) {
-      console.error('Order sanity check failed')
+      console.error('Order sanity check failed');
       return {
         state: CreateOrderCallbackState.INVALID,
         callback: null,
@@ -103,7 +107,7 @@ export function useCreateOrderCallback(
     }
 
     if (!sanityCheckStrategy(strategyData)) {
-      console.error('Strategy sanity check failed')
+      console.error('Strategy sanity check failed');
       return {
         state: CreateOrderCallbackState.INVALID,
         callback: null,
@@ -162,7 +166,7 @@ export function useCreateOrderCallback(
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           from: account,
-          ...inputOptions
+          ...inputOptions,
         })
           .then((response: any) => {
             const orderHash = calculateOrderHash(createOrderData);
@@ -188,5 +192,12 @@ export function useCreateOrderCallback(
       },
       error: null,
     };
-  }, [library, account, chainId, inputParams, inputOptions.value, addTransaction]);
+  }, [
+    library,
+    account,
+    chainId,
+    inputParams,
+    inputOptions.value,
+    addTransaction,
+  ]);
 }

@@ -15,11 +15,11 @@ export const NumberFieldWithMaxButton = (props: any) => {
   const { outlinedInput } = useStyles();
 
   const _setMaxNumber = () => {
-    setMaxValue?.()
+    setMaxValue?.();
   };
 
   const onChange = (event: any) => {
-    setValue(event.target.value)
+    setValue(event.target.value);
   };
 
   return (

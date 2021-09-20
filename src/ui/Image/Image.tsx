@@ -18,7 +18,9 @@ export const Image = (props: ImgHTMLAttributes<any>) => {
         onError={handleLoad}
         alt=""
         {...props}
-        className={`${image} ${props.className || ''} ${!loaded ? imageNotShow : ''}`}
+        className={`${image} ${props.className || ''} ${
+          !loaded ? imageNotShow : ''
+        }`}
       />
     </>
   );

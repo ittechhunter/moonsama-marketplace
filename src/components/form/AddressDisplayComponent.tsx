@@ -47,8 +47,13 @@ const _copyTextToClipboard = (text: string): void => {
   );
 };
 
-export const AddressDisplayComponent = (props: { children: ReactNode, charsShown: number, dontShowLink?: boolean, className?: string, buttonClassName?: string}) => {
-
+export const AddressDisplayComponent = (props: {
+  children: ReactNode;
+  charsShown: number;
+  dontShowLink?: boolean;
+  className?: string;
+  buttonClassName?: string;
+}) => {
   const text = props.children?.toString() || '';
   const charsShown = props.charsShown ? props.charsShown : CHARS_SHOWN;
 
@@ -73,15 +78,17 @@ export const AddressDisplayComponent = (props: { children: ReactNode, charsShown
     <React.Fragment>
       <Box display="flex" alignItems="center">
         <Tooltip title={text}>
-          {!props.dontShowLink ?
+          {!props.dontShowLink ? (
             <Typography className={props.className}>
               <ExternalLink href={getExplorerLink(chainId, text, 'address')}>
                 {_apply_ellipsis()}
-              </ExternalLink> 
-          </Typography>
-          : <Typography className={props.className}>
+              </ExternalLink>
+            </Typography>
+          ) : (
+            <Typography className={props.className}>
               {_apply_ellipsis()}
-          </Typography>}
+            </Typography>
+          )}
         </Tooltip>
         <Tooltip title={TXT_COPY_ADDRESS}>
           <Button

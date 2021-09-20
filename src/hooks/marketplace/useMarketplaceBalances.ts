@@ -20,10 +20,21 @@ export const useMarketplaceBalances = (queries: BalanceQuery[]) => {
 
   const [balances, setBalances] = useState<Balance[] | undefined>();
 
-  const warehouseAddress = WAREHOUSE_ADDRESS[chainId ?? ChainId.MOONRIVER] as string;
-  const erc20 = useERC20Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc1155 = useERC1155Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc721 = useERC721Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
+  const warehouseAddress = WAREHOUSE_ADDRESS[
+    chainId ?? ChainId.MOONRIVER
+  ] as string;
+  const erc20 = useERC20Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc1155 = useERC1155Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc721 = useERC721Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
 
   console.log({ queries });
 

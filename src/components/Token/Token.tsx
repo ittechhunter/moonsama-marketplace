@@ -10,10 +10,7 @@ import { Fraction } from 'utils/Fraction';
 import { StringAssetType, StringOrderType } from 'utils/subgraph';
 import { useStyles } from './Token.styles';
 
-export const Token = ({
-  meta,
-  staticData
-}: TokenData) => {
+export const Token = ({ meta, staticData }: TokenData) => {
   const {
     container,
     image,
@@ -22,25 +19,36 @@ export const Token = ({
     stockContainer,
     tokenName,
     mr,
-    lastPriceContainer
+    lastPriceContainer,
   } = useStyles();
   const { push } = useHistory();
 
-  const asset = staticData.asset
+  const asset = staticData.asset;
 
   const handleImageClick = () => {
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const ltp = useLastTradedPriceOnce({assetAddress: asset.assetAddress, assetId: asset.assetId})
+  const ltp = useLastTradedPriceOnce({
+    assetAddress: asset.assetAddress,
+    assetId: asset.assetId,
+  });
 
-  const color = ltp?.orderType.valueOf() === StringOrderType.BUY.valueOf() ? 'green': 'red'
+  const color =
+    ltp?.orderType.valueOf() === StringOrderType.BUY.valueOf()
+      ? 'green'
+      : 'red';
 
   //console.log('STATIC',{staticData})
 
-  const isErc721 = asset.assetType.valueOf() === StringAssetType.ERC721.valueOf()
-  const sup = staticData?.totalSupply?.toString()
-  const totalSupplyString = isErc721 ? "unique" : (sup ? `${sup} pieces`: undefined)
+  const isErc721 =
+    asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
+  const sup = staticData?.totalSupply?.toString();
+  const totalSupplyString = isErc721
+    ? 'unique'
+    : sup
+    ? `${sup} pieces`
+    : undefined;
 
   return (
     <Paper className={container}>
@@ -54,14 +62,22 @@ export const Token = ({
         <Media uri={meta?.image} className={image} />
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
+        <GlitchText className={tokenName}>
+          {meta?.name ?? truncateHexString(asset.assetId)}
+        </GlitchText>
       </div>
       <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
-        {ltp && <PriceBox margin={false} size="small" color={color}>
-          {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} MOVR
-        </PriceBox>}
-        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
+        {staticData?.symbol && (
+          <Typography color="textSecondary">{staticData.symbol}</Typography>
+        )}
+        {ltp && (
+          <PriceBox margin={false} size="small" color={color}>
+            {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} MOVR
+          </PriceBox>
+        )}
+        {totalSupplyString && (
+          <Typography color="textSecondary">{totalSupplyString}</Typography>
+        )}
       </div>
       {/*{ltp && <div className={lastPriceContainer}>
         <Typography color="textSecondary" noWrap className={mr}>

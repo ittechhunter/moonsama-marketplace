@@ -42,7 +42,7 @@ export interface FillWithOrder {
     salt: string;
     createdAt: string;
     strategy?: SimpleOrderStrategy;
-  }
+  };
 }
 
 export interface Cancel {

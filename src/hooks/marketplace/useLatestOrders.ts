@@ -6,13 +6,11 @@ import {
   SUBGRAPH_URL,
 } from '../../constants';
 import {
-    QUERY_LATEST_ORDERS,
+  QUERY_LATEST_ORDERS,
   QUERY_USER_ACTIVE_ORDERS,
 } from '../../subgraph/orderQueries';
 import { Order } from './types';
-import {
-  parseOrder,
-} from '../../utils/subgraph';
+import { parseOrder } from '../../utils/subgraph';
 import { useState, useCallback, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { AddressZero } from '@ethersproject/constants';
@@ -38,10 +36,7 @@ export const useLatestOrders = ({
   const [result, setResult] = useState<LatestOrdersResults>({});
 
   const fetchAssetOrders = useCallback(async () => {
-    const query = QUERY_LATEST_ORDERS(
-      from,
-      num as number
-    );
+    const query = QUERY_LATEST_ORDERS(from, num as number);
     const response = await request(SUBGRAPH_URL, query);
 
     console.debug('YOLO useLatestOrders', response);
@@ -62,13 +57,12 @@ export const useLatestOrders = ({
       .map((x: any) => parseOrder(x))
       .filter((item: Order | undefined) => !!item);
 
-    setResult({latestOrders});
+    setResult({ latestOrders });
   }, [blockNumber, account]);
 
   useEffect(() => {
     fetchAssetOrders();
   }, [blockNumber, account]);
-
 
   return result;
 };

@@ -287,8 +287,10 @@ export function sanityCheckOrder(order: Partial<CreateOrderData>) {
   }
 
   if (
-    (order.sellAsset.addr === AddressZero && order.sellAsset.assetType !== AssetType.NATIVE) ||
-    (order.buyAsset.addr === AddressZero && order.buyAsset.assetType !== AssetType.NATIVE)
+    (order.sellAsset.addr === AddressZero &&
+      order.sellAsset.assetType !== AssetType.NATIVE) ||
+    (order.buyAsset.addr === AddressZero &&
+      order.buyAsset.assetType !== AssetType.NATIVE)
   ) {
     return false;
   }

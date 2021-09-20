@@ -132,8 +132,13 @@ export const BidDialog = () => {
     }
   };
 
-  const { dialogContainer, loadingContainer, successContainer, successIcon, inputContainer } =
-    useStyles();
+  const {
+    dialogContainer,
+    loadingContainer,
+    successContainer,
+    successIcon,
+    inputContainer,
+  } = useStyles();
 
   const { chainId, account } = useActiveWeb3React();
 
@@ -165,12 +170,12 @@ export const BidDialog = () => {
   let royaltyFee: BigNumber;
   let askPerUnitNominator: BigNumber;
   let askPerUnitDenominator: BigNumber;
-  let amountToApprove: BigNumber
-  let ppu: BigNumber
+  let amountToApprove: BigNumber;
+  let ppu: BigNumber;
   let quantity: BigNumber;
   let displayQuantity: string | undefined;
-  let quantityError: string | undefined
-  let ppuError: string | undefined
+  let quantityError: string | undefined;
+  let ppuError: string | undefined;
 
   let sellAssetContract: Asset;
   let buyAssetContract: Asset;
@@ -183,13 +188,13 @@ export const BidDialog = () => {
   const assetId = bidData?.asset?.assetId;
   const assetType = bidData?.asset?.assetType;
 
-  
   const fee = useFees([bidData?.asset])?.[0];
   const symbolString = symbol ? ` ${symbol.toString()}` : '';
 
   const orderType = bidData?.orderType;
 
-  const isAssetNative = assetType?.valueOf() === StringAssetType.NATIVE.valueOf()
+  const isAssetNative =
+    assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
 
   const [quantityUnit, unitOptions] = useMemo(() => {
     return isAssetNative
@@ -198,13 +203,13 @@ export const BidDialog = () => {
   }, [isAssetNative]);
 
   // buy- PPU is always in ether!
-    try {
-        ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0');
-        ppuError = undefined;
-    } catch {
-      ppu = BigNumber.from('0');
-      ppuError = 'Invalid price value';
-    }
+  try {
+    ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0');
+    ppuError = undefined;
+  } catch {
+    ppu = BigNumber.from('0');
+    ppuError = 'Invalid price value';
+  }
 
   if (orderType === OrderType.BUY) {
     title = 'Create buy order';
@@ -227,7 +232,6 @@ export const BidDialog = () => {
 
     // buy- quantity input field is Ether
     if (isAssetNative) {
-
       // buy quantity is the amount of ERC20 to buy in ether
       try {
         quantity = quantityText
@@ -239,9 +243,12 @@ export const BidDialog = () => {
         quantityError = 'Invalid quantity value';
       }
 
-      orderAmount = ppu && quantity ? ppu.mul(quantity).div(TEN_POW_18) : BigNumber.from('0');
+      orderAmount =
+        ppu && quantity
+          ? ppu.mul(quantity).div(TEN_POW_18)
+          : BigNumber.from('0');
 
-      amountToApprove = orderAmount
+      amountToApprove = orderAmount;
 
       brutto = orderAmount;
 
@@ -249,21 +256,21 @@ export const BidDialog = () => {
       askPerUnitDenominator = ppu ?? BigNumber.from('1');
 
       royaltyFee =
-        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
+        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ??
+        BigNumber.from('0');
       protocolFee = orderAmount.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
       netto = orderAmount.sub(royaltyFee).sub(protocolFee);
 
-      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0) 
+      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0);
       //displayQuantity = quantity?.toString()
       //orderAmount = orderAmount.mul(TEN_POW_18)
 
-    // buy- quantity input field is Wei
+      // buy- quantity input field is Wei
     } else {
-
       // buy - quantity is the amount of NFT to buy in wei
       try {
-        quantity = BigNumber.from(quantityText ?? '0')
+        quantity = BigNumber.from(quantityText ?? '0');
         quantityError = undefined;
       } catch {
         quantity = BigNumber.from('0');
@@ -272,7 +279,7 @@ export const BidDialog = () => {
 
       // order amount in MOVR
       orderAmount = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
-      amountToApprove = orderAmount
+      amountToApprove = orderAmount;
 
       brutto = orderAmount;
 
@@ -280,11 +287,12 @@ export const BidDialog = () => {
       askPerUnitDenominator = ppu ?? BigNumber.from('1');
 
       royaltyFee =
-        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
+        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ??
+        BigNumber.from('0');
       protocolFee = orderAmount.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
       netto = orderAmount.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = quantity?.toString()
+      displayQuantity = quantity?.toString();
     }
   } else {
     title = 'Create sell order';
@@ -307,7 +315,6 @@ export const BidDialog = () => {
 
     // sell- quantity input field is Ether
     if (isAssetNative) {
-
       // sell- quantity the amount of ERC20 to sell in ether
       try {
         quantity = quantityText
@@ -320,8 +327,11 @@ export const BidDialog = () => {
       }
 
       orderAmount = quantity;
-      amountToApprove = orderAmount
-      brutto = ppu && quantity ? ppu.mul(quantity).div(TEN_POW_18) : BigNumber.from('0');
+      amountToApprove = orderAmount;
+      brutto =
+        ppu && quantity
+          ? ppu.mul(quantity).div(TEN_POW_18)
+          : BigNumber.from('0');
 
       askPerUnitNominator = ppu ?? BigNumber.from('1');
       askPerUnitDenominator = BigNumber.from('1');
@@ -331,13 +341,11 @@ export const BidDialog = () => {
       protocolFee = brutto.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
       netto = brutto.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0) 
-
+      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0);
     } else {
-
       // sell - quantity is the amount of NFT to sell in wei
       try {
-        quantity = BigNumber.from(quantityText ?? '0')
+        quantity = BigNumber.from(quantityText ?? '0');
         quantityError = undefined;
       } catch {
         quantity = BigNumber.from('0');
@@ -345,9 +353,8 @@ export const BidDialog = () => {
       }
 
       orderAmount = quantity;
-      amountToApprove = orderAmount
+      amountToApprove = orderAmount;
       brutto = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
-
 
       askPerUnitNominator = ppu ?? BigNumber.from('1');
       askPerUnitDenominator = BigNumber.from('1');
@@ -357,7 +364,7 @@ export const BidDialog = () => {
       protocolFee = brutto.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
       netto = brutto.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = quantity?.toString()
+      displayQuantity = quantity?.toString();
     }
   }
 
@@ -370,7 +377,10 @@ export const BidDialog = () => {
     },
   ])?.[0];
 
-  const displaySellBalance = sellAssetType?.valueOf() === StringAssetType.ERC20 ? Fraction.from(sellBalance, 18)?.toFixed(5) : sellBalance?.toString()
+  const displaySellBalance =
+    sellAssetType?.valueOf() === StringAssetType.ERC20
+      ? Fraction.from(sellBalance, 18)?.toFixed(5)
+      : sellBalance?.toString();
   const hasEnough = sellBalance?.gte(amountToApprove);
 
   const [approvalState, approveCallback] = useApproveCallback({
@@ -407,8 +417,8 @@ export const BidDialog = () => {
     onlyTo,
     partialAllowed,
     amountToApprove: amountToApprove?.toString(),
-    hasEnough
-  })
+    hasEnough,
+  });
 
   const { state: createOrderState, callback: createOrderCallback } =
     useCreateOrderCallback(orderData, {
@@ -423,7 +433,13 @@ export const BidDialog = () => {
 
   const { orderSubmitted, orderTx } = useSubmittedOrderTx(orderHash);
 
-  console.warn('CREATE ORDER STATE', {orderSubmitted, orderTx, orderHash, finalTxSubmitted, createOrderState})
+  console.warn('CREATE ORDER STATE', {
+    orderSubmitted,
+    orderTx,
+    orderHash,
+    finalTxSubmitted,
+    createOrderState,
+  });
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
@@ -497,7 +513,7 @@ export const BidDialog = () => {
     }
     return (
       <>
-        <Grid container spacing={1} justifyContent='center'>
+        <Grid container spacing={1} justifyContent="center">
           <Grid item md={12} xs={12}>
             <Box className={formBox}>
               <Typography className="form-subheader">Token Details</Typography>
@@ -568,9 +584,7 @@ export const BidDialog = () => {
                   </Grid>
                 </Grid>
               </div>
-              {ppuError && (
-                <div className={fieldError}>{ppuError}</div>
-              )}
+              {ppuError && <div className={fieldError}>{ppuError}</div>}
 
               <div className={infoContainer}>
                 <Typography className={formLabel}>
@@ -590,7 +604,12 @@ export const BidDialog = () => {
 
           <Grid item md={6} xs={12}>
             <Box className={formBox}>
-              <Grid container spacing={1} justifyContent="space-between" alignItems='center'>
+              <Grid
+                container
+                spacing={1}
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Grid item>
                   <Typography className="form-subheader">Advanced</Typography>
                 </Grid>
@@ -606,7 +625,11 @@ export const BidDialog = () => {
                 </Grid>
               </Grid>
 
-              <Collapse in={UIAdvancedSectionExpanded} timeout="auto" unmountOnExit>
+              <Collapse
+                in={UIAdvancedSectionExpanded}
+                timeout="auto"
+                unmountOnExit
+              >
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Expiration</Typography>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -714,8 +737,6 @@ export const BidDialog = () => {
                 </>
               )}
 
-
-
               {orderType?.valueOf() === OrderType.BUY && (
                 <>
                   <div className={infoContainer}>
@@ -778,8 +799,6 @@ export const BidDialog = () => {
             </Box>
           </Grid>
         </Grid>
-
-
 
         {showApproveFlow ? (
           <Button

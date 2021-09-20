@@ -1,12 +1,13 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
-import {
-  useMulticall2Contract,
-} from 'hooks/useContracts/useContracts';
+import { useMulticall2Contract } from 'hooks/useContracts/useContracts';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback, useEffect, useState } from 'react';
 import { Asset } from 'hooks/marketplace/types';
-import { getTokenStaticCalldata, processTokenStaticCallResults } from 'utils/calls';
+import {
+  getTokenStaticCalldata,
+  processTokenStaticCallResults,
+} from 'utils/calls';
 
 export interface StaticTokenData {
   asset: Asset;

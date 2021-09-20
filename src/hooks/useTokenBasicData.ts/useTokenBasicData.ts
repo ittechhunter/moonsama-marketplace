@@ -69,9 +69,18 @@ export const useTokenBasicData = (assets: Asset[]) => {
 
   const [datas, setBasicDatas] = useState<BasicTokenData[] | undefined>();
 
-  const erc20 = useERC20Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc1155 = useERC1155Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc721 = useERC721Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
+  const erc20 = useERC20Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc1155 = useERC1155Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc721 = useERC721Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
 
   const getCalldata = (asset: Asset) => {
     if (

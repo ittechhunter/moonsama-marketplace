@@ -20,9 +20,18 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
 
   const [balances, setBalances] = useState<(BigNumber | undefined)[]>([]);
 
-  const erc20 = useERC20Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc1155 = useERC1155Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
-  const erc721 = useERC721Contract(WMOVR_ADDRESS[ChainId.MOONRIVER] as string, true);
+  const erc20 = useERC20Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc1155 = useERC1155Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
+  const erc721 = useERC721Contract(
+    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
+    true
+  );
 
   const fetchBalances = useCallback(async () => {
     const inputs: any[] = assets
@@ -36,7 +45,7 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
         ) {
           return undefined;
         }
-        
+
         if (asset.assetType?.valueOf() === StringAssetType.NATIVE) {
           return [
             [multi?.interface.getFunction('getEthBalance') as FunctionFragment],
@@ -45,7 +54,7 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
             [account],
           ];
         }
-        
+
         if (asset.assetType?.valueOf() === StringAssetType.ERC20) {
           return [
             [erc20?.interface.getFunction('balanceOf') as FunctionFragment],
@@ -111,12 +120,12 @@ export const useBalances = (assets: (Partial<Asset> | undefined)[]) => {
 export const useNativeBalance = () => {
   const { chainId, account, library } = useActiveWeb3React();
   const [balance, setBalance] = useState<BigNumber | undefined>(undefined);
-  const blocknumber = useBlockNumber()
+  const blocknumber = useBlockNumber();
 
   const fetchBalance = useCallback(async () => {
     if (account && library) {
-      const b = await library?.getBalance(account)
-      setBalance(b)
+      const b = await library?.getBalance(account);
+      setBalance(b);
     }
   }, [chainId, library, account, blocknumber]);
 
@@ -128,4 +137,3 @@ export const useNativeBalance = () => {
 
   return balance;
 };
-

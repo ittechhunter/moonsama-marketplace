@@ -126,8 +126,8 @@ export const parseFillWithOrder = (data?: any): FillWithOrder | undefined => {
       strategyType: data.order.strategyType.id,
       buyAsset: parseAsset(data.order.buyAsset) as Asset,
       sellAsset: parseAsset(data.order.sellAsset) as Asset,
-      strategy: parseStrategy(data.order.strategy)
-    }
+      strategy: parseStrategy(data.order.strategy),
+    },
   };
 };
 

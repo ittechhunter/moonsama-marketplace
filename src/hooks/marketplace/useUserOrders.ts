@@ -5,13 +5,9 @@ import {
   SUBGRAPH_MAX_BLOCK_DELAY,
   SUBGRAPH_URL,
 } from '../../constants';
-import {
-  QUERY_USER_ACTIVE_ORDERS,
-} from '../../subgraph/orderQueries';
+import { QUERY_USER_ACTIVE_ORDERS } from '../../subgraph/orderQueries';
 import { Order } from './types';
-import {
-  parseOrder,
-} from '../../utils/subgraph';
+import { parseOrder } from '../../utils/subgraph';
 import { useState, useCallback, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { AddressZero } from '@ethersproject/constants';
@@ -70,7 +66,6 @@ export const useUserOrders = ({
   useEffect(() => {
     fetchAssetOrders();
   }, [blockNumber, account]);
-
 
   return result;
 };

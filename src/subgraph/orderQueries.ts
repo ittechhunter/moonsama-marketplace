@@ -202,19 +202,20 @@ export const QUERY_USER_ACTIVE_ORDERS = (
 ) => gql`
   query getUserActiveOrders {
     ${META}
-    userOrders: orders(where: {active: true, seller: "${account}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${num ?? DEFAULT_ORDERBOOK_PAGINATION}) {
+    userOrders: orders(where: {active: true, seller: "${account}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
       ${ORDER_FIELDS}
     }
   }
 `;
 
-export const QUERY_LATEST_ORDERS = (
-  from: number,
-  num: number
-) => gql`
+export const QUERY_LATEST_ORDERS = (from: number, num: number) => gql`
   query getUserActiveOrders {
     ${META}
-    latestOrders: orders(where: {active: true}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${num ?? DEFAULT_ORDERBOOK_PAGINATION}) {
+    latestOrders: orders(where: {active: true}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
       ${ORDER_FIELDS}
     }
   }

@@ -77,13 +77,12 @@ export const QUERY_FILLS_AT_BLOCK = gql`
   }
 `;
 
-export const QUERY_LATEST_FILLS = (
-  from: number,
-  num: number
-) => gql`
+export const QUERY_LATEST_FILLS = (from: number, num: number) => gql`
   query getLatestFills {
     ${META}
-    latestFills: fills(orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${num ?? DEFAULT_ORDERBOOK_PAGINATION}) {
+    latestFills: fills(orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
       ${FILL_FIELDS}
     }
   }

@@ -20,7 +20,7 @@ export type RawCollection = {
   indexing: Indexing;
   contractURI: string;
   tags: string[];
-  min_items: number
+  min_items: number;
 };
 
 export type RawCollectionList = {

@@ -76,8 +76,8 @@ export function useFillOrderCallback(
   orderHash?: string,
   fillData?: FillOrderCallbackData,
   nativeOptions?: {
-    usergive?: BigNumber,
-    native: boolean
+    usergive?: BigNumber;
+    native: boolean;
   }
 ): {
   state: FillOrderCallbackState;
@@ -95,7 +95,10 @@ export function useFillOrderCallback(
 
   const addTransaction = useTransactionAdder();
 
-  const inputOptions = nativeOptions?.native && nativeOptions?.usergive ? {value: nativeOptions.usergive.toString()} : {}
+  const inputOptions =
+    nativeOptions?.native && nativeOptions?.usergive
+      ? { value: nativeOptions.usergive.toString() }
+      : {};
 
   return useMemo(() => {
     if (!library || !account || !chainId || !contract) {
@@ -170,7 +173,7 @@ export function useFillOrderCallback(
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           from: account,
-          ...inputOptions
+          ...inputOptions,
         })
           .then((response: any) => {
             const sum = `Fill order ${orderHash}`;

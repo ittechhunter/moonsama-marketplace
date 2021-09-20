@@ -8,46 +8,54 @@ import { useTokenStaticDataCallbackArray } from 'hooks/useTokenStaticDataCallbac
 import { QUERY_LATEST_FILLS } from 'subgraph/fillQueries';
 
 export const useLatestTradesWithStaticCallback = () => {
+  const { chainId } = useActiveWeb3React();
+  const staticCallback = useTokenStaticDataCallbackArray();
 
-  const {chainId} = useActiveWeb3React()
-  const staticCallback = useTokenStaticDataCallbackArray()
+  const fetchLatestTradesWithStatic = useCallback(
+    async (num: number, offset: number) => {
+      const query = QUERY_LATEST_FILLS(offset, num);
+      const response = await request(SUBGRAPH_URL, query);
 
-  const fetchLatestTradesWithStatic = useCallback(async (num : number, offset: number) => {
-    const query = QUERY_LATEST_FILLS(
-      offset,
-      num
-    );
-    const response = await request(SUBGRAPH_URL, query);
+      console.debug('YOLO useLatestTradesWithStaticCallback', response);
 
-    console.debug('YOLO useLatestTradesWithStaticCallback', response);
+      if (!response) {
+        return [];
+      }
 
-    if (!response) {
-      return [];
-    }
-    
-    let assets: Asset[] = []
-    const latestFills: FillWithOrder[] = (response.latestFills ?? [])
-      .map((x: any) => {
-            const pfo = parseFillWithOrder(x)
-            if (pfo) {
-                const ot = inferOrderTYpe(chainId, pfo?.order?.sellAsset, pfo?.order?.buyAsset) ?? OrderType.SELL
-                assets.push(ot === OrderType.BUY ? pfo?.order?.buyAsset: pfo?.order?.sellAsset)
-            }
-            return pfo
+      let assets: Asset[] = [];
+      const latestFills: FillWithOrder[] = (response.latestFills ?? [])
+        .map((x: any) => {
+          const pfo = parseFillWithOrder(x);
+          if (pfo) {
+            const ot =
+              inferOrderTYpe(
+                chainId,
+                pfo?.order?.sellAsset,
+                pfo?.order?.buyAsset
+              ) ?? OrderType.SELL;
+            assets.push(
+              ot === OrderType.BUY
+                ? pfo?.order?.buyAsset
+                : pfo?.order?.sellAsset
+            );
+          }
+          return pfo;
         })
-      .filter((item: Order | undefined) => !!item);
+        .filter((item: Order | undefined) => !!item);
 
-    const staticDatas = await staticCallback(assets)
+      const staticDatas = await staticCallback(assets);
 
-    const datas = staticDatas.map((sd, i) => {
+      const datas = staticDatas.map((sd, i) => {
         return {
-            meta: sd.meta,
-            staticData: sd.staticData,
-            fill: latestFills[i]
-        }
-    })
-    return datas;
-  }, [chainId])
+          meta: sd.meta,
+          staticData: sd.staticData,
+          fill: latestFills[i],
+        };
+      });
+      return datas;
+    },
+    [chainId]
+  );
 
-  return fetchLatestTradesWithStatic
-}
+  return fetchLatestTradesWithStatic;
+};

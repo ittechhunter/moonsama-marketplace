@@ -123,35 +123,38 @@ export function getRandomInt() {
 // @ts-ignore
 export const isFirefox = typeof InstallTrigger !== 'undefined';
 
-
-export const TEN_POW_18 = BigNumber.from('10').pow('18')
+export const TEN_POW_18 = BigNumber.from('10').pow('18');
 
 export const numberToBytes32HexString = (num?: string | number) => {
-  if(!num) {
-    console.warn("HEXURI", HashZero)
-    return HashZero
+  if (!num) {
+    console.warn('HEXURI', HashZero);
+    return HashZero;
   }
 
-  const hv = `0x${(typeof num === 'string') ? Number.parseInt(num as string).toString(16): num.toString(16)}`
-  const final = hexZeroPad(hv, 32)
+  const hv = `0x${
+    typeof num === 'string'
+      ? Number.parseInt(num as string).toString(16)
+      : num.toString(16)
+  }`;
+  const final = hexZeroPad(hv, 32);
 
-  console.warn("HEXURI", {hv, final})
-  return final
-}
+  console.warn('HEXURI', { hv, final });
+  return final;
+};
 
 export const parseTokenUri = (uri?: string, tokenID?: string | number) => {
   if (!uri) {
-    return undefined
+    return undefined;
   }
 
   if (uri.includes('{id}')) {
-    return uri.replace('{id}', numberToBytes32HexString(tokenID).slice(2))
+    return uri.replace('{id}', numberToBytes32HexString(tokenID).slice(2));
   }
 
   // carbonjack does not follow the specifications unfortunately
   if (uri.includes('{0}')) {
-    return uri.replace('{0}', numberToBytes32HexString(tokenID).slice(2))
+    return uri.replace('{0}', numberToBytes32HexString(tokenID).slice(2));
   }
 
-  return uri
-}
+  return uri;
+};

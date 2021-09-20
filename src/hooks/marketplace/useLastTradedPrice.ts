@@ -61,7 +61,6 @@ export const useLastTradedPriceOnce = ({
   assetAddress,
   assetId,
 }: LastTradedPriceQuery) => {
-
   const [result, setResult] = useState<LastTradedPrice | undefined>(undefined);
 
   const fetchAssetOrders = useCallback(async () => {
