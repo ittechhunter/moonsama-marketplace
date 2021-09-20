@@ -17,14 +17,14 @@ export const useStyles = makeStyles((theme) => ({
     borderColor: color
       ? color
       : variant === 'primary'
-      ? theme.palette.primary.main
-      : theme.palette.text.secondary,
+        ? '#156b00'
+        : '#156b00',
     borderRadius: theme.spacing(0.5),
     color: color
       ? color
       : variant === 'primary'
-      ? theme.palette.primary.main
-      : theme.palette.text.primary,
+          ? '#156b00'
+          : '#156b00',
     padding: `0 ${theme.spacing(1)}px`,
     textTransform: 'uppercase',
     fontWeight: 600,

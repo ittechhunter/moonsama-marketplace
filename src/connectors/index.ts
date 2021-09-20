@@ -54,8 +54,8 @@ export const walletconnect = new WalletConnectConnector({
   qrcode: true,
   pollingInterval: 5000,
   bridge: 'https://bridge.walletconnect.org',
-  //chainId: CHAIN_ID,
-  //supportedChainIds: [CHAIN_ID]
+  chainId: CHAIN_ID,
+  supportedChainIds: [CHAIN_ID]
 });
 
 export interface WalletInfo {
@@ -88,13 +88,13 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#E8831D',
   },
-  WALLET_CONNECT: {
-    connector: walletconnect,
-    name: 'WalletConnect',
-    iconName: 'walletConnectIcon.svg',
-    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
+  // WALLET_CONNECT: {
+  //   connector: walletconnect,
+  //   name: 'WalletConnect',
+  //   iconName: 'walletConnectIcon.svg',
+  //   description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
+  //   href: null,
+  //   color: '#4196FC',
+  //   mobile: true,
+  // },
 };

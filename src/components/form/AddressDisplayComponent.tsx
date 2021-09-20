@@ -93,6 +93,7 @@ export const AddressDisplayComponent = (props: {
         <Tooltip title={TXT_COPY_ADDRESS}>
           <Button
             className={`${copyButton} ${props.buttonClassName}`}
+            size="small"
             onClick={() => {
               _copyTextToClipboard(text);
             }}

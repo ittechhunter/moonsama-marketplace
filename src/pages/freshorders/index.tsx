@@ -93,24 +93,6 @@ const FreshOrdersPage = () => {
         <div className={placeholderContainer}>
           <Loader />
         </div>
-        // <Grid container spacing={1} style={{ marginTop: 12 }}>
-        //   <Grid item xl={3} md={4} sm={6} xs={12}>
-        //     <div>Test</div>
-        //   </Grid>
-        //   <Grid item xl={3} md={4} sm={6} xs={12}>
-        //     <div>Test</div>
-        //   </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
-        //   <div>Test</div>
-        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
-        //   <div>Test</div>
-        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
-        //   <div>Test</div>
-        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
-        //   <div>Test</div>
-        // </Grid><Grid item xl={3} md={4} sm={6} xs={12}>
-        //   <div>Test</div>
-        // </Grid>
-        // </Grid>
       )}
     </>
   );

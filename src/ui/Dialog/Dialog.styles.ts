@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   paperStyles: {
     background: '#111',
-    borderRadius: '4px',
+    borderRadius: 0,
   },
   dialogTitle: {
     fontSize: 24,

@@ -36,6 +36,7 @@ export const TokenOrder = ({
     tokenName,
     mr,
     lastPriceContainer,
+    smallText
   } = useStyles();
   const { push } = useHistory();
 
@@ -80,23 +81,17 @@ export const TokenOrder = ({
         <Media uri={meta?.image} className={image} />
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>
-          {meta?.name ?? truncateHexString(asset.assetId)}
-        </GlitchText>
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && (
-          <Typography color="textSecondary">{staticData.symbol}</Typography>
-        )}
+        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
-        {totalSupplyString && (
-          <Typography color="textSecondary">{totalSupplyString}</Typography>
-        )}
+      </div>
+      <div className={stockContainer}>
+        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
+        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
       </div>
       <div className={lastPriceContainer}>
-        <Typography color="textSecondary" noWrap className={mr}>
+        <Typography noWrap className={smallText}>
           {truncateHexString(order?.id, 5)}
         </Typography>
         <Typography color="textSecondary" noWrap className={mr}>
@@ -106,7 +101,7 @@ export const TokenOrder = ({
           {truncateHexString(order.seller)}
         </Typography>*/}
         <ExternalLink href={getExplorerLink(chainId, order?.seller, 'address')}>
-          <Typography color="textSecondary" noWrap>
+          <Typography noWrap className={smallText}>
             {truncateHexString(order.seller)}
           </Typography>
         </ExternalLink>

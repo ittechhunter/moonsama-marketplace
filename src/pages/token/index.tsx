@@ -7,7 +7,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import MoneyIcon from '@mui/icons-material/Money';
-import SyncAltIcon from '@mui/icons-material/AccountBalanceWallet';
+import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { useActiveWeb3React, useBidDialog } from 'hooks';
 import { LastTradedPrice, Order } from 'hooks/marketplace/types';
@@ -132,6 +132,7 @@ const TokenPage = () => {
     tradeContainer,
     tradeRow,
     copyAddressButton,
+    smallText
   } = useStyles();
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
@@ -362,7 +363,7 @@ const TokenPage = () => {
               BALANCE: {userBalanceString}
             </Typography>
           ) : isErc721 ? (
-            <Typography color="textSecondary" variant="subtitle1">
+            <Typography color="textSecondary" className={smallText}>
               {userBalanceString === '1' ? 'OWNED' : 'NOT OWNED'}
             </Typography>
           ) : (
@@ -373,7 +374,7 @@ const TokenPage = () => {
             </Typography>
           )}
         </Box>
-        <Typography color="textSecondary" variant="subtitle1">
+        <Typography color="textSecondary" className={smallText}>
           {assetMeta?.description}
         </Typography>
 
@@ -461,7 +462,7 @@ const TokenPage = () => {
               }}
               startIcon={<MoneyIcon />}
               variant="outlined"
-              color="secondary"
+              color="primary"
               className={newSellButton}
             >
               New sell order

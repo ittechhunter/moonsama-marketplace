@@ -2,8 +2,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { fontWeight } from 'theme/typography';
 
-import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
-
 export const useStyles = makeStyles((theme) => ({
   pageContainer: {
     paddingTop: theme.spacing(1),
@@ -25,7 +23,7 @@ export const useStyles = makeStyles((theme) => ({
     height: 'auto',
     borderRadius: theme.spacing(2),
     objectFit: 'contain',
-    background: `url(${tokenBackgroundImage}) no-repeat center center`,
+    background: '#111',
     backgroundSize: 'cover',
   },
   name: {
@@ -137,6 +135,6 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   copyAddressButton: {
-    marginTop: -27,
-  },
+    marginTop: 0
+  }
 }));

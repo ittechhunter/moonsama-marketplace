@@ -1,32 +1,28 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
-
 export const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
     margin: theme.spacing(2),
     padding: theme.spacing(1.5),
-    borderRadius: '4px',
+    borderRadius: 0,
   },
   imageContainer: {
     width: '100%',
     textAlign: 'center',
     overflow: 'hidden',
     cursor: 'pointer',
-    minHeight: 330,
     display: 'flex',
-    maxHeight: 330,
     alignItems: 'center',
-    borderRadius: '4px',
+    borderRadius: 0,
     justifyContent: 'center',
   },
   image: {
     width: '100%',
     height: 'auto',
-    borderRadius: '4px',
-    background: `url(${tokenBackgroundImage}) no-repeat center center`,
+    borderRadius: 0,
+    background: '#111',
     backgroundSize: 'cover',
   },
   nameContainer: {
@@ -55,7 +51,12 @@ export const useStyles = makeStyles((theme) => ({
     textOverflow: 'ellipsis',
     fontSize: 14,
   },
-  mr: {
-    marginRight: theme.spacing(1),
+  smallText: {
+    fontSize: '12px',
+    marginTop: theme.spacing(0.5)
   },
+  mr: {
+    fontSize: '12px',
+    margin: theme.spacing(0.5)
+  }
 }));

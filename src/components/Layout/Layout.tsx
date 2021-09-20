@@ -12,7 +12,7 @@ import { Header, NavLink, Drawer, Footer } from 'ui';
 import { LayoutProps } from './Layout.types';
 import { useStyles } from './Layout.styles';
 
-import WhiteLogo from 'assets/images/Moonsama_White.png';
+import WhiteLogo from 'assets/images/logo-white.svg';
 import { Account } from 'components';
 
 import { MAX_WIDTH_TO_SHOW_NAVIGATION } from '../../constants';

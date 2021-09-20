@@ -36,6 +36,7 @@ export const TokenTrade = ({
     tokenName,
     mr,
     lastPriceContainer,
+    smallText
   } = useStyles();
   const { push } = useHistory();
 
@@ -89,38 +90,29 @@ export const TokenTrade = ({
         <Media uri={meta?.image} className={image} />
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>
-          {meta?.name ?? truncateHexString(asset.assetId)}
-        </GlitchText>
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && (
-          <Typography color="textSecondary">{staticData.symbol}</Typography>
-        )}
+        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
-        {totalSupplyString && (
-          <Typography color="textSecondary">{totalSupplyString}</Typography>
-        )}
+      </div>
+      <div className={stockContainer}>
+        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
+        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
       </div>
       <div className={lastPriceContainer}>
-        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}>
-          <Typography color="textSecondary" noWrap>
-            {unit?.toString()} taken
-          </Typography>
-        </ExternalLink>
+
+        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}><Typography className={smallText} noWrap>
+          {unit?.toString()} taken
+        </Typography></ExternalLink>
         <Typography color="textSecondary" noWrap className={mr}>
           by
         </Typography>
         {/*<Typography color="textSecondary" noWrap>
           {truncateHexString(order.seller)}
         </Typography>*/}
-        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}>
-          <Typography color="textSecondary" noWrap>
-            {truncateHexString(fill.buyer)}
-          </Typography>
-        </ExternalLink>
+        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}><Typography className={smallText} noWrap>
+          {truncateHexString(fill.buyer)}
+        </Typography></ExternalLink>
       </div>
     </Paper>
   );

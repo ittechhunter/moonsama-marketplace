@@ -5,14 +5,13 @@ export const useStyles = makeStyles((theme) => ({
     minWidth: 'unset',
     minHeight: 'unset',
     color: 'white',
-    borderTopLeftRadius: '4px',
-    borderTopRightRadius: '4px',
     height: 28,
     marginRight: 8,
     transition: 'all .2s',
     background: 'none',
     padding: '24px',
     opacity: 1,
+    borderBottom: '1px solid #000',
   },
   selected: {
     color: '#fff',
@@ -20,7 +19,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   tabsStyles: {
     minHeight: 'unset',
-    borderRadius: '4px',
+    borderRadius: 0,
     padding: 0,
   },
 }));

@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
     width: '30px',
     height: '30px',
     position: 'relative',
-    border: '4px solid #d2023e',
+    border: '4px solid #fff',
     top: '50%',
     animation: `$loaderAnimation 2s infinite ease`,
   },
@@ -15,7 +15,7 @@ export const useStyles = makeStyles((theme) => ({
     verticalAlign: 'top',
     display: 'inline-block',
     width: '100%',
-    backgroundColor: '#d2023e',
+    backgroundColor: '#fff',
     animation: `$loaderInnerAnimation 2s infinite ease-in`,
   },
 

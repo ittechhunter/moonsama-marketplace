@@ -366,6 +366,7 @@ export const AccountDialog = () => {
       <div className={styles.dialogContainer}>
         {walletView !== WALLET_VIEWS.ACCOUNT ? (
           <Button
+            className={styles.titleSlot}
             variant="outlined"
             color="primary"
             onClick={() => {
@@ -376,7 +377,7 @@ export const AccountDialog = () => {
             Back
           </Button>
         ) : (
-          <span>Connect to a wallet</span>
+          <span className={styles.titleSlot}>Connect to a wallet</span>
         )}
         {walletView === WALLET_VIEWS.PENDING ? (
           <>
@@ -392,7 +393,7 @@ export const AccountDialog = () => {
         )}
         {walletView !== WALLET_VIEWS.PENDING && (
           <Typography variant="body2" className={styles.row}>
-            New to Ethereum?{' '}
+            New to Ethereum? &nbsp;
             <ExternalLink href="https://ethereum.org/wallets">
               Learn more about wallets
             </ExternalLink>

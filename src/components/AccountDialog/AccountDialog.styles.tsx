@@ -10,10 +10,15 @@ export const useStyles = makeStyles<Theme>((theme) => ({
   button: {
     marginTop: '8px',
   },
+  titleSlot: {
+    display: 'block',
+    marginBottom: '20px',
+  },
   row: {
     marginTop: '20px',
     display: 'flex',
     flexDirection: 'row',
+    fontSize: '12px',
   },
   lowerSection: {
     display: 'flex',
@@ -75,5 +80,5 @@ export const useStyles = makeStyles<Theme>((theme) => ({
   },
   walletOption: {
     background: '#fff'
-  }
+  },
 }));

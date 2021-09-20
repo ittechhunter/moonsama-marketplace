@@ -21,7 +21,7 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
   overrides: {
     MuiButton: {
       root: {
-        borderRadius: '4px',
+        borderRadius: 0,
         textTransform: 'none',
         height: defaultTheme.spacing(5),
         fontSize: defaultTheme.typography.fontSize,
@@ -30,8 +30,9 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
         color: colors.text?.primary || 'white',
         borderColor: colors.text?.disabled || 'white',
         '&:hover': {
-          backgroundColor: (colors.primary as SimplePaletteColorOptions).main,
-          color: colors.background?.default || 'black',
+          backgroundColor: '#111',
+          color: 'white',
+          borderColor: 'inherit',
         },
       },
       contained: {
@@ -50,7 +51,7 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
     },
     MuiOutlinedInput: {
       root: {
-        borderRadius: '4px',
+        borderRadius: 0,
         height: defaultTheme.spacing(5),
         minWidth: '380px',
         maxWidth: '100%',
@@ -75,6 +76,41 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       icon: {
         color: 'white',
       },
+    },
+    MuiTable: {
+      root: {
+        backgroundColor: '#111',
+        border: '0 !important',
+      }
+    },
+    MuiTableRow: {
+      root: {
+        borderBottom: '1px solid #000',
+      }
+    },
+    MuiTableCell: {
+      root: {
+        border: '0 !important',
+      },
+      head: {
+        lineHeight: 1,
+      }
+    },
+    MuiSvgIcon: {
+      root: {
+        color: '#fff',
+      }
+    },
+    MuiPaper: {
+      root: {
+        '& a': {
+          textDecoration: 'none'
+        },
+        '& a:hover': {
+          textDecoration: 'underline',
+          color: '#d2023e'
+        },
+      }
     },
     MuiInputAdornment: {
       positionStart: {
