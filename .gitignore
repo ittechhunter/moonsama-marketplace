@@ -39,3 +39,5 @@ wrangler.toml
 worker
 workers-site
 dist
+
+/.idea
