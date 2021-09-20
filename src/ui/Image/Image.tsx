@@ -1,6 +1,6 @@
-import { ImgHTMLAttributes, useEffect, useState } from 'react';
+import React, { ImgHTMLAttributes, useEffect, useState } from 'react';
 import { useStyles } from './Image.styles';
-import { Placeholder } from 'ui';
+import { Loader } from 'ui';
 
 export const Image = (props: ImgHTMLAttributes<any>) => {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -12,7 +12,7 @@ export const Image = (props: ImgHTMLAttributes<any>) => {
 
   return (
     <>
-      {!loaded && <Placeholder />}
+      {!loaded && <Loader />}
       <img
         onLoad={handleLoad}
         onError={handleLoad}
