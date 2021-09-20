@@ -1,5 +1,5 @@
 import Grid from '@material-ui/core/Grid';
-import { GlitchText, Placeholder } from 'ui';
+import { GlitchText, Loader } from 'ui';
 import { useEffect, useState } from 'react';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
@@ -71,7 +71,7 @@ const MyCollectionPage = () => {
       </Grid>
       {pageLoading && (
         <div className={placeholderContainer}>
-          <Placeholder style={{ width: '30%' }} />
+          <Loader />
         </div>
       )}
     </>

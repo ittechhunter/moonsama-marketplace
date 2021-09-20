@@ -119,6 +119,11 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
         },
       },
     },
+    MuiGrid: {
+      root: {
+        justifyContent: 'center'
+      },
+    },
   },
 });
 

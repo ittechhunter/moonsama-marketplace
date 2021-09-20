@@ -2,7 +2,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const collectionListStyles = makeStyles((theme) => ({
   card: {
-    borderRadius: 4,
+    borderRadius: 0,
   },
   mediaContainer: {
     width: '100%',

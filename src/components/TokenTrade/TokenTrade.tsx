@@ -45,7 +45,7 @@ export const TokenTrade = ({
   const asset =
     ot == OrderType.BUY ? fill.order.buyAsset : fill.order.sellAsset;
   const action = ot == OrderType.BUY ? 'BUY' : 'SELL';
-  const actionColor = ot == OrderType.BUY ? 'green' : 'red';
+  const actionColor = ot == OrderType.BUY ? 'green' : '#b90e0e';
 
   //console.log('FRESH', {asset, action, actionColor})
 

@@ -44,7 +44,7 @@ export const TokenOrder = ({
   const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
   const action = ot == OrderType.BUY ? 'BUY' : 'SELL';
-  const actionColor = ot == OrderType.BUY ? 'green' : 'red';
+  const actionColor = ot == OrderType.BUY ? 'green' : '#b90e0e';
 
   //console.log('FRESH', {asset, action, actionColor})
 

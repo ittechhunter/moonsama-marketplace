@@ -12,26 +12,20 @@ export const useStyles = makeStyles((theme) => ({
     margin: boolean;
     color?: string;
   }) => ({
-    borderWidth: theme.spacing(0.25),
-    borderStyle: 'solid',
-    borderColor: color
-      ? color
-      : variant === 'primary'
-        ? '#156b00'
-        : '#156b00',
-    borderRadius: theme.spacing(0.5),
     color: color
       ? color
       : variant === 'primary'
-          ? '#156b00'
+          ? '#b90e0e'
           : '#156b00',
-    padding: `0 ${theme.spacing(1)}px`,
+    padding: 0,
     textTransform: 'uppercase',
-    fontWeight: 600,
     letterSpacing: '-.01em',
-    fontSize: size === 'medium' ? theme.spacing(2) : theme.spacing(1.5),
+    fontSize: size === 'medium' ? theme.spacing(2) : '16px',
     marginRight: margin ? theme.spacing(1) : 0,
+    marginTop: '6px',
+    marginBottom: '4px',
     display: 'flex',
     alignItems: 'center',
+    height: ''
   }),
 }));

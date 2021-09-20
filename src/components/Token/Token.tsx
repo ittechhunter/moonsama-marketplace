@@ -37,7 +37,7 @@ export const Token = ({ meta, staticData }: TokenData) => {
   const color =
     ltp?.orderType.valueOf() === StringOrderType.BUY.valueOf()
       ? 'green'
-      : 'red';
+      : '#b90e0e';
 
   //console.log('STATIC',{staticData})
 
