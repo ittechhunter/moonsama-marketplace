@@ -22,7 +22,8 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
     MuiCssBaseline: {
       '@global': {
         '*::-webkit-scrollbar': {
-          width: '0.4em'
+          width: '0.5em',
+          cursor: 'pointer'
         },
         '*::-webkit-scrollbar-track': {
           '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
@@ -79,6 +80,12 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       paper: {
         backgroundColor: colors.background?.default,
         borderRadius: defaultTheme.spacing(2),
+      },
+    },
+    MuiDrawer: {
+      paper: {
+        backgroundColor: '#000',
+        padding: '20px',
       },
     },
     MuiIconButton: {
