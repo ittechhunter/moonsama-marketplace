@@ -14,5 +14,5 @@ export const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     marginTop: 12,
     textAlign: 'center'
-  }
+  },
 }))

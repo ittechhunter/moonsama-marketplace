@@ -4,7 +4,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 export const useStyles = makeStyles<Theme>((theme) => ({
   dialogContainer: {
     display: 'flex',
-    padding: 32,
+    padding: '0 32px 32px 32px',
     flexDirection: 'column',
   },
   button: {
@@ -21,9 +21,12 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     padding: '1.5rem',
     flexGrow: 1,
     overflow: 'auto',
-    backgroundColor: theme.palette.background.paper,
-    borderBottomLeftRadius: '20px',
-    borderNottomRightRadius: '20px',
+    background: '#1d1d1d',
+    fontSize: '11px',
+
+    '& > p': {
+      fontSize: '12px'
+    },
   },
   walletName: {
     width: 'initial',
@@ -36,7 +39,7 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     flexFlow: 'column nowrap',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: '8px',
+    margin: '0 8px 8px 0',
     '& > img': {},
     span: {
       height: '16px',
@@ -70,4 +73,7 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     justifyContent: 'space-between',
     marginBottom: '1rem',
   },
+  walletOption: {
+    background: '#fff'
+  }
 }));

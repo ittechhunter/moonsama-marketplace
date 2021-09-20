@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import { Token as TokenComponent } from 'components';
-import { GlitchText, Placeholder } from 'ui';
+import { GlitchText, Loader } from 'ui';
 import { useCallback, useEffect, useState } from 'react';
 import { getAssetEntityId, StringAssetType, stringToStringAssetType } from 'utils/subgraph';
 import { truncateHexString } from 'utils';
@@ -13,7 +13,7 @@ import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from "react-hook-form";
 
 const PAGE_SIZE = 10
@@ -108,7 +108,7 @@ const CollectionPage = () => {
       }}>
         <TextField placeholder='Search by token ID' variant='outlined' InputProps={{
           endAdornment: (
-            <InputAdornment position='end'>
+            <InputAdornment position='start'>
               <IconButton onClick={handleSubmit(handleTokenSearch)} onMouseDown={handleSubmit(handleTokenSearch)}>
                 <SearchIcon />
               </IconButton>
@@ -116,7 +116,7 @@ const CollectionPage = () => {
           )
         }} {...register('tokenID')}/>
       </div>
-      <Grid container spacing={1} style={{ marginTop: 12 }}>
+      <Grid container spacing={1} style={{ marginTop: 55 }}>
         {collection.map(
           (token) =>
             token && (
@@ -128,7 +128,7 @@ const CollectionPage = () => {
       </Grid>
       {pageLoading && (
         <div className={placeholderContainer}>
-          <Placeholder style={{ width: '30%' }} />
+          <Loader />
         </div>
       )}
     </>

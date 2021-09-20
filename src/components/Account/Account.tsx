@@ -1,11 +1,14 @@
 import { Button } from 'ui';
+import { HeaderBalance } from 'components/HeaderBalance/HeaderBalance';
 import { UnsupportedChainIdError } from '@web3-react/core';
 import { useAccountDialog, useActiveWeb3React } from 'hooks';
 import { truncateAddress } from 'utils';
 import Identicon from 'components/Identicon/Identicon';
-import Power from '@material-ui/icons/Power';
+import Power from '@mui/icons-material/Power';
 import { Activity, Key } from 'react-feather';
 import { useMediaQuery } from 'beautiful-react-hooks';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWalletSharp';
+import { useStyles } from './Account.styles';
 
 export const Account = () => {
   const { account, error } = useActiveWeb3React();
@@ -16,30 +19,25 @@ export const Account = () => {
   const errMessage =
     error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error';
 
+  const { button } = useStyles();
+
   return (
     <>
-      <Button
-        variant={hideAddress ? "text" :"outlined"}
-        color="primary"
-        onClick={() => setAccountDialogOpen(true)}
-        fullWidth={true}
-        startIcon={
-          showError ? (
-            <Activity />
-          ) : account ? !hideAddress && (
-            <div style={{ fontSize: 0 }}>
-              <Identicon />
-            </div>
-          ) : (
-            <Power />
-          )
-        }
-      >
-        {showError
-          ? errMessage
-          : account
-          ? hideAddress ? <Identicon /> : truncateAddress(account)
-          : 'Connect'}
+      <Button className={button} size="medium" onClick={() => setAccountDialogOpen(true)}>
+        {account && <HeaderBalance />}
+
+        {showError ? (
+          <Activity />
+        ) : account ? !hideAddress && (
+          <div style={{ fontSize: 0, margin: '0 8px' }}>
+            <Identicon />
+          </div>
+        ) : (
+          <div style={{ fontSize: 0, margin: '0 8px 0 0' }}>
+            <AccountBalanceWalletIcon />
+          </div>
+        )}
+        {showError ? errMessage : account ? hideAddress ? <Identicon /> : truncateAddress(account) : 'Connect'}
       </Button>
     </>
   );

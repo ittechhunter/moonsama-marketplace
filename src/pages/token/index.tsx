@@ -3,11 +3,11 @@ import { Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
-import MoneyIcon from '@material-ui/icons/Money';
-import SyncAltIcon from '@material-ui/icons/SyncAlt';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import MoneyIcon from '@mui/icons-material/Money';
+import SyncAltIcon from '@mui/icons-material/AccountBalanceWallet';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { useActiveWeb3React, useBidDialog } from 'hooks';
 import { LastTradedPrice, Order } from 'hooks/marketplace/types';
@@ -460,14 +460,14 @@ const TokenPage = () => {
           <Box className={externals}>
             {assetMeta?.external_url && (
               <ExternalLink href={assetMeta?.external_url}>
-                <Button variant='contained'>
+                <Button>
                   External site↗
                 </Button>
               </ExternalLink>
             )}
             {staticData?.[0]?.tokenURI && (
               <ExternalLink href={staticData?.[0].tokenURI}>
-                <Button variant='contained'>
+                <Button>
                   Full metadata↗
                 </Button>
               </ExternalLink>
@@ -477,7 +477,7 @@ const TokenPage = () => {
               asset?.assetAddress,
               'address'
             )}>
-              <Button variant='contained'>
+              <Button>
                 Check the contract↗
               </Button>
             </ExternalLink>

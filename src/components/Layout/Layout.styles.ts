@@ -3,9 +3,10 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 export const useStyles = makeStyles((theme) => ({
   logo: {
     marginRight: theme.spacing(1),
+    width: 180,
     height: 'auto',
     '& > img': {
-      maxHeight: '48px',
+      maxWidth: '100%',
       marginBottom: '-5px',
     },
   },
@@ -16,9 +17,17 @@ export const useStyles = makeStyles((theme) => ({
   },
   navItem: {
     margin: '0 20px',
+
+    'a': {
+      textDecoration: 'none !important',
+    },
   },
   navItemDrawer: {
     margin: '20px',
+    textDecoration: 'none !important',
+    '> a': {
+      textDecoration: 'none !important',
+    },
   },
   inputContainer: {
     width: theme.spacing(32),

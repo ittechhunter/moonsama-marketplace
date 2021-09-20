@@ -1,0 +1,57 @@
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+export const useStyles = makeStyles((theme) => ({
+  loader: {
+    display: 'inline-block',
+    width: '30px',
+    height: '30px',
+    position: 'relative',
+    border: '4px solid #d2023e',
+    top: '50%',
+    animation: `$loaderAnimation 2s infinite ease`,
+  },
+
+  loaderInner: {
+    verticalAlign: 'top',
+    display: 'inline-block',
+    width: '100%',
+    backgroundColor: '#d2023e',
+    animation: `$loaderInnerAnimation 2s infinite ease-in`,
+  },
+
+
+  "@keyframes loaderAnimation": {
+    "0%": {
+      transform: "rotate(0deg)",
+    },
+    "25%": {
+      transform: "rotate(180deg)",
+    },
+    "50%": {
+      transform: "rotate(180deg)",
+    },
+    "75%": {
+      transform: "rotate(360deg)",
+    },
+    "100%": {
+      transform: "rotate(360deg)",
+    },
+  },
+  "@keyframes loaderInnerAnimation": {
+    "0%": {
+      height: "0%",
+    },
+    "25%": {
+      height: "0%",
+    },
+    "50%": {
+      height: "100%",
+    },
+    "75%": {
+      height: "100%",
+    },
+    "100%": {
+      height: "0%",
+    }
+  },
+}));

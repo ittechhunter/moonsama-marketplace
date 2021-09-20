@@ -6,9 +6,9 @@ export const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    margin: theme.spacing(2),
+    marginTop: theme.spacing(2),
     padding: theme.spacing(1.5),
-    borderRadius: 20,
+    borderRadius: '4px',
   },
   imageContainer: {
     width: '100%',
@@ -19,13 +19,13 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     maxHeight: 330,
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: '4px',
     justifyContent: 'center',
   },
   image: {
     width: '100%',
     height: 'auto',
-    borderRadius: 20,
+    borderRadius: '4px',
     background: `url(${tokenBackgroundImage}) no-repeat center center`,
     backgroundSize: 'cover',
   },

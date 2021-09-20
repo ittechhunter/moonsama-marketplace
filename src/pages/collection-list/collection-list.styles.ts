@@ -4,24 +4,26 @@ import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
 
 export const collectionListStyles = makeStyles((theme) => ({
   card: {
-    borderRadius: 20,
+    borderRadius: 4,
   },
   mediaContainer: {
     width: '100%',
     textAlign: 'center',
     overflow: 'hidden',
     cursor: 'pointer',
-    minHeight: 330,
+    minHeight: 300,
     display: 'flex',
-    maxHeight: 330,
+    maxHeight: 300,
     maxWidth: 330,
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: '4px',
     flexDirection: 'column',
     justifyContent: 'center',
     '& > img': {
       background: `url(${tokenBackgroundImage}) no-repeat center center`,
       backgroundSize: 'cover',
+      height: '100%',
+      width: '100%',
     },
   },
   media: {},
@@ -38,4 +40,7 @@ export const collectionListStyles = makeStyles((theme) => ({
   collectionType: {
     color: theme.palette.text.primary,
   },
+  collectionDescription: {
+    fontSize: '12px',
+  }
 }));

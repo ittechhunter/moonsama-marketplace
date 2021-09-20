@@ -6,15 +6,15 @@ import tokenBackgroundImage from '../../assets/images/token-bg.jpg';
 
 export const useStyles = makeStyles((theme) => ({
   pageContainer: {
-    paddingTop: theme.spacing(1),
+    paddingTop: theme.spacing(8),
     marginBottom: theme.spacing(5),
   },
   imageContainer: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     maxWidth: '60%',
     maxHeight: '80%',
-    padding: theme.spacing(4),
+    padding: 0,
     [theme.breakpoints.down('md')]: {
       maxWidth: 'unset',
       padding: theme.spacing(1),
@@ -23,7 +23,7 @@ export const useStyles = makeStyles((theme) => ({
   image: {
     width: '70%',
     height: 'auto',
-    borderRadius: theme.spacing(2),
+    borderRadius: '4px',
     objectFit: 'contain',
     background: `url(${tokenBackgroundImage}) no-repeat center center`,
     backgroundSize: 'cover',
@@ -38,8 +38,9 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   card: {
-    borderRadius: theme.spacing(3),
-    padding: theme.spacing(3),
+    background: 'none',
+    borderRadius: '4px',
+    padding: 0,
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
@@ -55,7 +56,7 @@ export const useStyles = makeStyles((theme) => ({
     width: theme.spacing(6),
   },
   tabsContainer: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(8),
     width: '100%',
   },
   tabs: {
@@ -89,7 +90,7 @@ export const useStyles = makeStyles((theme) => ({
   externals: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: theme.spacing(4),
   },
   buttonsContainer: {
@@ -116,10 +117,7 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[600],
   },
   transferButton: {
-    borderColor: '#079AA2',
-    '&:hover': {
-      backgroundColor: '#079AA2'
-    }
+
   },
   newSellButton: {
     '&:hover': {
