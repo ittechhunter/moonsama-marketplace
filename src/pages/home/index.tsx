@@ -9,8 +9,8 @@ const HomePage = () => {
   return (
     <div className={homeContainer}>
       <GlitchText fontSize={48}>Discover, collect, and sell NFTs</GlitchText>
-      <GlitchText fontSize={24}>Moonsama, MoonRiver's first NFT marketplace
-      </GlitchText>
+      <GlitchText fontSize={24}>Moonsama, MoonRiver's first NFT marketplace</GlitchText>
+
       {/*<div className={iconBlock}>*/}
       {/*  <div className={iconContainer}>*/}
       {/*    <WalletIcon className={icon} />*/}

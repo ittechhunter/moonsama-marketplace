@@ -6,6 +6,10 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
     margin: `${theme.spacing(5)}px 0`,
+
+    [theme.breakpoints.down('sm')]: {
+      textAlign: 'center'
+    },
   },
   iconBlock: {
     display: 'flex',
@@ -27,11 +31,19 @@ export const useStyles = makeStyles((theme) => ({
   },
   betaTitle: {
     color: theme.palette.text.disabled,
+
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: '16px'
+    },
   },
   betaText: {
     fontSize: '0.825rem',
     color: theme.palette.text.disabled,
     margin: `${theme.spacing(2)}px ${theme.spacing(32)}px`,
+
+    [theme.breakpoints.down('sm')]: {
+      margin: 0,
+    },
   },
   pageContent: {
     margin: '80px 0',

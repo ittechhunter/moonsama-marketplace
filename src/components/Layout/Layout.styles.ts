@@ -2,12 +2,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const useStyles = makeStyles((theme) => ({
   logo: {
-    marginRight: theme.spacing(1),
     width: 180,
     height: 'auto',
     '& > img': {
       maxWidth: '100%',
       marginBottom: '-5px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: '20px',
     },
   },
   nav: {
@@ -39,4 +41,11 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end',
     gap: theme.spacing(2),
   },
+  iconButton: {
+    [theme.breakpoints.down('sm')]: {
+      position: 'absolute',
+      left: '10px',
+      top: '8px',
+    },
+  }
 }));

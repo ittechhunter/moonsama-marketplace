@@ -25,6 +25,10 @@ export const useStyles = makeStyles((theme) => ({
     objectFit: 'contain',
     background: '#111',
     backgroundSize: 'cover',
+
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
   },
   name: {
     marginBottom: theme.spacing(1),

@@ -23,7 +23,7 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       '@global': {
         '*::-webkit-scrollbar': {
           width: '0.5em',
-          cursor: 'pointer'
+          cursor: 'pointer',
         },
         '*::-webkit-scrollbar-track': {
           '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
@@ -68,9 +68,13 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       root: {
         borderRadius: 0,
         height: defaultTheme.spacing(5),
-        minWidth: '380px',
+        width: '380px',
         maxWidth: '100%',
-        paddingRight: '0 !important'
+        paddingRight: '0 !important',
+
+        [defaultTheme.breakpoints.down('sm')]: {
+            width: '100%',
+         },
       },
       notchedOutline: {
         borderColor: colors.text?.disabled || 'white',
@@ -131,6 +135,11 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
           textDecoration: 'underline',
           color: '#d2023e'
         },
+      }
+    },
+    MuiFormControl: {
+      root: {
+        maxWidth: '100%',
       }
     },
     MuiInputAdornment: {
