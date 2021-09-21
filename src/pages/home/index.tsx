@@ -9,7 +9,7 @@ const HomePage = () => {
   return (
     <div className={homeContainer}>
       <GlitchText fontSize={48}>Discover, collect, and sell NFTs</GlitchText>
-      <GlitchText fontSize={24}>Moonsama, MoonRiver's first NFT marketplace</GlitchText>
+      <GlitchText fontSize={24}>Moonsama, Moonriver's first NFT marketplace</GlitchText>
 
       {/*<div className={iconBlock}>*/}
       {/*  <div className={iconContainer}>*/}
@@ -34,7 +34,7 @@ const HomePage = () => {
 
       <Typography variant="h5" className={betaTitle}>STILL IN BETA</Typography>
       <Typography align="center" className={betaText}>
-        Some bugs, hiccups and glitches can still be exptected from time to time. We are continuously work on making it better and better.
+        Report to us if you find something weird
       </Typography>
     </div>
   );

@@ -344,8 +344,8 @@ const TokenPage = () => {
   return (
     <Grid container className={pageContainer} justifyContent="center">
       <Grid item md={8} xs={12} className={imageContainer}>
-        {/*<Media uri={assetMeta?.image ?? currencyLogo} className={image} /> FIXME*/}
-        <img src={LootBox} className={image}/>
+        <Media uri={assetMeta?.image ?? currencyLogo} className={image} />
+        {/*<img src={LootBox} className={image}/>*/}
       </Grid>
       <Grid item md={4} xs={12}>
         <GlitchText fontSize={36} className={name}>

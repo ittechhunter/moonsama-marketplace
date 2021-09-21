@@ -53,8 +53,8 @@ export const escrowBalanceCore = async (
     */
 
   const result = await request(SUBGRAPH_URL, QUERY_ESCROW_BALANCE, { id });
-  console.log(result);
-  console.debug('YOLO getEscrowBalance', result);
+  //console.log(result);
+  //console.debug('YOLO getEscrowBalance', result);
 
   const eb = result?.escrowBalance;
 

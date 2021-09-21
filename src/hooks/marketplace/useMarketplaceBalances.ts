@@ -184,7 +184,7 @@ export const useMarketplaceBalances = (queries: BalanceQuery[]) => {
       }
     }
 
-    console.log('final fetchMarketplaceBalances', { final: escrowBalances });
+    //console.log('final fetchMarketplaceBalances', { final: escrowBalances });
 
     setBalances(escrowBalances);
   }, [chainId, queries]);

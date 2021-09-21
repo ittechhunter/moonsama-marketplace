@@ -31,7 +31,7 @@ export const useLatestOrders = ({
   const blockNumber = useBlockNumber();
   const { account } = useActiveWeb3React();
 
-  console.log('useLatestOrders', blockNumber);
+  //console.log('useLatestOrders', blockNumber);
 
   const [result, setResult] = useState<LatestOrdersResults>({});
 
@@ -39,7 +39,7 @@ export const useLatestOrders = ({
     const query = QUERY_LATEST_ORDERS(from, num as number);
     const response = await request(SUBGRAPH_URL, query);
 
-    console.debug('YOLO useLatestOrders', response);
+    //console.debug('YOLO useLatestOrders', response);
 
     if (!response) {
       setResult({});

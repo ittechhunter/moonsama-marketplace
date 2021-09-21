@@ -126,12 +126,12 @@ export const PurchaseDialog = () => {
   useEffect(() => {
     if (total) {
       if (!partialAllowed) {
-        console.warn('SETT');
+        //console.warn('SETT');
         setInputAmountText(total?.toString());
       }
 
       if (total.eq('1')) {
-        console.warn('SETT');
+        //console.warn('SETT');
         setInputAmountText(total?.toString());
       }
     }
@@ -267,6 +267,7 @@ export const PurchaseDialog = () => {
     }
   }, [approvalState, approvalSubmitted]);
 
+  /*
   console.warn('FILL', {
     hasEnough,
     buyer: account?.toString(),
@@ -280,6 +281,7 @@ export const PurchaseDialog = () => {
     isGetAssetErc20OrNative,
     isGiveAssetErc20OrNative,
   });
+  */
 
   const {
     state: fillOrderState,
@@ -304,6 +306,8 @@ export const PurchaseDialog = () => {
   const showApproveFlow =
     approvalState === ApprovalState.NOT_APPROVED ||
     approvalState === ApprovalState.PENDING;
+  
+  /*
   console.log('approveflow', {
     showApproveFlow,
     approvalState,
@@ -311,6 +315,7 @@ export const PurchaseDialog = () => {
     fillSubmitted,
     error,
   });
+  */
 
   const {
     divider,

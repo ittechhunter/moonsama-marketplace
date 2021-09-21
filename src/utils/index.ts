@@ -127,7 +127,7 @@ export const TEN_POW_18 = BigNumber.from('10').pow('18');
 
 export const numberToBytes32HexString = (num?: string | number) => {
   if (!num) {
-    console.warn('HEXURI', HashZero);
+    //console.warn('HEXURI', HashZero);
     return HashZero;
   }
 
@@ -138,7 +138,7 @@ export const numberToBytes32HexString = (num?: string | number) => {
   }`;
   const final = hexZeroPad(hv, 32);
 
-  console.warn('HEXURI', { hv, final });
+  //console.warn('HEXURI', { hv, final });
   return final;
 };
 

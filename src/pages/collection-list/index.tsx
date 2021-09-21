@@ -31,7 +31,7 @@ export const CollectionListPage = () => {
   const rawCollections = useRawCollectionsFromList();
   const metas = useFetchCollectionMeta(rawCollections);
 
-  console.warn('HERE', { rawCollections, metas });
+  //console.warn('HERE', { rawCollections, metas });
 
   const collections: RawCollection[] = rawCollections ?? [];
 

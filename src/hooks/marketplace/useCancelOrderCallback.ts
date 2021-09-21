@@ -58,7 +58,7 @@ export function useCancelOrderCallback(orderHash?: string): {
 } {
   const { account, chainId } = useActiveWeb3React();
 
-  console.log('YOLO', { account, chainId });
+  //console.log('YOLO', { account, chainId });
   const contract = useMarketplaceV1Contract(true);
 
   const inputParams = useCancelOrderArguments(orderHash);

@@ -68,7 +68,7 @@ export default createReducer(initialState, (builder) =>
           },
         }
       ) => {
-        console.log('YOLO new TX added', {
+        console.log('new TX added', {
           chainId,
           from,
           hash,

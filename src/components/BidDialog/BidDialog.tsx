@@ -408,6 +408,7 @@ export const BidDialog = () => {
   const orderHash = calculateOrderHash(orderData);
   //console.log({ expiresAt, partialAllowed });
 
+  /*
   console.warn('ORDER', {
     askPerUnitDenominator: askPerUnitDenominator.toString(),
     askPerUnitNominator: askPerUnitNominator.toString(),
@@ -419,6 +420,7 @@ export const BidDialog = () => {
     amountToApprove: amountToApprove?.toString(),
     hasEnough,
   });
+  */
 
   const { state: createOrderState, callback: createOrderCallback } =
     useCreateOrderCallback(orderData, {
@@ -433,6 +435,7 @@ export const BidDialog = () => {
 
   const { orderSubmitted, orderTx } = useSubmittedOrderTx(orderHash);
 
+  /*
   console.warn('CREATE ORDER STATE', {
     orderSubmitted,
     orderTx,
@@ -440,6 +443,7 @@ export const BidDialog = () => {
     finalTxSubmitted,
     createOrderState,
   });
+  */
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {

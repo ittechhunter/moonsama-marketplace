@@ -88,8 +88,8 @@ export const TokenTrade = ({
         onKeyPress={handleImageClick}
         tabIndex={0}
       >
-        {/*<Media uri={meta?.image} className={image} /> *FIXME */}
-        <img src={LootBox} style={{width: '100%', height: 'auto'}}/>
+        <Media uri={meta?.image} className={image} />
+        {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
