@@ -38,6 +38,7 @@ export const collections = {
   types: ['ERC20', 'ERC721', 'ERC1155'],
   indexing: ['none', 'sequential'],
   collections: [
+    /*
     {
       chainId: 1285,
       address: '0xaF1F85aD24Bc45fb19f5F8B5166e1Aed41c60844',
@@ -48,6 +49,7 @@ export const collections = {
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
       tags: ['native', 'green'],
     },
+    */
     {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
