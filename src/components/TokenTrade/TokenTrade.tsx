@@ -17,6 +17,7 @@ import {
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenTrade.styles';
+import LootBox from '../../assets/images/loot-box.png'
 
 export const TokenTrade = ({
   fill,
@@ -87,7 +88,8 @@ export const TokenTrade = ({
         onKeyPress={handleImageClick}
         tabIndex={0}
       >
-        <Media uri={meta?.image} className={image} />
+        {/*<Media uri={meta?.image} className={image} /> *FIXME */}
+        <img src={LootBox} style={{width: '100%', height: 'auto'}}/>
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>

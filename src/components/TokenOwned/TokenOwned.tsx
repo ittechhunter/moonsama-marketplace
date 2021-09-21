@@ -10,6 +10,7 @@ import { GlitchText } from 'ui';
 import { truncateHexString } from 'utils';
 import { StringAssetType } from 'utils/subgraph';
 import { useStyles } from './TokenOwned.styles';
+import LootBox from '../../assets/images/loot-box.png'
 
 export const TokenOwned = ({
   meta,
@@ -58,7 +59,8 @@ export const TokenOwned = ({
         onKeyPress={handleImageClick}
         tabIndex={0}
       >
-        <Media uri={meta?.image} className={image} />
+        {/*<Media uri={meta?.image} className={image} /> *FIXME */}
+        <img src={LootBox} style={{width: '100%', height: 'auto'}}/>
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>
