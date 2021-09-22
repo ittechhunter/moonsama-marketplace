@@ -1,8 +1,9 @@
 import { AddressZero } from '@ethersproject/constants';
-import { Typography } from '@material-ui/core';
+import { Chip, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@mui/material/Tooltip';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
@@ -52,6 +53,7 @@ import { useStyles } from './styles';
 import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
+import { MOONSAMA_TRAITS } from 'utils/constants';
 
 import LootBox from '../../assets/images/loot-box.png'
 
@@ -133,7 +135,8 @@ const TokenPage = () => {
     newSellButton,
     tradeContainer,
     tradeRow,
-    smallText
+    smallText,
+    traitChip
   } = useStyles();
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
@@ -174,6 +177,16 @@ const TokenPage = () => {
     (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
 
   //console.log('data', { balanceData, staticData, assetMeta });
+
+  const transformedMetaData = assetMeta?.description?.replace(/\s*,\s*/g, ",").split(',').map((trait: string) => {
+    // TODO: Get token supply correctly
+    const rarity = ((MOONSAMA_TRAITS  as any)[trait] / 10000 * 100).toFixed(2);
+
+    return {
+      label: trait,
+      rarity
+    };
+  });
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -376,8 +389,13 @@ const TokenPage = () => {
             </Typography>
           )}
         </Box>
+
+        {/*TODO: Make traits calculation collection specific*/}
         <Typography color="textSecondary" className={smallText}>
-          {assetMeta?.description}
+          {transformedMetaData?.map(trait =>
+            <Tooltip title={`${trait.rarity}% have this trait`}>
+              <Chip label={trait.label} className={traitChip} />
+          </Tooltip>)}
         </Typography>
 
         <Paper className={card}>
