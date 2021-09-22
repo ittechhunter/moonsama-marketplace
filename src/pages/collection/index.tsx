@@ -1,11 +1,19 @@
+import { useCallback, useEffect, useState } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Stack from '@mui/material/Stack';
+
 import { Token as TokenComponent } from 'components';
-import { GlitchText, Loader } from 'ui';
-import { useCallback, useEffect, useState } from 'react';
+import { Button, GlitchText, Loader } from 'ui';
 import {
-  getAssetEntityId,
+  getAssetEntityId, OrderType,
   StringAssetType,
   stringToStringAssetType,
 } from 'utils/subgraph';
@@ -21,7 +29,9 @@ import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
+import FilterIcon from '@mui/icons-material/FilterListSharp';
 import { useForm } from "react-hook-form";
+import collections from '../../assets/data/collections';
 
 const PAGE_SIZE = 10;
 
@@ -37,7 +47,7 @@ const CollectionPage = () => {
   const [take, setTake] = useState<number>(1);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
-  const { placeholderContainer, container } = useStyles();
+  const { placeholderContainer, collectionStats, statItem, container, select, selectLabel, dropDown } = useStyles();
   const { register, handleSubmit } = useForm();
 
   const asset: Asset = {
@@ -108,22 +118,71 @@ const CollectionPage = () => {
         <GlitchText fontSize={48}>
           Collection {truncateHexString(address)}
         </GlitchText>
+        <Grid className={collectionStats} container spacing={1}>
+            <Grid xl={3}>
+              <div className={statItem}>1k <span>Items</span></div>
+            </Grid>
+            <Grid xl={3}>
+              <div className={statItem}>120 <span>Owners</span></div>
+            </Grid>
+            <Grid xl={3}>
+              <div className={statItem}>420 MOVR <span>Floor price</span></div>
+            </Grid>
+            <Grid xl={3}>
+              <div className={statItem}>1.2k MOVR <span>Traded</span></div>
+            </Grid>
+        </Grid>
+
+        {/*<Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{*/}
+        {/*  marginTop: '55px',*/}
+        {/*  padding: '16px'*/}
+        {/*}} justifyContent="flex-end" alignItems="center">*/}
+        {/*  <div>*/}
+        {/*  <TextField placeholder='Search by token ID' variant='outlined' InputProps={{*/}
+        {/*    endAdornment: (*/}
+        {/*      <InputAdornment position='start'>*/}
+        {/*        <IconButton onClick={handleSubmit(handleTokenSearch)} onMouseDown={handleSubmit(handleTokenSearch)}>*/}
+        {/*          <SearchIcon />*/}
+        {/*        </IconButton>*/}
+        {/*      </InputAdornment>*/}
+        {/*    )*/}
+        {/*  }} {...register('tokenID')}/>*/}
+        {/*  </div>*/}
+        {/*  <div>*/}
+        {/*    <FormControl sx={{ m: 1, minWidth: 80 }}>*/}
+        {/*      <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>*/}
+        {/*      <Select*/}
+        {/*        className={select}*/}
+        {/*        color="primary"*/}
+        {/*        labelId="simple-select-autowidth-label"*/}
+        {/*        id="demo-simple-select-autowidth"*/}
+        {/*        onChange={()=>{}}*/}
+        {/*        autoWidth*/}
+        {/*        label="Sort By"*/}
+        {/*        value={22}*/}
+        {/*        MenuProps={{ classes: { paper: dropDown }}}*/}
+        {/*      >*/}
+        {/*        <MenuItem value={10}>Price: Low to High</MenuItem>*/}
+        {/*        <MenuItem value={21}>Price: High to Low</MenuItem>*/}
+        {/*        <MenuItem value={22}>Recently listed</MenuItem>*/}
+        {/*        <MenuItem value={23}>Recently sold</MenuItem>*/}
+        {/*      </Select>*/}
+        {/*    </FormControl>*/}
+        {/*  </div>*/}
+        {/*  <div>*/}
+        {/*    <Button*/}
+        {/*      onClick={() => {}}*/}
+        {/*      startIcon={<FilterIcon />}*/}
+        {/*      variant="outlined"*/}
+        {/*      color="primary"*/}
+        {/*    >*/}
+        {/*      Filter*/}
+        {/*    </Button>*/}
+        {/*  </div>*/}
+        {/*</Stack>*/}
+
       </div>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center'
-      }}>
-        <TextField placeholder='Search by token ID' variant='outlined' InputProps={{
-          endAdornment: (
-            <InputAdornment position='start'>
-              <IconButton onClick={handleSubmit(handleTokenSearch)} onMouseDown={handleSubmit(handleTokenSearch)}>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          )
-        }} {...register('tokenID')}/>
-      </div>
-      <Grid container spacing={1} style={{ marginTop: 55 }}>
+      <Grid container spacing={1}>
         {collection.map(
           (token) =>
             token && (
