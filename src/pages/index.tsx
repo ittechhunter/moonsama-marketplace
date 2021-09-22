@@ -30,6 +30,7 @@ export const Routing = () => (
       <TokenPage />
     </Route>
     <Route path="/freshorders">
+      <PurchaseDialog />
       <FreshOrdersPage />
     </Route>
     <Route path="/freshtrades">

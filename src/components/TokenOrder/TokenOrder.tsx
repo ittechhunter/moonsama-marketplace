@@ -1,8 +1,7 @@
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, usePurchaseDialog } from 'hooks';
 import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -37,10 +36,14 @@ export const TokenOrder = ({
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
+  const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
+
   const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
   const action = ot == OrderType.BUY ? 'BUY' : 'SELL';
   const actionColor = ot == OrderType.BUY ? 'green' : '#b90e0e';
+
+  //const buttonLabel = ot == OrderType.BUY ? 'sell' : 'buy';
 
   const handleImageClick = () => {
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
@@ -99,15 +102,19 @@ export const TokenOrder = ({
       <TableCell>
         <Button
           onClick={() => {
-            // setPurchaseDialogOpen(true);
-            // setPurchaseData({ order, orderType: ot });
+            setPurchaseDialogOpen(true);
+            setPurchaseData({ order, orderType: ot });
           }}
           variant="contained"
           color="primary"
         >
-          Buy
+          Fill
         </Button>
       </TableCell>
     </TableRow>
   );
 };
+function setPurchaseDialogOpen(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
