@@ -7,6 +7,8 @@
 //   }
 // ];
 
+export const MOONSAMA_MAX_SUPPLY = 1000;
+
 export const MOONSAMA_TRAITS = {
   "Yellow Bird": 120,
   "Rainbow Shirt": 141,

@@ -53,7 +53,7 @@ import { useStyles } from './styles';
 import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
-import { MOONSAMA_TRAITS } from 'utils/constants';
+import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 
 import LootBox from '../../assets/images/loot-box.png'
 
@@ -180,7 +180,7 @@ const TokenPage = () => {
 
   const transformedMetaData = assetMeta?.description?.replace(/\s*,\s*/g, ",").split(',').map((trait: string) => {
     // TODO: Get token supply correctly
-    const rarity = ((MOONSAMA_TRAITS  as any)[trait] / 10000 * 100).toFixed(2);
+    const rarity = ((MOONSAMA_TRAITS  as any)[trait] / MOONSAMA_MAX_SUPPLY * 100).toFixed(2);
 
     return {
       label: trait,

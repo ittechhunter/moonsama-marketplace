@@ -133,6 +133,20 @@ const CollectionPage = () => {
             </Grid>
         </Grid>
 
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{
+          padding: '16px'
+        }} justifyContent="flex-end" alignItems="center">
+          <TextField placeholder='Search by token ID' variant='outlined' InputProps={{
+            endAdornment: (
+              <InputAdornment position='start'>
+                <IconButton onClick={handleSubmit(handleTokenSearch)} onMouseDown={handleSubmit(handleTokenSearch)}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            )
+          }} {...register('tokenID')}/>
+        </Stack>
+
         {/*<Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{*/}
         {/*  marginTop: '55px',*/}
         {/*  padding: '16px'*/}
