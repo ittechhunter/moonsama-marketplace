@@ -118,7 +118,7 @@ const CollectionPage = () => {
         <GlitchText fontSize={48}>
           Collection {truncateHexString(address)}
         </GlitchText>
-        <Grid className={collectionStats} container spacing={1}>
+        {/*<Grid className={collectionStats} container spacing={1}>
             <Grid xl={3}>
               <div className={statItem}>1k <span>Items</span></div>
             </Grid>
@@ -131,7 +131,7 @@ const CollectionPage = () => {
             <Grid xl={3}>
               <div className={statItem}>1.2k MOVR <span>Traded</span></div>
             </Grid>
-        </Grid>
+        </Grid>*/}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{
           padding: '16px'

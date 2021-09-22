@@ -212,7 +212,7 @@ export const BidDialog = () => {
   }
 
   if (orderType === OrderType.BUY) {
-    title = 'Create buy order';
+    title = 'Create buy offer';
     action = 'buy';
     availableLabel = 'Total requested';
 
@@ -295,7 +295,7 @@ export const BidDialog = () => {
       displayQuantity = quantity?.toString();
     }
   } else {
-    title = 'Create sell order';
+    title = 'Create sell offer';
     action = 'sell';
     availableLabel = 'Total available';
 
@@ -477,7 +477,7 @@ export const BidDialog = () => {
           <div className={loadingContainer}>
             <CircularProgress />
             <div>
-              <Typography>Placing your order...</Typography>
+              <Typography>Placing your offer...</Typography>
               <Typography color="textSecondary" variant="h5">
                 Check your wallet for action
               </Typography>
@@ -830,7 +830,7 @@ export const BidDialog = () => {
               createOrderState !== CreateOrderCallbackState.VALID || !hasEnough
             }
           >
-            Place order
+            Place offer
           </Button>
         )}
         <Button className={formButton} onClick={handleClose} color="primary">

@@ -28,6 +28,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -71,6 +72,7 @@ const FreshOrdersPage = () => {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
   const { placeholderContainer, container, pageContainer, tabsContainer, tabs, select, selectLabel, dropDown, filterControls } = useStyles();
+  const whitelist = useWhitelistedAddresses() // REMOVEME later
 
   const { chainId } = useActiveWeb3React();
   const getPaginatedBuyOrders = useLatestBuyOrdersWithStaticCallback();
@@ -86,9 +88,11 @@ const FreshOrdersPage = () => {
     const getCollectionById = async () => {
       setPageLoading(true);
       
-      const buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
-      const sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
-      
+      let buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
+      let sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
+
+      buyData = buyData.filter(x => whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())) // REMOVEME later
+      sellData = sellData.filter(x => whitelist.includes(x.order.sellAsset.assetAddress.toLowerCase())) // REMOVEME later
       
       setPageLoading(false);
 
