@@ -211,6 +211,11 @@ export const BidDialog = () => {
     ppuError = 'Invalid price value';
   }
 
+  if (ppu.lt('0')) {
+    ppu = BigNumber.from('0')
+    ppuError = 'Invalid price value';
+  }
+
   if (orderType === OrderType.BUY) {
     title = 'Create buy offer';
     action = 'buy';
@@ -240,6 +245,11 @@ export const BidDialog = () => {
         quantityError = undefined;
       } catch {
         quantity = BigNumber.from('0');
+        quantityError = 'Invalid quantity value';
+      }
+
+      if (quantity.lt('0')) {
+        quantity = BigNumber.from('0')
         quantityError = 'Invalid quantity value';
       }
 
@@ -274,6 +284,11 @@ export const BidDialog = () => {
         quantityError = undefined;
       } catch {
         quantity = BigNumber.from('0');
+        quantityError = 'Invalid quantity value';
+      }
+
+      if (quantity.lt('0')) {
+        quantity = BigNumber.from('0')
         quantityError = 'Invalid quantity value';
       }
 
@@ -326,6 +341,11 @@ export const BidDialog = () => {
         quantityError = 'Invalid quantity value';
       }
 
+      if (quantity.lt('0')) {
+        quantity = BigNumber.from('0')
+        quantityError = 'Invalid quantity value';
+      }
+
       orderAmount = quantity;
       amountToApprove = orderAmount;
       brutto =
@@ -349,6 +369,11 @@ export const BidDialog = () => {
         quantityError = undefined;
       } catch {
         quantity = BigNumber.from('0');
+        quantityError = 'Invalid quantity value';
+      }
+
+      if (quantity.lt('0')) {
+        quantity = BigNumber.from('0')
         quantityError = 'Invalid quantity value';
       }
 
@@ -408,7 +433,7 @@ export const BidDialog = () => {
   const orderHash = calculateOrderHash(orderData);
   //console.log({ expiresAt, partialAllowed });
 
-  /*
+  /* */
   console.warn('ORDER', {
     askPerUnitDenominator: askPerUnitDenominator.toString(),
     askPerUnitNominator: askPerUnitNominator.toString(),
@@ -420,7 +445,7 @@ export const BidDialog = () => {
     amountToApprove: amountToApprove?.toString(),
     hasEnough,
   });
-  */
+  
 
   const { state: createOrderState, callback: createOrderCallback } =
     useCreateOrderCallback(orderData, {
