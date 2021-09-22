@@ -155,7 +155,7 @@ const FreshOrdersPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>Latest orders</GlitchText>
+        <GlitchText fontSize={48}>Latest offers</GlitchText>
       </div>
 
       <Drawer
@@ -183,7 +183,7 @@ const FreshOrdersPage = () => {
           tabsClassName={tabs}
           tabs={[
             {
-              label: 'Sell Orders',
+              label: 'Sell Offers',
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
@@ -192,7 +192,7 @@ const FreshOrdersPage = () => {
               ),
             },
             {
-              label: 'Buy Orders',
+              label: 'Buy Offers',
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
