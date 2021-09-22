@@ -7,16 +7,18 @@ import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useHistory } from 'react-router-dom';
-import { GlitchText, PriceBox } from 'ui';
+import { Button, GlitchText, PriceBox, TableCell, TableRow } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
 import {
+  formatExpirationDateString, getDisplayQuantity,
   getUnitPrice,
   inferOrderTYpe,
-  OrderType,
+  OrderType, StrategyMap,
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
+import React from 'react';
 
 export const TokenOrder = ({
   order,
@@ -28,14 +30,9 @@ export const TokenOrder = ({
   order: Order;
 }) => {
   const {
-    container,
     image,
     imageContainer,
-    nameContainer,
-    stockContainer,
     tokenName,
-    mr,
-    lastPriceContainer,
     smallText
   } = useStyles();
   const { push } = useHistory();
@@ -45,8 +42,6 @@ export const TokenOrder = ({
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
   const action = ot == OrderType.BUY ? 'BUY' : 'SELL';
   const actionColor = ot == OrderType.BUY ? 'green' : '#b90e0e';
-
-  //console.log('FRESH', {asset, action, actionColor})
 
   const handleImageClick = () => {
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
@@ -69,43 +64,51 @@ export const TokenOrder = ({
     ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
     : action;
 
+  const expiration = formatExpirationDateString(order.strategy?.expiresAt);
+  const strategyType = StrategyMap[order.strategyType.toLowerCase()];
+
   return (
-    <Paper className={container}>
-      <div
-        role="button"
-        className={imageContainer}
-        onClick={handleImageClick}
-        onKeyPress={handleImageClick}
-        tabIndex={0}
-      >
-        <Media uri={meta?.image} className={image} />
-      </div>
-      <div className={nameContainer}>
-        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
+    <TableRow>
+      <TableCell>
+        <div
+          role="button"
+          className={imageContainer}
+          onClick={handleImageClick}
+          onKeyPress={handleImageClick}
+          tabIndex={0}
+        >
+          <Media uri={meta?.image} className={image} />
+        </div>
+        <Typography className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</Typography>
+      </TableCell>
+      <TableCell>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
-        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
-      </div>
-      <div className={lastPriceContainer}>
-        <Typography noWrap className={smallText}>
-          {truncateHexString(order?.id, 5)}
-        </Typography>
-        <Typography color="textSecondary" noWrap className={mr}>
-          by
-        </Typography>
-        {/*<Typography color="textSecondary" noWrap>
-          {truncateHexString(order.seller)}
-        </Typography>*/}
+      </TableCell>
+      {/*TODO: Update Quantity*/}
+      <TableCell>1</TableCell>
+      <TableCell>
         <ExternalLink href={getExplorerLink(chainId, order?.seller, 'address')}>
           <Typography noWrap className={smallText}>
             {truncateHexString(order.seller)}
           </Typography>
         </ExternalLink>
-      </div>
-    </Paper>
+      </TableCell>
+      <TableCell>{strategyType}</TableCell>
+      <TableCell>{expiration}</TableCell>
+      <TableCell>
+        <Button
+          onClick={() => {
+            // setPurchaseDialogOpen(true);
+            // setPurchaseData({ order, orderType: ot });
+          }}
+          variant="contained"
+          color="primary"
+        >
+          Fill
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 };

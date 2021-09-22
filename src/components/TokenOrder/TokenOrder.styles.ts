@@ -9,7 +9,8 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: 0,
   },
   imageContainer: {
-    width: '100%',
+    width: '65px',
+    height: '65px',
     textAlign: 'center',
     overflow: 'hidden',
     cursor: 'pointer',
