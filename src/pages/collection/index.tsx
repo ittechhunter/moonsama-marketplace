@@ -23,6 +23,7 @@ import { isAddress } from '@ethersproject/address';
 import {
   StaticTokenData,
   useTokenStaticDataCallback,
+  useTokenStaticDataCallbackArray,
 } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
@@ -32,6 +33,7 @@ import SearchIcon from '@mui/icons-material/SearchSharp';
 import FilterIcon from '@mui/icons-material/FilterListSharp';
 import { useForm } from "react-hook-form";
 import collections from '../../assets/data/collections';
+import { useMoonsamaAttrIdsCallback } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsamaAttrIdsCallback';
 
 const PAGE_SIZE = 10;
 
@@ -58,6 +60,25 @@ const CollectionPage = () => {
   };
 
   const getPaginatedItems = useTokenStaticDataCallback(asset);
+
+  // TODO: wire it to search result
+  /*
+  const searchItems = useTokenStaticDataCallbackArray()
+  const x = useMoonsamaAttrIdsCallback()
+  const f = x(['Black Bird', 'White Shades'])
+  console.log('MSATTR', f)
+  const m = searchItems(
+    f.map(num => {
+      return {
+        assetAddress: asset.assetAddress,
+        assetType: assetType,
+        assetId: num.toString(),
+        id: '000'
+      }
+    }
+  ))
+  console.log('MSATTR', m)
+  */
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
@@ -198,9 +219,9 @@ const CollectionPage = () => {
       </div>
       <Grid container spacing={1}>
         {collection.map(
-          (token) =>
+          (token, i) =>
             token && (
-              <Grid item key={token.staticData.asset.id} xl={3} md={3} sm={6} xs={12}>
+              <Grid item key={`${token.staticData.asset.id}-${i}`} xl={3} md={3} sm={6} xs={12}>
                 <TokenComponent {...token} />
               </Grid>
             )
