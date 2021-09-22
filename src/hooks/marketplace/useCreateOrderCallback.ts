@@ -86,7 +86,7 @@ export function useCreateOrderCallback(
 
   const addTransaction = useTransactionAdder();
 
-  console.warn('YOLO ORDER', { inputParams, inputOptions });
+  //console.warn('YOLO ORDER', { inputParams, inputOptions });
 
   return useMemo(() => {
     if (!library || !account || !chainId || !contract || !inputParams) {

@@ -9,6 +9,8 @@ import { truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
 import { StringAssetType, StringOrderType } from 'utils/subgraph';
 import { useStyles } from './Token.styles';
+import LootBox from '../../assets/images/loot-box.png'
+import { width } from '@mui/system';
 
 export const Token = ({ meta, staticData }: TokenData) => {
   const {
@@ -60,6 +62,7 @@ export const Token = ({ meta, staticData }: TokenData) => {
         tabIndex={0}
       >
         <Media uri={meta?.image} className={image} />
+        {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>

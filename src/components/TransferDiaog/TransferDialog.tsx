@@ -147,11 +147,13 @@ export const TransferDialog = () => {
     quantity
   );
 
+  /*
   console.warn('transferdialog', {
     finalTxSubmitted,
     transferSubmitted,
     transferTx,
   });
+  */
 
   const renderBody = () => {
     if (!orderLoaded) {

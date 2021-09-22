@@ -53,6 +53,8 @@ import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 
+import LootBox from '../../assets/images/loot-box.png'
+
 const geTableHeader = () => {
   return (
     <TableHeader>
@@ -343,6 +345,7 @@ const TokenPage = () => {
     <Grid container className={pageContainer} justifyContent="center">
       <Grid item md={8} xs={12} className={imageContainer}>
         <Media uri={assetMeta?.image ?? currencyLogo} className={image} />
+        {/*<img src={LootBox} className={image}/>*/}
       </Grid>
       <Grid item md={4} xs={12}>
         <GlitchText fontSize={36} className={name}>

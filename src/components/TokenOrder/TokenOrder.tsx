@@ -18,7 +18,6 @@ import {
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
-import React from 'react';
 
 export const TokenOrder = ({
   order,

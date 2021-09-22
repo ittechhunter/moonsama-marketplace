@@ -19,7 +19,7 @@ export const PINATA_GATEWAY =
   process.env.REACT_APP_PINATA_IPFS_URL ??
   'https://moonsama.mypinata.cloud/ipfs/';
 
-console.log('YOLO SUBGRAPH_URL', { SUBGRAPH_URL, CHAIN_ID });
+console.log('SUBGRAPH_URL', { SUBGRAPH_URL, CHAIN_ID });
 
 export enum ChainId {
   MAINNET = 1,
@@ -80,7 +80,7 @@ export const STRATEGY_SIMPLE =
   '0xb4c34ccd96d70009be083eaea45c708dff031622381acfcf6e3d07039aca39bb';
 
 export const IPFS_GATEWAYS = [
-  'https://carbonswap.mypinata.cloud',
+  'https://moonsama.mypinata.cloud',
   'https://cloudflare-ipfs.com',
   'https://ipfs.io',
 ];
