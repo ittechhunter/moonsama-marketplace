@@ -7,11 +7,11 @@ import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useHistory } from 'react-router-dom';
-import { Button, GlitchText, PriceBox, TableCell, TableRow } from 'ui';
+import { Button, PriceBox, TableCell, TableRow } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
 import {
-  formatExpirationDateString, getDisplayQuantity,
+  formatExpirationDateString,
   getUnitPrice,
   inferOrderTYpe,
   OrderType, StrategyMap,
@@ -105,7 +105,7 @@ export const TokenOrder = ({
           variant="contained"
           color="primary"
         >
-          Fill
+          Buy
         </Button>
       </TableCell>
     </TableRow>

@@ -220,3 +220,25 @@ export const QUERY_LATEST_ORDERS = (from: number, num: number) => gql`
     }
   }
 `;
+
+export const QUERY_LATEST_BUY_ORDERS = (sellAssetId: string, from: number, num: number) => gql`
+  query getUserActiveOrders {
+    ${META}
+    latestOrders: orders(where: {active: true, sellAsset: "${sellAssetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
+      ${ORDER_FIELDS}
+    }
+  }
+`;
+
+export const QUERY_LATEST_SELL_ORDERS = (buyAssetId: string, from: number, num: number) => gql`
+  query getUserActiveOrders {
+    ${META}
+    latestOrders: orders(where: {active: true, buyAsset: "${buyAssetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
+      ${ORDER_FIELDS}
+    }
+  }
+`;

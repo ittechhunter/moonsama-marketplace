@@ -7,7 +7,7 @@ import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStatic
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
-import { useLatestOrdersWithStaticCallback } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
+import { useLatestBuyOrdersWithStaticCallback, useLatestOrdersWithStaticCallback, useLatestSellOrdersWithStaticCallback } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
 import {
   formatExpirationDateString, getDisplayQuantity,
   getUnitPrice,
@@ -50,13 +50,22 @@ const geTableHeader = () => {
 };
 
 const FreshOrdersPage = () => {
-  const [collection, setCollection] = useState<
+  const [buyOrders, setBuyOrders] = useState<
     {
       meta: TokenMeta | undefined;
       staticData: StaticTokenData;
       order: Order;
     }[]
   >([]);
+
+  const [sellOrders, setSellOrders] = useState<
+    {
+      meta: TokenMeta | undefined;
+      staticData: StaticTokenData;
+      order: Order;
+    }[]
+  >([]);
+
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
@@ -64,7 +73,8 @@ const FreshOrdersPage = () => {
   const { placeholderContainer, container, pageContainer, tabsContainer, tabs, select, selectLabel, dropDown, filterControls } = useStyles();
 
   const { chainId } = useActiveWeb3React();
-  const getPaginatedItems = useLatestOrdersWithStaticCallback();
+  const getPaginatedBuyOrders = useLatestBuyOrdersWithStaticCallback();
+  const getPaginatedSellOrders = useLatestSellOrdersWithStaticCallback();
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
@@ -75,21 +85,29 @@ const FreshOrdersPage = () => {
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      const data = await getPaginatedItems(PAGE_SIZE, take);
+      
+      const buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
+      const sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
+      
+      
       setPageLoading(false);
 
-      const isEnd = data.some(({ meta }) => !meta);
+      const isEnd = buyData.some(({ meta }) => !meta) || sellData.some(({ meta }) => !meta);
 
       if (isEnd) {
-        const pieces = data.filter(({ meta }) => !!meta);
+        const buyPieces = buyData.filter(({ meta }) => !!meta);
+        const sellPieces = sellData.filter(({ meta }) => !!meta);
+
         setPaginationEnded(true);
 
-        setCollection((state) => state.concat(pieces));
+        setSellOrders((state) => state.concat(sellPieces));
+        setBuyOrders((state) => state.concat(buyPieces));
 
         return;
       }
 
-      setCollection((state) => state.concat(data));
+      setSellOrders((state) => state.concat(sellData));
+      setBuyOrders((state) => state.concat(buyData));
     };
     if (!paginationEnded) {
       getCollectionById();
@@ -169,7 +187,7 @@ const FreshOrdersPage = () => {
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
-                  {getTableBody(filterSellOrders(collection))}
+                  {getTableBody(sellOrders)}
                 </Table>
               ),
             },
@@ -178,7 +196,7 @@ const FreshOrdersPage = () => {
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
-                  {getTableBody(filterBuyOrders(collection))}
+                  {getTableBody(filterBuyOrders(buyOrders))}
                 </Table>
               ),
             },
