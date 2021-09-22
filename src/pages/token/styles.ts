@@ -142,4 +142,11 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
+  traitChip: {
+    fontSize: '12px',
+    color: '#c5c5c5',
+    background: 'transparent',
+    border: '2px solid #111',
+    margin: '0 5px 5px 0',
+  }
 }));
