@@ -33,10 +33,10 @@ export const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
   },
   filterChip: {
-    border: '1px solid #c5c5c5',
-    color: '#c5c5c5',
+    border: '1px solid #c5c5c5 !important',
+    color: '#c5c5c5 !important',
     margin: '0 8px 8px 0',
-    fontSize: '12px',
+    fontSize: '12px !important',
 
     '&.selected': {
       background: '#710021 !important',
