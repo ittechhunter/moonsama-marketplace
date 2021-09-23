@@ -11,9 +11,17 @@ import { Chip,  } from '@material-ui/core';
 import { MOONSAMA_TRAITS, ORDER_TYPES } from 'utils/constants';
 import FilterIcon from '@mui/icons-material/FilterListSharp';
 
-interface Props {
-  onFiltersUpdate: (x: {}) => void
+
+export interface Filters {
+  priceRange: number[]
+  traits: string[]
+  selectedOrderTypes: string[]
 }
+
+interface Props {
+  onFiltersUpdate: (x: Filters) => void
+}
+
 export const Filters = ({ onFiltersUpdate }: Props) => {
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([1, 400]);

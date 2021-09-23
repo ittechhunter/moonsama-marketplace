@@ -20,8 +20,7 @@ import { Asset } from 'hooks/marketplace/types';
 import { isAddress } from '@ethersproject/address';
 import {
   StaticTokenData,
-  useTokenStaticDataCallback,
-  useTokenStaticDataCallbackArray,
+  useTokenStaticDataCallbackArrayWithFilter,
 } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
@@ -29,8 +28,6 @@ import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from "react-hook-form";
-import collections from '../../assets/data/collections';
-import { useMoonsamaAttrIdsCallback } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsamaAttrIdsCallback';
 
 const PAGE_SIZE = 10;
 
@@ -44,6 +41,7 @@ const CollectionPage = () => {
   const { address, type } = useParams<{ address: string; type: string }>();
   const assetType = stringToStringAssetType(type);
   const [take, setTake] = useState<number>(1);
+  const [filters, setFilters] = useState<Filters | undefined>(undefined);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const { placeholderContainer, collectionStats, statItem, container, select, selectLabel, dropDown } = useStyles();
@@ -56,12 +54,11 @@ const CollectionPage = () => {
     id: getAssetEntityId(address?.toLowerCase(), '0'),
   };
 
-  const getPaginatedItems = useTokenStaticDataCallback(asset);
-
   // TODO: wire it to search result
+  
+  
+  const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(asset, filters)//useTokenStaticDataCallback(asset)//
   /*
-  const searchItems = useTokenStaticDataCallbackArray()
-  const x = useMoonsamaAttrIdsCallback()
   const f = x(['Black Bird', 'White Shades'])
   console.log('MSATTR', f)
   const m = searchItems(
@@ -78,6 +75,7 @@ const CollectionPage = () => {
   */
 
   const handleScrollToBottom = useCallback(() => {
+    console.log('SCROLLBOTTOM')
     setTake((state) => (state += PAGE_SIZE));
   }, []);
 
@@ -85,28 +83,27 @@ const CollectionPage = () => {
     if (tokenID) {
       setPaginationEnded(true);
       setPageLoading(true);
-      const data = await getPaginatedItems(1, BigNumber.from(tokenID));
+      const data = await getItemsWithFilter(1, BigNumber.from(tokenID));
       setPageLoading(false);
       setCollection(data);
     } else {
       setPaginationEnded(false);
       setPageLoading(true);
-      const data = await getPaginatedItems(PAGE_SIZE, BigNumber.from(take));
+      const data = await getItemsWithFilter(PAGE_SIZE, BigNumber.from(take));
       setPageLoading(false);
       setCollection(data);
     }
   }, []);
 
-  useBottomScrollListener(handleScrollToBottom, { offset: 400 });
+  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
 
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      const data = await getPaginatedItems(PAGE_SIZE, BigNumber.from(take));
-      setPageLoading(false);
-
+      const data = await getItemsWithFilter(PAGE_SIZE, BigNumber.from(take));
       const isEnd = data.some(({ meta }) => !meta);
       const pieces = data.filter(({ meta }) => !!meta);
+      setPageLoading(false);
 
       //console.log('IS END', {paginationEnded, isEnd, pieces, data})
 
@@ -130,9 +127,14 @@ const CollectionPage = () => {
     throw Error('Address format is incorrect');
   }
 
-  const handleFiltersUpdate = (filters: {}) => {
-    console.log(filters)
-  };
+  const handleFiltersUpdate = useCallback(async (filters: Filters) => {
+    console.log('FILTER', filters)
+    setFilters(filters)
+    setCollection([])
+    setTake(0)
+    setPageLoading(true);
+    setPaginationEnded(false);
+  }, []);
 
   return (
     <>
