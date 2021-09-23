@@ -172,27 +172,27 @@ const CollectionPage = () => {
             )
           }} {...register('tokenID')}/>
           </div>
-          <div>
-            <FormControl sx={{ m: 1, minWidth: 80 }}>
-              <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>
-              <Select
-                className={select}
-                color="primary"
-                labelId="simple-select-autowidth-label"
-                id="demo-simple-select-autowidth"
-                onChange={()=>{}}
-                autoWidth
-                label="Sort By"
-                value={22}
-                MenuProps={{ classes: { paper: dropDown }}}
-              >
-                <MenuItem value={10}>Price: Low to High</MenuItem>
-                <MenuItem value={21}>Price: High to Low</MenuItem>
-                <MenuItem value={22}>Recently listed</MenuItem>
-                <MenuItem value={23}>Recently sold</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+          {/*<div>*/}
+          {/*  <FormControl sx={{ m: 1, minWidth: 80 }}>*/}
+          {/*    <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>*/}
+          {/*    <Select*/}
+          {/*      className={select}*/}
+          {/*      color="primary"*/}
+          {/*      labelId="simple-select-autowidth-label"*/}
+          {/*      id="demo-simple-select-autowidth"*/}
+          {/*      onChange={()=>{}}*/}
+          {/*      autoWidth*/}
+          {/*      label="Sort By"*/}
+          {/*      value={22}*/}
+          {/*      MenuProps={{ classes: { paper: dropDown }}}*/}
+          {/*    >*/}
+          {/*      <MenuItem value={10}>Price: Low to High</MenuItem>*/}
+          {/*      <MenuItem value={21}>Price: High to Low</MenuItem>*/}
+          {/*      <MenuItem value={22}>Recently listed</MenuItem>*/}
+          {/*      <MenuItem value={23}>Recently sold</MenuItem>*/}
+          {/*    </Select>*/}
+          {/*  </FormControl>*/}
+          {/*</div>*/}
           <div>
             <Filters onFiltersUpdate={handleFiltersUpdate} />
           </div>
