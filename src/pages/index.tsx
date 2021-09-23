@@ -9,7 +9,7 @@ import { PurchaseDialog, BidDialog } from 'components';
 import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
 import { CollectionListPage } from './collection-list';
-import MyCollectionPage from './mycollection';
+import MyNFTsPage from './mynfts';
 
 export const Routing = () => (
   <Switch>
@@ -41,8 +41,8 @@ export const Routing = () => (
       <PurchaseDialog />
       <MyOrdersPage />
     </Route>
-    <Route path="/mycollection">
-      <MyCollectionPage />
+    <Route path="/mynfts">
+      <MyNFTsPage />
     </Route>
   </Switch>
 );

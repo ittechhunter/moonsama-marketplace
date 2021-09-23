@@ -12,7 +12,7 @@ import { Asset } from 'hooks/marketplace/types';
 
 const PAGE_SIZE = 10;
 
-const MyCollectionPage = () => {
+const MyNFTsPage = () => {
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
@@ -42,7 +42,7 @@ const MyCollectionPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>My collection</GlitchText>
+        <GlitchText fontSize={48}>My NFTs</GlitchText>
       </div>
       <div
         style={{
@@ -78,4 +78,4 @@ const MyCollectionPage = () => {
   );
 };
 
-export default MyCollectionPage;
+export default MyNFTsPage;

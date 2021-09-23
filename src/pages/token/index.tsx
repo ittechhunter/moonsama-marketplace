@@ -55,7 +55,6 @@ import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 
-import LootBox from '../../assets/images/loot-box.png'
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 
 const geTableHeader = () => {
@@ -170,6 +169,8 @@ const TokenPage = () => {
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
 
+  const owner = balanceData?.[0].owner
+
   const assetMeta = metas?.[0];
 
   let userBalanceString = isErc20
@@ -178,6 +179,9 @@ const TokenPage = () => {
         18
       )?.toFixed(5) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0';
+
+  const isOwner = userBalanceString !== '0'
+
   let totalSupplyString =
     balanceData?.[0]?.totalSupply?.toString() ??
     (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
@@ -384,9 +388,11 @@ const TokenPage = () => {
               BALANCE: {userBalanceString}
             </Typography>
           ) : isErc721 ? (
-            <Typography color="textSecondary" className={smallText}>
-              {userBalanceString === '1' ? 'OWNED' : 'NOT OWNED'}
-            </Typography>
+            userBalanceString === '1' ? (
+              <Typography color="textSecondary" className={smallText}>OWNED</Typography>
+            ) : (
+              <Typography color="textSecondary" className={smallText}>NOT OWNED {owner && <ExternalLink className={smallText} href={getExplorerLink(chainId, owner, 'address')}>{' '}Owned by {truncateHexString(owner)}</ExternalLink>}</Typography>
+            )
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
               {`OWNED ${userBalanceString}${
@@ -478,9 +484,9 @@ const TokenPage = () => {
               variant="contained"
               color="primary"
             >
-              New buy offer
+              Make an offer
             </Button>
-            <Button
+            {isOwner && <Button
               onClick={() => {
                 setBidDialogOpen(true);
                 setBidData({ orderType: OrderType.SELL, asset });
@@ -491,7 +497,7 @@ const TokenPage = () => {
               className={newSellButton}
             >
               New sell offer
-            </Button>
+            </Button>}
             <Button
               onClick={() => {
                 setTransferDialogOpen(true);

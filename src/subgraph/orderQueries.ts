@@ -242,3 +242,14 @@ export const QUERY_LATEST_SELL_ORDERS = (buyAssetId: string, from: number, num: 
     }
   }
 `;
+
+export const QUERY_ASSET_SELLS = (buyAssetId: string, from: number, num: number) => gql`
+  query getUserActiveOrders {
+    ${META}
+    activeAssetSellOrders: orders(where: {active: true, buyAsset: "${buyAssetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+  num ?? DEFAULT_ORDERBOOK_PAGINATION
+}) {
+      ${ORDER_FIELDS}
+    }
+  }
+`;

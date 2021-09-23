@@ -17,6 +17,7 @@ export interface BasicTokenData {
   asset: Asset;
   userBalance: BigNumber;
   totalSupply?: BigNumber;
+  owner?: string;
 }
 
 export const processResults = (
@@ -45,6 +46,7 @@ export const processResults = (
             ? BigNumber.from('1')
             : BigNumber.from('0'),
         totalSupply: results[i + offset + 1]?.[0],
+        owner: results[i + offset]?.[0]
       });
       offset += 1;
       return;
