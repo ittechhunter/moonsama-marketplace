@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
@@ -6,12 +6,10 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Stack from '@mui/material/Stack';
 
 import { Token as TokenComponent } from 'components';
-import { Button, GlitchText, Loader } from 'ui';
+import { Button, GlitchText, Loader, Filters } from 'ui';
 import {
   getAssetEntityId, OrderType,
   StringAssetType,
@@ -30,7 +28,6 @@ import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
-import FilterIcon from '@mui/icons-material/FilterListSharp';
 import { useForm } from "react-hook-form";
 import collections from '../../assets/data/collections';
 import { useMoonsamaAttrIdsCallback } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsamaAttrIdsCallback';
@@ -133,6 +130,10 @@ const CollectionPage = () => {
     throw Error('Address format is incorrect');
   }
 
+  const handleFiltersUpdate = (filters: {}) => {
+    console.log(filters)
+  };
+
   return (
     <>
       <div className={container}>
@@ -155,8 +156,10 @@ const CollectionPage = () => {
         </Grid>*/}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{
+          marginTop: '10px',
           padding: '16px'
         }} justifyContent="flex-end" alignItems="center">
+          <div>
           <TextField placeholder='Search by token ID' variant='outlined' InputProps={{
             endAdornment: (
               <InputAdornment position='start'>
@@ -166,55 +169,32 @@ const CollectionPage = () => {
               </InputAdornment>
             )
           }} {...register('tokenID')}/>
+          </div>
+          <div>
+            <FormControl sx={{ m: 1, minWidth: 80 }}>
+              <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>
+              <Select
+                className={select}
+                color="primary"
+                labelId="simple-select-autowidth-label"
+                id="demo-simple-select-autowidth"
+                onChange={()=>{}}
+                autoWidth
+                label="Sort By"
+                value={22}
+                MenuProps={{ classes: { paper: dropDown }}}
+              >
+                <MenuItem value={10}>Price: Low to High</MenuItem>
+                <MenuItem value={21}>Price: High to Low</MenuItem>
+                <MenuItem value={22}>Recently listed</MenuItem>
+                <MenuItem value={23}>Recently sold</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <div>
+            <Filters onFiltersUpdate={handleFiltersUpdate} />
+          </div>
         </Stack>
-
-        {/*<Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{*/}
-        {/*  marginTop: '55px',*/}
-        {/*  padding: '16px'*/}
-        {/*}} justifyContent="flex-end" alignItems="center">*/}
-        {/*  <div>*/}
-        {/*  <TextField placeholder='Search by token ID' variant='outlined' InputProps={{*/}
-        {/*    endAdornment: (*/}
-        {/*      <InputAdornment position='start'>*/}
-        {/*        <IconButton onClick={handleSubmit(handleTokenSearch)} onMouseDown={handleSubmit(handleTokenSearch)}>*/}
-        {/*          <SearchIcon />*/}
-        {/*        </IconButton>*/}
-        {/*      </InputAdornment>*/}
-        {/*    )*/}
-        {/*  }} {...register('tokenID')}/>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <FormControl sx={{ m: 1, minWidth: 80 }}>*/}
-        {/*      <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>*/}
-        {/*      <Select*/}
-        {/*        className={select}*/}
-        {/*        color="primary"*/}
-        {/*        labelId="simple-select-autowidth-label"*/}
-        {/*        id="demo-simple-select-autowidth"*/}
-        {/*        onChange={()=>{}}*/}
-        {/*        autoWidth*/}
-        {/*        label="Sort By"*/}
-        {/*        value={22}*/}
-        {/*        MenuProps={{ classes: { paper: dropDown }}}*/}
-        {/*      >*/}
-        {/*        <MenuItem value={10}>Price: Low to High</MenuItem>*/}
-        {/*        <MenuItem value={21}>Price: High to Low</MenuItem>*/}
-        {/*        <MenuItem value={22}>Recently listed</MenuItem>*/}
-        {/*        <MenuItem value={23}>Recently sold</MenuItem>*/}
-        {/*      </Select>*/}
-        {/*    </FormControl>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <Button*/}
-        {/*      onClick={() => {}}*/}
-        {/*      startIcon={<FilterIcon />}*/}
-        {/*      variant="outlined"*/}
-        {/*      color="primary"*/}
-        {/*    >*/}
-        {/*      Filter*/}
-        {/*    </Button>*/}
-        {/*  </div>*/}
-        {/*</Stack>*/}
 
       </div>
       <Grid container spacing={1}>

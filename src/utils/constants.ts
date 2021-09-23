@@ -1,11 +1,13 @@
-// export const SORT_TYPES = [
-//   {
-//     'priceLowToHigh': '',
-//     'priceHighToLow': '',
-//     'recentlyListed': '',
-//     'recentlySold': '',
-//   }
-// ];
+export const SORT_TYPES = [
+  { label: 'Price: Low to High', value: 'price_low_to_high' },
+  { label: 'Price: High to Low', value: 'price_high_to_low' },
+  { label: 'Recently listed', value: 'recently_listed' },
+  { label: 'Recently sold', value: 'recently_sold' },
+];
+
+export const ORDER_TYPES = [
+  { label: 'Buy Now', value: 'buy_now' }
+];
 
 export const MOONSAMA_MAX_SUPPLY = 1000;
 
