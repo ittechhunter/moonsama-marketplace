@@ -97,9 +97,11 @@ const CollectionPage = () => {
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
 
+  console.log('before FETCH', {PAGE_SIZE, address, take, paginationEnded})
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
+      console.log('FETCH', {PAGE_SIZE, address, take, paginationEnded})
       const data = await getItemsWithFilter(PAGE_SIZE, BigNumber.from(take));
       const isEnd = data.some(({ meta }) => !meta);
       const pieces = data.filter(({ meta }) => !!meta);
@@ -118,7 +120,7 @@ const CollectionPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, take, paginationEnded]);
+  }, [address, take, paginationEnded, JSON.stringify(filters?.traits)]);
 
   if (assetType.valueOf() === StringAssetType.UNKNOWN) {
     throw Error('Asset type was not recognized');
@@ -129,9 +131,9 @@ const CollectionPage = () => {
 
   const handleFiltersUpdate = useCallback(async (filters: Filters) => {
     console.log('FILTER', filters)
-    setFilters(filters)
     setCollection([])
     setTake(0)
+    setFilters(filters)
     setPageLoading(true);
     setPaginationEnded(false);
   }, []);

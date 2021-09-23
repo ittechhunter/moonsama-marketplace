@@ -211,7 +211,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = ({
         };
       });
     },
-    [chainId, assetType, assetAddress, ids.toString()]
+    [chainId, assetType, assetAddress, JSON.stringify(ids)]
   );
 
   return fetchTokenStaticData;
