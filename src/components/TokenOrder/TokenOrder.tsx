@@ -108,13 +108,9 @@ export const TokenOrder = ({
           variant="contained"
           color="primary"
         >
-          Take offer
+          Accept offer
         </Button>
       </TableCell>
     </TableRow>
   );
 };
-function setPurchaseDialogOpen(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-

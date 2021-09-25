@@ -10,7 +10,7 @@ import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDial
 import { Dialog, Button } from 'ui';
 import { useStyles } from './PurchaseDialog.styles';
 import { SuccessIcon } from 'icons';
-import { ChainId } from '../../constants';
+import { ChainId, FRACTION_TO_BPS, PROTOCOL_FEE_BPS } from '../../constants';
 import { useActiveWeb3React } from 'hooks';
 import {
   getQuantity,
@@ -36,6 +36,8 @@ import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent
 import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import { Fraction } from 'utils/Fraction';
 import { AddressZero } from '@ethersproject/constants';
+import { Fee, useFees } from 'hooks/useFees/useFees';
+import { Asset } from 'hooks/marketplace/types';
 
 export const PurchaseDialog = () => {
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
@@ -87,8 +89,13 @@ export const PurchaseDialog = () => {
   let userGetDisplay: string | undefined;
   let inputUnit: UNIT;
   let unitOptions: (string | number)[][];
-
+  let fee: Fee
+  let feeAsset: Asset | undefined
+  let royaltyFee: BigNumber
+  let protocolFee: BigNumber
+  let showFee = false
   let availableLabel: string;
+  let netto: BigNumber | undefined
 
   const {
     askPerUnitNominator,
@@ -145,6 +152,7 @@ export const PurchaseDialog = () => {
     assetAddress = userAsset?.assetAddress;
     assetId = userAsset?.assetId;
     assetType = userAsset?.assetType;
+    
 
     // user asset desides
     [inputUnit, unitOptions] = isGiveAssetErc20OrNative
@@ -168,6 +176,7 @@ export const PurchaseDialog = () => {
 
       userget = sendAmount ?? BigNumber.from('0');
       userGetDisplay = Fraction.from(userget?.toString(), 18)?.toFixed(5);
+
     } else {
       try {
         sendAmount = BigNumber.from(inputAmountText ?? '0');
@@ -184,6 +193,10 @@ export const PurchaseDialog = () => {
       userGetDisplay = isGetAssetErc20OrNative
         ? Fraction.from(userget?.toString(), 18)?.toFixed(5)
         : userget?.toString();
+
+      // we give an NFT and we check the royalty of it
+      feeAsset = userAsset
+      showFee = true
     }
   } else {
     action = 'BUY';
@@ -282,6 +295,17 @@ export const PurchaseDialog = () => {
     isGiveAssetErc20OrNative,
   });
   */
+
+  fee = useFees([feeAsset])?.[0];
+  royaltyFee =
+      fee?.value?.mul(userget).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
+  protocolFee = userget.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
+
+  if (showFee) {
+    netto = userget.sub(protocolFee).sub(royaltyFee)
+  }
+
+  console.log('fee', {showFee,royaltyFee, protocolFee, isGiveAssetErc20OrNative, isGetAssetErc20OrNative})
 
   const {
     state: fillOrderState,
@@ -496,11 +520,36 @@ export const PurchaseDialog = () => {
                 )}
 
                 <div className={infoContainer}>
-                  <Typography className={formLabel}>You get</Typography>
+                  <Typography className={formLabel}>You get brutto</Typography>
                   <Typography className={formValueGet}>
                     {userGetDisplay} MOVR
                   </Typography>
                 </div>
+
+                {showFee && protocolFee && (
+                    <div className={infoContainer}>
+                      <Typography className={formLabel}>Protocol fee</Typography>
+                      <Typography className={`${formValue}`}>
+                        {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)} MOVR
+                      </Typography>
+                    </div>
+                  )}
+
+                  {showFee && royaltyFee && (
+                    <div className={infoContainer}>
+                      <Typography className={formLabel}>Royalty fee</Typography>
+                      <Typography className={`${formValue}`}>
+                        {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)} MOVR
+                      </Typography>
+                    </div>
+                  )}
+
+                  {showFee && netto && <div className={infoContainer}>
+                    <Typography className={formLabel}>You get netto</Typography>
+                    <Typography className={`${formValueGet}`}>
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
+                    </Typography>
+                  </div>}
               </>
             )}
 

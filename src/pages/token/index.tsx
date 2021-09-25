@@ -389,9 +389,9 @@ const TokenPage = () => {
             </Typography>
           ) : isErc721 ? (
             userBalanceString === '1' ? (
-              <Typography color="textSecondary" className={smallText}>OWNED</Typography>
+              <Typography color="textSecondary" className={smallText}>OWNED BY YOU</Typography>
             ) : (
-              <Typography color="textSecondary" className={smallText}>NOT OWNED {owner && <ExternalLink className={smallText} href={getExplorerLink(chainId, owner, 'address')}>{' '}Owned by {truncateHexString(owner)}</ExternalLink>}</Typography>
+              <Typography color="textSecondary" className={smallText}>{owner && <ExternalLink className={smallText} href={getExplorerLink(chainId, owner, 'address')}>{' '}Owned by {truncateHexString(owner)}</ExternalLink>}</Typography>
             )
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
@@ -475,7 +475,7 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            <Button
+            {((!isOwner && isErc721) || (isOwner && !isErc721)) &&<Button
               onClick={() => {
                 setBidDialogOpen(true);
                 setBidData({ orderType: OrderType.BUY, asset });
@@ -485,7 +485,7 @@ const TokenPage = () => {
               color="primary"
             >
               Make an offer
-            </Button>
+            </Button>}
             {isOwner && <Button
               onClick={() => {
                 setBidDialogOpen(true);
@@ -498,7 +498,7 @@ const TokenPage = () => {
             >
               New sell offer
             </Button>}
-            <Button
+            {isOwner && <Button
               onClick={() => {
                 setTransferDialogOpen(true);
                 setTransferData({ asset });
@@ -509,7 +509,7 @@ const TokenPage = () => {
               className={transferButton}
             >
               Transfer
-            </Button>
+            </Button>}
           </Box>
           <Box className={externals}>
             {assetMeta?.external_url && (
