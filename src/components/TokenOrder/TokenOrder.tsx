@@ -13,7 +13,8 @@ import {
   formatExpirationDateString,
   getUnitPrice,
   inferOrderTYpe,
-  OrderType, StrategyMap,
+  OrderType,
+  StrategyMap,
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
@@ -27,12 +28,7 @@ export const TokenOrder = ({
   staticData: StaticTokenData;
   order: Order;
 }) => {
-  const {
-    image,
-    imageContainer,
-    tokenName,
-    smallText
-  } = useStyles();
+  const { image, imageContainer, tokenName, smallText } = useStyles();
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
@@ -58,15 +54,15 @@ export const TokenOrder = ({
     ? `${sup} pieces`
     : undefined;
   const ppu = getUnitPrice(
-    order.strategy?.askPerUnitNominator,
-    order.strategy?.askPerUnitDenominator
+    order?.askPerUnitNominator,
+    order?.askPerUnitDenominator
   );
 
   const ppuDisplay = ppu
     ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
     : action;
 
-  const expiration = formatExpirationDateString(order.strategy?.expiresAt);
+  const expiration = formatExpirationDateString(order?.expiresAt);
   const strategyType = StrategyMap[order.strategyType.toLowerCase()];
 
   return (
@@ -81,7 +77,9 @@ export const TokenOrder = ({
         >
           <Media uri={meta?.image} className={image} />
         </div>
-        <Typography className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</Typography>
+        <Typography className={tokenName}>
+          {meta?.name ?? truncateHexString(asset.assetId)}
+        </Typography>
       </TableCell>
       <TableCell>
         <PriceBox margin={false} size="small" color={actionColor}>

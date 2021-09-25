@@ -212,7 +212,7 @@ export const BidDialog = () => {
   }
 
   if (ppu.lt('0')) {
-    ppu = BigNumber.from('0')
+    ppu = BigNumber.from('0');
     ppuError = 'Invalid price value';
   }
 
@@ -249,7 +249,7 @@ export const BidDialog = () => {
       }
 
       if (quantity.lt('0')) {
-        quantity = BigNumber.from('0')
+        quantity = BigNumber.from('0');
         quantityError = 'Invalid quantity value';
       }
 
@@ -288,7 +288,7 @@ export const BidDialog = () => {
       }
 
       if (quantity.lt('0')) {
-        quantity = BigNumber.from('0')
+        quantity = BigNumber.from('0');
         quantityError = 'Invalid quantity value';
       }
 
@@ -342,7 +342,7 @@ export const BidDialog = () => {
       }
 
       if (quantity.lt('0')) {
-        quantity = BigNumber.from('0')
+        quantity = BigNumber.from('0');
         quantityError = 'Invalid quantity value';
       }
 
@@ -373,7 +373,7 @@ export const BidDialog = () => {
       }
 
       if (quantity.lt('0')) {
-        quantity = BigNumber.from('0')
+        quantity = BigNumber.from('0');
         quantityError = 'Invalid quantity value';
       }
 
@@ -445,7 +445,6 @@ export const BidDialog = () => {
     amountToApprove: amountToApprove?.toString(),
     hasEnough,
   });
-  
 
   const { state: createOrderState, callback: createOrderCallback } =
     useCreateOrderCallback(orderData, {

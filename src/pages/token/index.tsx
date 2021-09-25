@@ -76,7 +76,7 @@ const geTableHeader = () => {
 // TEST URL: http://localhost:3000/token/0xff3e85e33a8cfc73fe08f437bfaeadff7c95e285/0
 const TokenPage = () => {
   const { chainId, account } = useActiveWeb3React();
-  const whitelist = useWhitelistedAddresses() // REMOVEME later
+  const whitelist = useWhitelistedAddresses(); // REMOVEME later
   let { id, address, type } =
     useParams<{ id: string; address: string; type: string }>();
 
@@ -87,8 +87,9 @@ const TokenPage = () => {
 
   if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
 
-  if (!whitelist.includes(address.toLowerCase())) { // REMOVEME later
-    throw Error('Unsupported token')
+  if (!whitelist.includes(address.toLowerCase())) {
+    // REMOVEME later
+    throw Error('Unsupported token');
   }
 
   if (assetType.valueOf() === StringAssetType.ERC20.valueOf())
@@ -141,7 +142,7 @@ const TokenPage = () => {
     tradeContainer,
     tradeRow,
     smallText,
-    traitChip
+    traitChip,
   } = useStyles();
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
@@ -169,7 +170,7 @@ const TokenPage = () => {
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
 
-  const owner = balanceData?.[0].owner
+  const owner = balanceData?.[0].owner;
 
   const assetMeta = metas?.[0];
 
@@ -180,7 +181,7 @@ const TokenPage = () => {
       )?.toFixed(5) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0';
 
-  const isOwner = userBalanceString !== '0'
+  const isOwner = userBalanceString !== '0';
 
   let totalSupplyString =
     balanceData?.[0]?.totalSupply?.toString() ??
@@ -188,15 +189,21 @@ const TokenPage = () => {
 
   //console.log('data', { balanceData, staticData, assetMeta });
 
-  const transformedMetaData = assetMeta?.description?.replace(/\s*,\s*/g, ",").split(',').map((trait: string) => {
-    // TODO: Get token supply correctly
-    const rarity = ((MOONSAMA_TRAITS  as any)[trait] / MOONSAMA_MAX_SUPPLY * 100).toFixed(2);
+  const transformedMetaData = assetMeta?.description
+    ?.replace(/\s*,\s*/g, ',')
+    .split(',')
+    .map((trait: string) => {
+      // TODO: Get token supply correctly
+      const rarity = (
+        ((MOONSAMA_TRAITS as any)[trait] / MOONSAMA_MAX_SUPPLY) *
+        100
+      ).toFixed(2);
 
-    return {
-      label: trait,
-      rarity
-    };
-  });
+      return {
+        label: trait,
+        rarity,
+      };
+    });
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -211,18 +218,15 @@ const TokenPage = () => {
               seller,
               createdAt,
               strategyType,
-              strategy,
               sellAsset,
               buyAsset,
-            } = order;
-            const {
               quantityLeft,
               askPerUnitDenominator,
               askPerUnitNominator,
               expiresAt,
               onlyTo,
               partialAllowed,
-            } = strategy || {};
+            } = order;
 
             const unitPrice = getUnitPrice(
               askPerUnitNominator,
@@ -389,9 +393,21 @@ const TokenPage = () => {
             </Typography>
           ) : isErc721 ? (
             userBalanceString === '1' ? (
-              <Typography color="textSecondary" className={smallText}>OWNED BY YOU</Typography>
+              <Typography color="textSecondary" className={smallText}>
+                OWNED BY YOU
+              </Typography>
             ) : (
-              <Typography color="textSecondary" className={smallText}>{owner && <ExternalLink className={smallText} href={getExplorerLink(chainId, owner, 'address')}>{' '}Owned by {truncateHexString(owner)}</ExternalLink>}</Typography>
+              <Typography color="textSecondary" className={smallText}>
+                {owner && (
+                  <ExternalLink
+                    className={smallText}
+                    href={getExplorerLink(chainId, owner, 'address')}
+                  >
+                    {' '}
+                    Owned by {truncateHexString(owner)}
+                  </ExternalLink>
+                )}
+              </Typography>
             )
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
@@ -404,10 +420,11 @@ const TokenPage = () => {
 
         {/*TODO: Make traits calculation collection specific*/}
         <Typography color="textSecondary" className={smallText}>
-          {transformedMetaData?.map(trait =>
+          {transformedMetaData?.map((trait) => (
             <Tooltip title={`${trait.rarity}% have this trait`}>
               <Chip label={trait.label} className={traitChip} />
-          </Tooltip>)}
+            </Tooltip>
+          ))}
         </Typography>
 
         <Paper className={card}>
@@ -475,65 +492,67 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            {((!isOwner && isErc721) || (isOwner && !isErc721)) &&<Button
-              onClick={() => {
-                setBidDialogOpen(true);
-                setBidData({ orderType: OrderType.BUY, asset });
-              }}
-              startIcon={<AccountBalanceWalletIcon />}
-              variant="contained"
-              color="primary"
-            >
-              Make an offer
-            </Button>}
-            {isOwner && <Button
-              onClick={() => {
-                setBidDialogOpen(true);
-                setBidData({ orderType: OrderType.SELL, asset });
-              }}
-              startIcon={<MoneyIcon />}
-              variant="outlined"
-              color="primary"
-              className={newSellButton}
-            >
-              New sell offer
-            </Button>}
-            {isOwner && <Button
-              onClick={() => {
-                setTransferDialogOpen(true);
-                setTransferData({ asset });
-              }}
-              startIcon={<SyncAltIcon />}
-              variant="outlined"
-              color="primary"
-              className={transferButton}
-            >
-              Transfer
-            </Button>}
+            {((!isOwner && isErc721) || (isOwner && !isErc721)) && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({ orderType: OrderType.BUY, asset });
+                }}
+                startIcon={<AccountBalanceWalletIcon />}
+                variant="contained"
+                color="primary"
+              >
+                Make an offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({ orderType: OrderType.SELL, asset });
+                }}
+                startIcon={<MoneyIcon />}
+                variant="outlined"
+                color="primary"
+                className={newSellButton}
+              >
+                New sell offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setTransferDialogOpen(true);
+                  setTransferData({ asset });
+                }}
+                startIcon={<SyncAltIcon />}
+                variant="outlined"
+                color="primary"
+                className={transferButton}
+              >
+                Transfer
+              </Button>
+            )}
           </Box>
           <Box className={externals}>
             {assetMeta?.external_url && (
               <ExternalLink href={assetMeta?.external_url}>
-                <Button>
-                  External site↗
-                </Button>
+                <Button>External site↗</Button>
               </ExternalLink>
             )}
             {staticData?.[0]?.tokenURI && (
               <ExternalLink href={staticData?.[0].tokenURI}>
-                <Button>
-                  Full metadata↗
-                </Button>
+                <Button>Full metadata↗</Button>
               </ExternalLink>
             )}
-            <ExternalLink href={getExplorerLink(
-              chainId ?? ChainId.MOONRIVER,
-              asset?.assetAddress,
-              'address'
-            )}>
-              <Button>
-                Check the contract↗
-              </Button>
+            <ExternalLink
+              href={getExplorerLink(
+                chainId ?? ChainId.MOONRIVER,
+                asset?.assetAddress,
+                'address'
+              )}
+            >
+              <Button>Check the contract↗</Button>
             </ExternalLink>
           </Box>
         </Paper>

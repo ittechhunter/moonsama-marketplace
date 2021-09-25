@@ -17,7 +17,7 @@ import {
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenTrade.styles';
-import LootBox from '../../assets/images/loot-box.png'
+import LootBox from '../../assets/images/loot-box.png';
 
 export const TokenTrade = ({
   fill,
@@ -37,7 +37,7 @@ export const TokenTrade = ({
     tokenName,
     mr,
     lastPriceContainer,
-    smallText
+    smallText,
   } = useStyles();
   const { push } = useHistory();
 
@@ -64,16 +64,16 @@ export const TokenTrade = ({
     : undefined;
 
   const ppu = getUnitPrice(
-    fill.order.strategy?.askPerUnitNominator,
-    fill.order.strategy?.askPerUnitDenominator
+    fill.order?.askPerUnitNominator,
+    fill.order?.askPerUnitDenominator
   );
 
   const unit =
     ot == OrderType.BUY
       ? fill.buyerSendsAmountFull
-      : fill.order.strategy?.askPerUnitDenominator
+      : fill.order?.askPerUnitDenominator
           .mul(fill.buyerSendsAmountFull)
-          .div(fill.order.strategy?.askPerUnitNominator);
+          .div(fill.order?.askPerUnitNominator);
 
   const ppuDisplay = ppu
     ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
@@ -92,29 +92,38 @@ export const TokenTrade = ({
         {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
+        <GlitchText className={tokenName}>
+          {meta?.name ?? truncateHexString(asset.assetId)}
+        </GlitchText>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
       </div>
       <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
-        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
+        {staticData?.symbol && (
+          <Typography color="textSecondary">{staticData.symbol}</Typography>
+        )}
+        {totalSupplyString && (
+          <Typography color="textSecondary">{totalSupplyString}</Typography>
+        )}
       </div>
       <div className={lastPriceContainer}>
-
-        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}><Typography className={smallText} noWrap>
-          {unit?.toString()} taken
-        </Typography></ExternalLink>
+        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}>
+          <Typography className={smallText} noWrap>
+            {unit?.toString()} taken
+          </Typography>
+        </ExternalLink>
         <Typography color="textSecondary" noWrap className={mr}>
           by
         </Typography>
         {/*<Typography color="textSecondary" noWrap>
           {truncateHexString(order.seller)}
         </Typography>*/}
-        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}><Typography className={smallText} noWrap>
-          {truncateHexString(fill.buyer)}
-        </Typography></ExternalLink>
+        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}>
+          <Typography className={smallText} noWrap>
+            {truncateHexString(fill.buyer)}
+          </Typography>
+        </ExternalLink>
       </div>
     </Paper>
   );

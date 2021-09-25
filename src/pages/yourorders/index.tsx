@@ -119,18 +119,15 @@ export const MyOrdersPage = () => {
               seller,
               createdAt,
               strategyType,
-              strategy,
               sellAsset,
               buyAsset,
-            } = order;
-            const {
               quantityLeft,
               askPerUnitDenominator,
               askPerUnitNominator,
               expiresAt,
               onlyTo,
               partialAllowed,
-            } = strategy || {};
+            } = order || {};
 
             const unitPrice = getUnitPrice(
               askPerUnitNominator,

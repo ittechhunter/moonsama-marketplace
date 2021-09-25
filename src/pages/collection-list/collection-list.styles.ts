@@ -40,5 +40,5 @@ export const collectionListStyles = makeStyles((theme) => ({
   },
   collectionDescription: {
     fontSize: '12px',
-  }
+  },
 }));

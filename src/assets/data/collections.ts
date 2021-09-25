@@ -59,7 +59,7 @@ export const collections = {
       indexing: 'sequential',
       contractURI: 'ipfs://QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5',
       tags: ['native', 'green'],
-    }
+    },
   ],
 };
 

@@ -1,7 +1,14 @@
 import Grid from '@material-ui/core/Grid';
 import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
 import { GlitchText, Loader } from 'ui';
-import React, { ChangeEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FillWithOrder, Order } from 'hooks/marketplace/types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
@@ -13,22 +20,32 @@ import { TokenTrade } from 'components/TokenTrade/TokenTrade';
 const PAGE_SIZE = 10;
 
 const FreshTradesPage = () => {
-  const [collection, setCollection] = useState<{
-    meta: TokenMeta | undefined;
-    staticData: StaticTokenData;
-    fill: FillWithOrder
-  }[]>([]);
-  const [take, setTake] = useState<number>(0)
-  const [paginationEnded, setPaginationEnded] = useState<boolean>(false)
-  const [pageLoading, setPageLoading] = useState<boolean>(false)
-  const { placeholderContainer, container, scene, canvas, poster, glass, nftWrapper } = useStyles()
+  const [collection, setCollection] = useState<
+    {
+      meta: TokenMeta | undefined;
+      staticData: StaticTokenData;
+      fill: FillWithOrder;
+    }[]
+  >([]);
+  const [take, setTake] = useState<number>(0);
+  const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
+  const [pageLoading, setPageLoading] = useState<boolean>(false);
+  const {
+    placeholderContainer,
+    container,
+    scene,
+    canvas,
+    poster,
+    glass,
+    nftWrapper,
+  } = useStyles();
 
   const sceneRef = useRef(null);
   const canvasRef = useRef(null);
   const posterRef = useRef(null);
   const glassRef = useRef(null);
 
-  const getPaginatedItems = useLatestTradesWithStaticCallback()
+  const getPaginatedItems = useLatestTradesWithStaticCallback();
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
@@ -40,10 +57,13 @@ const FreshTradesPage = () => {
     const getCollectionById = async () => {
       setPageLoading(true);
       let data = await getPaginatedItems(PAGE_SIZE, take);
-      data = data.filter(x => x.staticData.asset.assetAddress.toLowerCase() === '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()) // REMOVEME later
+      data = data.filter(
+        (x) =>
+          x.staticData.asset.assetAddress.toLowerCase() ===
+          '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
+      ); // REMOVEME later
       setPageLoading(false);
       const isEnd = data.some(({ meta }) => !meta);
-      
 
       //console.log('IS END', {paginationEnded, isEnd, pieces, data})
 
@@ -81,18 +101,21 @@ const FreshTradesPage = () => {
 
   const updateRotation = (x: number, y: number) => {
     console.log(x, y);
-    if(!!glassRef.current && !!canvasRef.current) {
-      const yAxisRotation = (x - (window.innerWidth / 8)) * (80 / window.innerWidth);
-      const xAxisRotation = (y - (window.innerHeight / 8)) * (-80 / window.innerHeight);
+    if (!!glassRef.current && !!canvasRef.current) {
+      const yAxisRotation =
+        (x - window.innerWidth / 8) * (80 / window.innerWidth);
+      const xAxisRotation =
+        (y - window.innerHeight / 8) * (-80 / window.innerHeight);
 
       const transformations = [
         'translate(-50%, -50%)',
         'rotateY(' + yAxisRotation + 'deg)',
-        'rotateX(' + xAxisRotation + 'deg)'
+        'rotateX(' + xAxisRotation + 'deg)',
       ];
 
       // @ts-ignore
-      glassRef.current.style.backgroundPosition = (500 - yAxisRotation * 5 + 'px ') + (xAxisRotation * 5 + 'px');
+      glassRef.current.style.backgroundPosition =
+        500 - yAxisRotation * 5 + 'px ' + (xAxisRotation * 5 + 'px');
       // @ts-ignore
       canvasRef.current.style.transform = transformations.join(' ');
     }

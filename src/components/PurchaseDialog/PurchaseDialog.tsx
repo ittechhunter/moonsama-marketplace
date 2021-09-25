@@ -68,9 +68,8 @@ export const PurchaseDialog = () => {
 
   const order = purchaseData?.order;
   const orderType = purchaseData?.orderType;
-  const strategy = order?.strategy;
 
-  if (!orderLoaded && account && order && orderType && strategy) {
+  if (!orderLoaded && account && order && orderType) {
     setOrderLoaded(true);
   }
 
@@ -89,26 +88,26 @@ export const PurchaseDialog = () => {
   let userGetDisplay: string | undefined;
   let inputUnit: UNIT;
   let unitOptions: (string | number)[][];
-  let fee: Fee
-  let feeAsset: Asset | undefined
-  let royaltyFee: BigNumber
-  let protocolFee: BigNumber
-  let showFee = false
+  let fee: Fee;
+  let feeAsset: Asset | undefined;
+  let royaltyFee: BigNumber;
+  let protocolFee: BigNumber;
+  let showFee = false;
   let availableLabel: string;
-  let netto: BigNumber | undefined
+  let netto: BigNumber | undefined;
 
   const {
     askPerUnitNominator,
     askPerUnitDenominator,
     quantityLeft: quantity,
-  } = strategy ?? {};
+  } = order ?? {};
 
   const orderHash = order?.id;
 
-  const partialAllowed = strategy?.partialAllowed;
+  const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
-    strategy?.askPerUnitNominator,
-    strategy?.askPerUnitDenominator
+    order?.askPerUnitNominator,
+    order?.askPerUnitDenominator
   );
   const displayppu = ppu ? Fraction.from(ppu.toString(), 18)?.toFixed(5) : '?';
   const symbolString = symbol ? ` ${symbol.toString()}` : '';
@@ -152,7 +151,6 @@ export const PurchaseDialog = () => {
     assetAddress = userAsset?.assetAddress;
     assetId = userAsset?.assetId;
     assetType = userAsset?.assetType;
-    
 
     // user asset desides
     [inputUnit, unitOptions] = isGiveAssetErc20OrNative
@@ -176,7 +174,6 @@ export const PurchaseDialog = () => {
 
       userget = sendAmount ?? BigNumber.from('0');
       userGetDisplay = Fraction.from(userget?.toString(), 18)?.toFixed(5);
-
     } else {
       try {
         sendAmount = BigNumber.from(inputAmountText ?? '0');
@@ -195,8 +192,8 @@ export const PurchaseDialog = () => {
         : userget?.toString();
 
       // we give an NFT and we check the royalty of it
-      feeAsset = userAsset
-      showFee = true
+      feeAsset = userAsset;
+      showFee = true;
     }
   } else {
     action = 'BUY';
@@ -298,14 +295,20 @@ export const PurchaseDialog = () => {
 
   fee = useFees([feeAsset])?.[0];
   royaltyFee =
-      fee?.value?.mul(userget).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
+    fee?.value?.mul(userget).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
   protocolFee = userget.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
   if (showFee) {
-    netto = userget.sub(protocolFee).sub(royaltyFee)
+    netto = userget.sub(protocolFee).sub(royaltyFee);
   }
 
-  console.log('fee', {showFee,royaltyFee, protocolFee, isGiveAssetErc20OrNative, isGetAssetErc20OrNative})
+  console.log('fee', {
+    showFee,
+    royaltyFee,
+    protocolFee,
+    isGiveAssetErc20OrNative,
+    isGetAssetErc20OrNative,
+  });
 
   const {
     state: fillOrderState,
@@ -330,7 +333,7 @@ export const PurchaseDialog = () => {
   const showApproveFlow =
     approvalState === ApprovalState.NOT_APPROVED ||
     approvalState === ApprovalState.PENDING;
-  
+
   /*
   console.log('approveflow', {
     showApproveFlow,
@@ -527,29 +530,33 @@ export const PurchaseDialog = () => {
                 </div>
 
                 {showFee && protocolFee && (
-                    <div className={infoContainer}>
-                      <Typography className={formLabel}>Protocol fee</Typography>
-                      <Typography className={`${formValue}`}>
-                        {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)} MOVR
-                      </Typography>
-                    </div>
-                  )}
+                  <div className={infoContainer}>
+                    <Typography className={formLabel}>Protocol fee</Typography>
+                    <Typography className={`${formValue}`}>
+                      {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
+                      MOVR
+                    </Typography>
+                  </div>
+                )}
 
-                  {showFee && royaltyFee && (
-                    <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue}`}>
-                        {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)} MOVR
-                      </Typography>
-                    </div>
-                  )}
+                {showFee && royaltyFee && (
+                  <div className={infoContainer}>
+                    <Typography className={formLabel}>Royalty fee</Typography>
+                    <Typography className={`${formValue}`}>
+                      {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
+                      MOVR
+                    </Typography>
+                  </div>
+                )}
 
-                  {showFee && netto && <div className={infoContainer}>
+                {showFee && netto && (
+                  <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
                     </Typography>
-                  </div>}
+                  </div>
+                )}
               </>
             )}
 

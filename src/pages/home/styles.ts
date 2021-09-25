@@ -8,7 +8,7 @@ export const useStyles = makeStyles((theme) => ({
     margin: `${theme.spacing(5)}px 0`,
 
     [theme.breakpoints.down('sm')]: {
-      textAlign: 'center'
+      textAlign: 'center',
     },
   },
   iconBlock: {
@@ -27,13 +27,13 @@ export const useStyles = makeStyles((theme) => ({
     height: 'auto',
     width: '55%',
     fill: theme.palette.primary.main,
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   betaTitle: {
     color: theme.palette.text.disabled,
 
     [theme.breakpoints.down('sm')]: {
-      marginBottom: '16px'
+      marginBottom: '16px',
     },
   },
   betaText: {
@@ -54,5 +54,5 @@ export const useStyles = makeStyles((theme) => ({
   },
   exploreButton: {
     height: '50px',
-  }
-}))
+  },
+}));

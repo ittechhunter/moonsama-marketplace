@@ -17,9 +17,9 @@ export interface OwnedTokens {
 export const useWhitelistedAddresses = () => {
   const { chainId } = useActiveWeb3React();
 
-  const collections = useRawCollectionsFromList()
+  const collections = useRawCollectionsFromList();
 
   return useMemo(() => {
-    return collections.map(x => x.address.toLowerCase())
-  }, [chainId])
+    return collections.map((x) => x.address.toLowerCase());
+  }, [chainId]);
 };

@@ -41,7 +41,16 @@ export interface FillWithOrder {
     strategyType: string;
     salt: string;
     createdAt: string;
-    strategy?: SimpleOrderStrategy;
+    quantity: BigNumber;
+    quantityLeft: BigNumber;
+    startsAt: string;
+    expiresAt: string;
+    askPerUnitNominator: BigNumber;
+    askPerUnitDenominator: BigNumber;
+    onlyTo: string;
+    partialAllowed: boolean;
+    pricePerUnit: BigNumber;
+    orderType: StringAssetType;
   };
 }
 
@@ -50,19 +59,6 @@ export interface Cancel {
   id: string;
   sellerGetsBackAmount: string;
   createdAt: string;
-}
-
-export interface SimpleOrderStrategy {
-  // orderHash
-  id: string;
-  quantity: BigNumber;
-  quantityLeft: BigNumber;
-  startsAt: string;
-  expiresAt: string;
-  askPerUnitNominator: BigNumber;
-  askPerUnitDenominator: BigNumber;
-  onlyTo: string;
-  partialAllowed: boolean;
 }
 
 export interface Order {
@@ -76,7 +72,16 @@ export interface Order {
   createdAt: string;
   cancel?: Cancel;
   fills: Fill[];
-  strategy?: SimpleOrderStrategy;
+  quantity: BigNumber;
+  quantityLeft: BigNumber;
+  startsAt: string;
+  expiresAt: string;
+  askPerUnitNominator: BigNumber;
+  askPerUnitDenominator: BigNumber;
+  onlyTo: string;
+  partialAllowed: boolean;
+  pricePerUnit: BigNumber;
+  orderType: StringAssetType;
 }
 
 export interface Balance {

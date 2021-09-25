@@ -53,10 +53,10 @@ export const useStyles = makeStyles((theme) => ({
   },
   smallText: {
     fontSize: '12px',
-    marginTop: theme.spacing(0.5)
+    marginTop: theme.spacing(0.5),
   },
   mr: {
     fontSize: '12px',
-    marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));

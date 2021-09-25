@@ -16,12 +16,12 @@ export const useStyles = makeStyles((theme) => ({
     fill: theme.palette.secondary.main,
     transition: 'all 0.2s ease-in-out',
 
-    "&:hover": {
+    '&:hover': {
       fill: theme.palette.primary.main,
-    }
+    },
   },
   copyrightText: {
     fontSize: 12,
     marginTop: theme.spacing(4),
-  }
+  },
 }));

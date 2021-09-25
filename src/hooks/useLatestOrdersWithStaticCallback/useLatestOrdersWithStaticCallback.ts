@@ -4,7 +4,11 @@ import { inferOrderTYpe, OrderType, parseOrder } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback } from 'react';
 import { Asset, Order } from 'hooks/marketplace/types';
-import { QUERY_LATEST_BUY_ORDERS, QUERY_LATEST_ORDERS, QUERY_LATEST_SELL_ORDERS } from 'subgraph/orderQueries';
+import {
+  QUERY_LATEST_BUY_ORDERS,
+  QUERY_LATEST_ORDERS,
+  QUERY_LATEST_SELL_ORDERS,
+} from 'subgraph/orderQueries';
 import { useTokenStaticDataCallbackArray } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { AddressZero } from '@ethersproject/constants';
 

@@ -1,7 +1,7 @@
 import { DEFAULT_ORDERBOOK_PAGINATION } from '../constants';
 import { gql } from 'graphql-request';
 import { META } from './common';
-import { ASSET_FIELDS, SIMPLE_STRATEGY_FIELDS } from './orderQueries';
+import { ASSET_FIELDS } from './orderQueries';
 
 const ORDER_FIELDS = `
     id
@@ -18,11 +18,17 @@ const ORDER_FIELDS = `
       id
     }
     salt
-    createdAt,
-    strategy {
-      ${SIMPLE_STRATEGY_FIELDS}
-    }
+    createdAt
     active
+    quantity
+    quantityLeft
+    startsAt
+    expiresAt
+    askPerUnitNominator
+    askPerUnitDenominator
+    onlyTo
+    partialAllowed
+    pricePerUnit
 `;
 
 const FILL_FIELDS = `

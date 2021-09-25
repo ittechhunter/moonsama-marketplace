@@ -9,11 +9,11 @@ export const useStyles = makeStyles((theme) => ({
     height: '100%',
     maxWidth: '100%',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   applyFiltersButton: {
     width: '100%',
-    margin: '25px 0'
+    margin: '25px 0',
   },
   filterAccordion: {
     fontFamily: 'Space Mono, monospace !important',
@@ -22,8 +22,8 @@ export const useStyles = makeStyles((theme) => ({
     maxHeight: '40%',
 
     '& svg': {
-      color: '#fff'
-    }
+      color: '#fff',
+    },
   },
   accordionHeader: {
     fontFamily: 'Space Mono, monospace !important',
@@ -41,11 +41,11 @@ export const useStyles = makeStyles((theme) => ({
     '&.selected': {
       background: '#710021 !important',
       borderColor: '#710021 !important',
-    }
+    },
   },
   priceRangeWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
-    fontSize: '12px'
-  }
-}))
+    fontSize: '12px',
+  },
+}));

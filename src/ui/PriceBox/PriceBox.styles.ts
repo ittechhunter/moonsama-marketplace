@@ -12,11 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     margin: boolean;
     color?: string;
   }) => ({
-    color: color
-      ? color
-      : variant === 'primary'
-          ? '#b90e0e'
-          : '#156b00',
+    color: color ? color : variant === 'primary' ? '#b90e0e' : '#156b00',
     padding: 0,
     textTransform: 'uppercase',
     letterSpacing: '-.01em',
@@ -26,6 +22,6 @@ export const useStyles = makeStyles((theme) => ({
     marginBottom: '4px',
     display: 'flex',
     alignItems: 'center',
-    height: ''
+    height: '',
   }),
 }));

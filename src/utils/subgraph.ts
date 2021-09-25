@@ -7,7 +7,6 @@ import {
   FillWithOrder,
   LastTradedPrice,
   Order,
-  SimpleOrderStrategy,
 } from '../hooks/marketplace/types';
 import { AssetType } from './marketplace';
 import { ChainId } from '../constants';
@@ -126,7 +125,16 @@ export const parseFillWithOrder = (data?: any): FillWithOrder | undefined => {
       strategyType: data.order.strategyType.id,
       buyAsset: parseAsset(data.order.buyAsset) as Asset,
       sellAsset: parseAsset(data.order.sellAsset) as Asset,
-      strategy: parseStrategy(data.order.strategy),
+      askPerUnitDenominator: BigNumber.from(data.order.askPerUnitDenominator),
+      askPerUnitNominator: BigNumber.from(data.order.askPerUnitNominator),
+      startsAt: data.order.startsAt,
+      expiresAt: data.order.expiresAt,
+      onlyTo: data.order.onlyTo,
+      partialAllowed: data.order.partialAllowed,
+      quantity: BigNumber.from(data.order.quantity),
+      quantityLeft: BigNumber.from(data.order.quantityLeft),
+      pricePerUnit: BigNumber.from(data.order.pricePerUnit),
+      orderType: stringToStringAssetType(data.order.orderType),
     },
   };
 };
@@ -149,11 +157,21 @@ export const parseOrder = (data?: any): Order | undefined => {
     ...data,
     seller: data.seller.id,
     strategyType: data.strategyType.id,
-    strategy: parseStrategy(data.strategy),
     cancel: parseCancel(data.cancel),
     buyAsset: parseAsset(data.buyAsset),
     sellAsset: parseAsset(data.sellAsset),
     fills: data.fills.map((x: any) => parseFill(x)),
+    askPerUnitDenominator: BigNumber.from(data.askPerUnitDenominator),
+    askPerUnitNominator: BigNumber.from(data.askPerUnitNominator),
+    startsAt: data.startsAt,
+    expiresAt: data.expiresAt,
+    id: data.id,
+    onlyTo: data.onlyTo,
+    partialAllowed: data.partialAllowed,
+    quantity: BigNumber.from(data.quantity),
+    quantityLeft: BigNumber.from(data.quantityLeft),
+    pricePerUnit: BigNumber.from(data.pricePerUnit),
+    orderType: stringToStringAssetType(data.orderType),
   };
 };
 
@@ -166,23 +184,6 @@ export const parseAsset = (data?: any): Asset | undefined => {
     assetId: data.assetId,
     assetType: stringToStringAssetType(data.assetType),
     id: data.id,
-  };
-};
-
-export const parseStrategy = (data?: any): SimpleOrderStrategy | undefined => {
-  if (!data) {
-    return undefined;
-  }
-  return {
-    askPerUnitDenominator: BigNumber.from(data.askPerUnitDenominator),
-    askPerUnitNominator: BigNumber.from(data.askPerUnitNominator),
-    startsAt: data.startsAt,
-    expiresAt: data.expiresAt,
-    id: data.id,
-    onlyTo: data.onlyTo,
-    partialAllowed: data.partialAllowed,
-    quantity: BigNumber.from(data.quantity),
-    quantityLeft: BigNumber.from(data.quantityLeft),
   };
 };
 

@@ -1,18 +1,35 @@
 import Grid from '@material-ui/core/Grid';
 import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
-import { Button, GlitchText, Loader, Table, TableBody, TableCell, TableHeader, TableRow, Tabs, Drawer } from 'ui';
+import {
+  Button,
+  GlitchText,
+  Loader,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  Tabs,
+  Drawer,
+} from 'ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Order } from 'hooks/marketplace/types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
-import { useLatestBuyOrdersWithStaticCallback, useLatestOrdersWithStaticCallback, useLatestSellOrdersWithStaticCallback } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
 import {
-  formatExpirationDateString, getDisplayQuantity,
+  useLatestBuyOrdersWithStaticCallback,
+  useLatestOrdersWithStaticCallback,
+  useLatestSellOrdersWithStaticCallback,
+} from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
+import {
+  formatExpirationDateString,
+  getDisplayQuantity,
   getUnitPrice,
   inferOrderTYpe,
-  OrderType, StrategyMap,
+  OrderType,
+  StrategyMap,
   StringAssetType,
 } from '../../utils/subgraph';
 import { truncateHexString } from '../../utils';
@@ -71,8 +88,18 @@ const FreshOrdersPage = () => {
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
-  const { placeholderContainer, container, pageContainer, tabsContainer, tabs, select, selectLabel, dropDown, filterControls } = useStyles();
-  const whitelist = useWhitelistedAddresses() // REMOVEME later
+  const {
+    placeholderContainer,
+    container,
+    pageContainer,
+    tabsContainer,
+    tabs,
+    select,
+    selectLabel,
+    dropDown,
+    filterControls,
+  } = useStyles();
+  const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
   const { chainId } = useActiveWeb3React();
   const getPaginatedBuyOrders = useLatestBuyOrdersWithStaticCallback();
@@ -87,16 +114,21 @@ const FreshOrdersPage = () => {
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      
+
       let buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
       let sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
 
-      buyData = buyData.filter(x => whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())) // REMOVEME later
-      sellData = sellData.filter(x => whitelist.includes(x.order.sellAsset.assetAddress.toLowerCase())) // REMOVEME later
-      
+      buyData = buyData.filter((x) =>
+        whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())
+      ); // REMOVEME later
+      sellData = sellData.filter((x) =>
+        whitelist.includes(x.order.sellAsset.assetAddress.toLowerCase())
+      ); // REMOVEME later
+
       setPageLoading(false);
 
-      const isEnd = buyData.some(({ meta }) => !meta) || sellData.some(({ meta }) => !meta);
+      const isEnd =
+        buyData.some(({ meta }) => !meta) || sellData.some(({ meta }) => !meta);
 
       if (isEnd) {
         const buyPieces = buyData.filter(({ meta }) => !!meta);
@@ -119,21 +151,23 @@ const FreshOrdersPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [take, paginationEnded]);
 
-
-
   const getTableBody = (
-    filteredCollection: {
-      meta: TokenMeta | undefined;
-      staticData: StaticTokenData;
-      order: Order;
-    }[] | undefined | null,
+    filteredCollection:
+      | {
+          meta: TokenMeta | undefined;
+          staticData: StaticTokenData;
+          order: Order;
+        }[]
+      | undefined
+      | null
   ) => {
     return (
       <TableBody>
-        {filteredCollection && filteredCollection.length > 0 ?
-          filteredCollection.map((token, i) =>
-            token && (<TokenOrder {...token} />))
-         : (
+        {filteredCollection && filteredCollection.length > 0 ? (
+          filteredCollection.map(
+            (token, i) => token && <TokenOrder {...token} />
+          )
+        ) : (
           <TableRow>
             <TableCell style={{ textAlign: 'center' }} colSpan={7}>
               No records available...
@@ -144,17 +178,27 @@ const FreshOrdersPage = () => {
     );
   };
 
-  const filterBuyOrders = (collection: any) => collection.filter((item: any) => {
-    const ot = inferOrderTYpe(chainId, item.order.sellAsset, item.order.buyAsset);
+  const filterBuyOrders = (collection: any) =>
+    collection.filter((item: any) => {
+      const ot = inferOrderTYpe(
+        chainId,
+        item.order.sellAsset,
+        item.order.buyAsset
+      );
 
-    return ot == OrderType.BUY;
-  });
+      return ot == OrderType.BUY;
+    });
 
-  const filterSellOrders = (collection: any) => collection.filter((item: any) => {
-    const ot = inferOrderTYpe(chainId, item.order.sellAsset, item.order.buyAsset);
+  const filterSellOrders = (collection: any) =>
+    collection.filter((item: any) => {
+      const ot = inferOrderTYpe(
+        chainId,
+        item.order.sellAsset,
+        item.order.buyAsset
+      );
 
-    return ot != OrderType.BUY;
-  });
+      return ot != OrderType.BUY;
+    });
 
   return (
     <>

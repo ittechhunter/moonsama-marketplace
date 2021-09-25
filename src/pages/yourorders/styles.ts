@@ -135,6 +135,6 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   copyAddressButton: {
-    marginTop: 0
-  }
+    marginTop: 0,
+  },
 }));

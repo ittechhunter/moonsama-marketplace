@@ -14,6 +14,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     '& path': {
       color: '#d2023e',
-    }
+    },
   },
 }));

@@ -130,8 +130,10 @@ const CollectionListItem = (
           </CardContent>
 
           <Collapse in={isCollectionExpanded} timeout="auto" unmountOnExit>
-            <CardContent style={{ padding: '8px 16px'}}>
-              <Typography paragraph className={collectionDescription}>{meta?.description}</Typography>
+            <CardContent style={{ padding: '8px 16px' }}>
+              <Typography paragraph className={collectionDescription}>
+                {meta?.description}
+              </Typography>
               {meta?.external_link && (
                 <ExternalLink href={meta?.external_link}>
                   External site↗

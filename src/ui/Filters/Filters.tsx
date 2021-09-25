@@ -7,19 +7,18 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Slider from '@mui/material/Slider';
 import { Button, Drawer } from 'ui';
 import { useStyles } from './Filters.style';
-import { Chip,  } from '@material-ui/core';
+import { Chip } from '@material-ui/core';
 import { MOONSAMA_TRAITS, ORDER_TYPES } from 'utils/constants';
 import FilterIcon from '@mui/icons-material/FilterListSharp';
 
-
 export interface Filters {
-  priceRange: number[]
-  traits: string[]
-  selectedOrderTypes: string[]
+  priceRange: number[];
+  traits: string[];
+  selectedOrderTypes: string[];
 }
 
 interface Props {
-  onFiltersUpdate: (x: Filters) => void
+  onFiltersUpdate: (x: Filters) => void;
 }
 
 export const Filters = ({ onFiltersUpdate }: Props) => {
@@ -27,10 +26,18 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
   const [priceRange, setPriceRange] = useState<number[]>([1, 400]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
   const [selectedOrderTypes, setSelectedOrderTypes] = useState<string[]>([]);
-  const { filtersDrawerContent, applyFiltersButton, filterAccordion, accordionHeader, accordionContent, filterChip, priceRangeWrapper, filtersTitle } = useStyles();
+  const {
+    filtersDrawerContent,
+    applyFiltersButton,
+    filterAccordion,
+    accordionHeader,
+    accordionContent,
+    filterChip,
+    priceRangeWrapper,
+    filtersTitle,
+  } = useStyles();
 
   const handleApplyFilters = () => {
-
     onFiltersUpdate({
       selectedOrderTypes,
       traits: selectedTraits,
@@ -39,13 +46,20 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
     setIsDrawerOpened(false);
   };
 
-  const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
+  const handlePriceRangeChange = (
+    event: Event,
+    newValue: number | number[]
+  ) => {
     setPriceRange(newValue as number[]);
   };
 
   const handleOrderTypeClick = (orderType: string) => {
-    if(selectedOrderTypes.includes(orderType)){
-      setSelectedOrderTypes(selectedOrderTypes.filter(selectedOrderType => selectedOrderType !== orderType));
+    if (selectedOrderTypes.includes(orderType)) {
+      setSelectedOrderTypes(
+        selectedOrderTypes.filter(
+          (selectedOrderType) => selectedOrderType !== orderType
+        )
+      );
 
       return;
     }
@@ -54,8 +68,10 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
   };
 
   const handleTraitClick = (trait: string) => {
-    if(selectedTraits.includes(trait)){
-      setSelectedTraits(selectedTraits.filter(selectedTrait => selectedTrait !== trait));
+    if (selectedTraits.includes(trait)) {
+      setSelectedTraits(
+        selectedTraits.filter((selectedTrait) => selectedTrait !== trait)
+      );
 
       return;
     }
@@ -80,7 +96,9 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
         onClose={() => setIsDrawerOpened(false)}
         onOpen={() => setIsDrawerOpened(true)}
       >
-        <Typography variant="h6" className={filtersTitle}>Filters</Typography>
+        <Typography variant="h6" className={filtersTitle}>
+          Filters
+        </Typography>
         <div className={filtersDrawerContent}>
           <div>
             {/*<Accordion defaultExpanded square className={filterAccordion}>*/}
@@ -145,14 +163,16 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
               </AccordionSummary>
               <AccordionDetails>
                 <div className={accordionContent}>
-                  {Object.keys(MOONSAMA_TRAITS).map(trait =>
+                  {Object.keys(MOONSAMA_TRAITS).map((trait) => (
                     <Chip
                       label={trait}
                       variant="outlined"
                       onClick={() => handleTraitClick(trait)}
-                      className={`${filterChip} ${selectedTraits.includes(trait) && 'selected'}`}
+                      className={`${filterChip} ${
+                        selectedTraits.includes(trait) && 'selected'
+                      }`}
                     />
-                  )}
+                  ))}
                 </div>
               </AccordionDetails>
             </Accordion>

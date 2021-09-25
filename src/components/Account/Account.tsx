@@ -23,21 +23,37 @@ export const Account = () => {
 
   return (
     <>
-      <Button className={button} size="medium" onClick={() => setAccountDialogOpen(true)}>
+      <Button
+        className={button}
+        size="medium"
+        onClick={() => setAccountDialogOpen(true)}
+      >
         {account && <HeaderBalance />}
 
         {showError ? (
           <Activity />
-        ) : account ? !hideAddress && (
-          <div style={{ fontSize: 0, margin: '0 8px' }}>
-            <Identicon />
-          </div>
+        ) : account ? (
+          !hideAddress && (
+            <div style={{ fontSize: 0, margin: '0 8px' }}>
+              <Identicon />
+            </div>
+          )
         ) : (
           <div style={{ fontSize: 0, margin: '0 8px 0 0' }}>
             <AccountBalanceWalletIcon />
           </div>
         )}
-        {showError ? errMessage : account ? hideAddress ? <Identicon /> : truncateAddress(account) : 'Connect'}
+        {showError ? (
+          errMessage
+        ) : account ? (
+          hideAddress ? (
+            <Identicon />
+          ) : (
+            truncateAddress(account)
+          )
+        ) : (
+          'Connect'
+        )}
       </Button>
     </>
   );

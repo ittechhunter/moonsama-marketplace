@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     marginTop: 12,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   scene: {
     position: 'absolute',
@@ -31,20 +31,20 @@ export const useStyles = makeStyles((theme) => ({
   },
   poster: {
     position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      overflow: 'hidden',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
   },
   glass: {
-      position: 'absolute',
-      width: '280px',
-      height: '430px',
-      transform: 'translateZ(3px)',
-      backgroundPosition: '0px 0px',
-      opacity: '0.01',
-      border: '5px solid #000',
+    position: 'absolute',
+    width: '280px',
+    height: '430px',
+    transform: 'translateZ(3px)',
+    backgroundPosition: '0px 0px',
+    opacity: '0.01',
+    border: '5px solid #000',
   },
   canvas: {
     position: 'absolute',
@@ -57,10 +57,9 @@ export const useStyles = makeStyles((theme) => ({
     transformStyle: 'preserve-3d',
     background: '#28495B',
 
-    'div': {
+    div: {
       position: 'absolute',
       transformStyle: 'preserve-3d',
     },
-},
-}))
-
+  },
+}));

@@ -132,35 +132,33 @@ export const useTokenStaticDataCallbackArray = () => {
   return fetchTokenStaticData;
 };
 
-export const useTokenStaticDataCallbackArrayWithFilter = ({
-  assetAddress,
-  assetType,
-}: TokenStaticCallbackInput,
+export const useTokenStaticDataCallbackArrayWithFilter = (
+  { assetAddress, assetType }: TokenStaticCallbackInput,
   filter?: Filters
 ) => {
   const { chainId } = useActiveWeb3React();
   const multi = useMulticall2Contract();
 
   const fetchUri = useFetchTokenUriCallback();
-  const ids = useMoonsamaAttrIds(filter?.traits) ?? []
+  const ids = useMoonsamaAttrIds(filter?.traits) ?? [];
 
   const fetchTokenStaticData = useCallback(
     async (num: number, offset: BigNumber) => {
-      if ((!assetAddress || !assetType)) {
-        console.log({assetAddress, assetType})
+      if (!assetAddress || !assetType) {
+        console.log({ assetAddress, assetType });
         return [];
       }
 
-      const offsetNum = BigNumber.from(offset).toNumber()
-      let chosenAssets: Asset[]
+      const offsetNum = BigNumber.from(offset).toNumber();
+      let chosenAssets: Asset[];
 
       if (ids?.length > 0) {
         //console.log('xxxx')
         if (offsetNum >= ids.length) {
-          return []
+          return [];
         }
-        const to = offsetNum + num >= ids.length ? ids.length : offsetNum + num
-        const chosenIds = ids.slice(offsetNum, to)
+        const to = offsetNum + num >= ids.length ? ids.length : offsetNum + num;
+        const chosenIds = ids.slice(offsetNum, to);
 
         //console.log('xxxx', {ids, offsetNum, num, to, chosenIds})
         chosenAssets = chosenIds.map((x) => {
@@ -169,8 +167,8 @@ export const useTokenStaticDataCallbackArrayWithFilter = ({
             assetType,
             assetAddress,
             id: getAssetEntityId(assetAddress, x),
-          }
-        })
+          };
+        });
       } else {
         chosenAssets = Array.from({ length: num }, (_, i) => {
           const x = offset.add(i).toString();
@@ -181,12 +179,17 @@ export const useTokenStaticDataCallbackArrayWithFilter = ({
             id: getAssetEntityId(assetAddress, x),
           };
         });
-        console.log('xxxx', chosenAssets)
+        console.log('xxxx', chosenAssets);
       }
 
       console.log('SEARCH', {
-        assetAddress, assetType, ids, num, offsetNum, chosenAssets
-      })
+        assetAddress,
+        assetType,
+        ids,
+        num,
+        offsetNum,
+        chosenAssets,
+      });
 
       let calls: any[] = [];
       chosenAssets.map((asset, i) => {
