@@ -30,7 +30,8 @@ import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from 'react-hook-form';
 
-const PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
+const SEARCH_PAGE_SIZE = 50;
 
 const CollectionPage = () => {
   const [collection, setCollection] = useState<
@@ -45,6 +46,7 @@ const CollectionPage = () => {
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
+  const [searchCounter, setSearchCounter] = useState<number>(0);
   const {
     placeholderContainer,
     collectionStats,
@@ -67,7 +69,8 @@ const CollectionPage = () => {
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
     asset,
-    filters
+    filters,
+    1000
   ); //useTokenStaticDataCallback(asset)//
   /*
   const f = x(['Black Bird', 'White Shades'])
@@ -85,36 +88,39 @@ const CollectionPage = () => {
   console.log('MSATTR', m)
   */
 
+  const searchSize = filters?.selectedOrderType == undefined ? DEFAULT_PAGE_SIZE: SEARCH_PAGE_SIZE
+
   const handleScrollToBottom = useCallback(() => {
     console.log('SCROLLBOTTOM');
-    setTake((state) => (state += PAGE_SIZE));
-  }, []);
+    setTake((state) => (state += searchSize));
+    setSearchCounter((state) => (state += 1));
+  }, [searchSize]);
 
   const handleTokenSearch = useCallback(async ({ tokenID }) => {
     if (tokenID) {
       setPaginationEnded(true);
       setPageLoading(true);
-      const data = await getItemsWithFilter(1, BigNumber.from(tokenID));
+      const data = await getItemsWithFilter(1, BigNumber.from(tokenID), setTake);
       setPageLoading(false);
       setCollection(data);
     } else {
       setPaginationEnded(false);
       setPageLoading(true);
-      const data = await getItemsWithFilter(PAGE_SIZE, BigNumber.from(take));
+      const data = await getItemsWithFilter(searchSize, BigNumber.from(take), setTake);
       setPageLoading(false);
       setCollection(data);
     }
-  }, []);
+  }, [searchSize]);
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
 
-  console.log('before FETCH', { PAGE_SIZE, address, take, paginationEnded });
+  console.log('before FETCH', { searchSize, address, take, paginationEnded, searchCounter, filters });
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      console.log('FETCH', { PAGE_SIZE, address, take, paginationEnded });
-      const data = await getItemsWithFilter(PAGE_SIZE, BigNumber.from(take));
-      const isEnd = data.some(({ meta }) => !meta);
+      console.log('FETCH', { searchSize, address, take, paginationEnded });
+      const data = await getItemsWithFilter(searchSize, BigNumber.from(take), setTake);
+      const isEnd = !data || data.length == 0
       const pieces = data.filter(({ meta }) => !!meta);
       setPageLoading(false);
 
@@ -125,13 +131,13 @@ const CollectionPage = () => {
         setCollection((state) => state.concat(pieces));
         return;
       }
-      setCollection((state) => state.concat(data));
+      setCollection((state) => state.concat(pieces));
     };
     if (!paginationEnded) {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, take, paginationEnded, JSON.stringify(filters?.traits)]);
+  }, [address, searchCounter, paginationEnded, searchSize, JSON.stringify(filters?.traits)]);
 
   if (assetType.valueOf() === StringAssetType.UNKNOWN) {
     throw Error('Asset type was not recognized');
@@ -147,6 +153,7 @@ const CollectionPage = () => {
     setFilters(filters);
     setPageLoading(true);
     setPaginationEnded(false);
+    setSearchCounter((state) => (state += 1));
   }, []);
 
   return (

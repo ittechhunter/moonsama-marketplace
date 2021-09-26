@@ -8,13 +8,14 @@ import Slider from '@mui/material/Slider';
 import { Button, Drawer } from 'ui';
 import { useStyles } from './Filters.style';
 import { Chip } from '@material-ui/core';
-import { MOONSAMA_TRAITS, ORDER_TYPES } from 'utils/constants';
+import { MOONSAMA_TRAITS } from 'utils/constants';
 import FilterIcon from '@mui/icons-material/FilterListSharp';
+import { OrderType } from 'utils/subgraph';
 
 export interface Filters {
   priceRange: number[];
   traits: string[];
-  selectedOrderTypes: string[];
+  selectedOrderType: OrderType | undefined;
 }
 
 interface Props {
@@ -25,7 +26,7 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([1, 400]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
-  const [selectedOrderTypes, setSelectedOrderTypes] = useState<string[]>([]);
+  const [selectedOrderType, setSelectedOrderType] = useState<OrderType | undefined>(undefined);
   const {
     filtersDrawerContent,
     applyFiltersButton,
@@ -39,7 +40,7 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
 
   const handleApplyFilters = () => {
     onFiltersUpdate({
-      selectedOrderTypes,
+      selectedOrderType,
       traits: selectedTraits,
       priceRange,
     });
@@ -53,18 +54,8 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
     setPriceRange(newValue as number[]);
   };
 
-  const handleOrderTypeClick = (orderType: string) => {
-    if (selectedOrderTypes.includes(orderType)) {
-      setSelectedOrderTypes(
-        selectedOrderTypes.filter(
-          (selectedOrderType) => selectedOrderType !== orderType
-        )
-      );
-
-      return;
-    }
-
-    setSelectedOrderTypes([...selectedOrderTypes, orderType]);
+  const handleOrderTypeClick = (orderType: OrderType | undefined) => {
+    setSelectedOrderType(orderType)
   };
 
   const handleTraitClick = (trait: string) => {
@@ -101,58 +92,68 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
         </Typography>
         <div className={filtersDrawerContent}>
           <div>
-            {/*<Accordion defaultExpanded square className={filterAccordion}>*/}
-            {/*  <AccordionSummary*/}
-            {/*    expandIcon={<ExpandMoreIcon />}*/}
-            {/*    aria-controls="panel1a-content"*/}
-            {/*    id="panel1a-header"*/}
-            {/*  >*/}
-            {/*    <Typography className={accordionHeader}>Order Type</Typography>*/}
-            {/*  </AccordionSummary>*/}
-            {/*  <AccordionDetails>*/}
-            {/*    <div className={accordionContent}>*/}
-            {/*      <Chip*/}
-            {/*        label="Buy Now"*/}
-            {/*        variant="outlined"*/}
-            {/*        onClick={() => handleOrderTypeClick('buy_now')}*/}
-            {/*        className={`${filterChip} ${selectedOrderTypes.includes('buy_now') && 'selected'}`} />*/}
-            {/*    </div>*/}
-            {/*  </AccordionDetails>*/}
-            {/*</Accordion>*/}
-            {/*<Accordion defaultExpanded square className={filterAccordion}>*/}
-            {/*  <AccordionSummary*/}
-            {/*    expandIcon={<ExpandMoreIcon />}*/}
-            {/*    aria-controls="panel2a-content"*/}
-            {/*    id="panel2a-header"*/}
-            {/*  >*/}
-            {/*    <Typography className={accordionHeader}>Price</Typography>*/}
-            {/*  </AccordionSummary>*/}
-            {/*  <AccordionDetails>*/}
-            {/*    <Slider*/}
-            {/*      getAriaLabel={() => 'Price range'}*/}
-            {/*      value={priceRange}*/}
-            {/*      onChange={handlePriceRangeChange}*/}
-            {/*      valueLabelDisplay="auto"*/}
-            {/*      min={0}*/}
-            {/*      max={400}*/}
-            {/*      sx={{*/}
-            {/*        "& .MuiSlider-thumb":{*/}
-            {/*          color: "#710021",*/}
-            {/*        },*/}
-            {/*        "& .MuiSlider-track": {*/}
-            {/*          color: '#710021'*/}
-            {/*        },*/}
-            {/*        "& .MuiSlider-rail": {*/}
-            {/*          color: '#c5c5c5'*/}
-            {/*        }*/}
-            {/*      }}*/}
-            {/*    />*/}
-            {/*    <div className={priceRangeWrapper}>*/}
-            {/*      <div>{`${priceRange[0]} MOVR`}</div>*/}
-            {/*      <div>{`${priceRange[1]} MOVR`}</div>*/}
-            {/*    </div>*/}
-            {/*  </AccordionDetails>*/}
-            {/*</Accordion>*/}
+            <Accordion defaultExpanded square className={filterAccordion}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography className={accordionHeader}>Order Type</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className={accordionContent}>
+                  <Chip
+                    label="Active buy order"
+                    variant="outlined"
+                    onClick={() => handleOrderTypeClick(OrderType.BUY)}
+                    className={`${filterChip} ${selectedOrderType == OrderType.BUY && 'selected'}`} />
+                  <Chip
+                    label="Active sell order"
+                    variant="outlined"
+                    onClick={() => handleOrderTypeClick(OrderType.SELL)}
+                    className={`${filterChip} ${selectedOrderType == OrderType.SELL && 'selected'}`} />
+                  <Chip
+                    label="None"
+                    variant="outlined"
+                    onClick={() => handleOrderTypeClick(undefined)}
+                    className={`${filterChip} ${selectedOrderType == undefined && 'selected'}`} />
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion defaultExpanded square className={filterAccordion}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2a-content"
+                id="panel2a-header"
+              >
+                <Typography className={accordionHeader}>Price</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Slider
+                  getAriaLabel={() => 'Price range'}
+                  value={priceRange}
+                  onChange={handlePriceRangeChange}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={400}
+                  sx={{
+                    "& .MuiSlider-thumb":{
+                      color: "#710021",
+                    },
+                    "& .MuiSlider-track": {
+                      color: '#710021'
+                    },
+                    "& .MuiSlider-rail": {
+                      color: '#c5c5c5'
+                    }
+                  }}
+                />
+                <div className={priceRangeWrapper}>
+                  <div>{`${priceRange[0]} MOVR`}</div>
+                  <div>{`${priceRange[1]} MOVR`}</div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
             <Accordion defaultExpanded square className={filterAccordion}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}

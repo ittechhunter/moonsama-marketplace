@@ -1,6 +1,7 @@
 import { DEFAULT_ORDERBOOK_PAGINATION } from '../constants';
 import { gql } from 'graphql-request';
 import { META } from './common';
+import { OrderType } from 'utils/subgraph';
 
 export const ASSET_FIELDS = `
     id,
@@ -120,12 +121,10 @@ export const QUERY_ACTIVE_ORDERS_AT_BLOCK = gql`
   }
 `;
 
-export const QUERY_ASSET_ORDERS = (isBuy: boolean, onlyActive: boolean) => gql`
-  query getAssetOrders($asset: String!) {
+export const QUERY_ASSET_ORDERS = (isBuy: boolean, onlyActive: boolean, assetEntityId: string) => gql`
+  query getAssetOrders {
     ${META}
-    orders(where: {${onlyActive ? 'active: true, ' : ''}${
-  isBuy ? 'buyAsset' : 'sellAsset'
-}: $asset}) {
+    orders(where: {${onlyActive ? 'active: true, ' : ''}${isBuy ? 'buyAsset' : 'sellAsset'}: "${assetEntityId}"}) {
       ${ORDER_FIELDS}
     }
   }
@@ -237,16 +236,15 @@ export const QUERY_LATEST_SELL_ORDERS = (
   }
 `;
 
-export const QUERY_ASSET_SELLS = (
-  buyAssetId: string,
-  from: number,
-  num: number
+export const QUERY_ACTIVE_ORDERS_FOR_FILTER = (
+  orderType: OrderType,
+  assetIdsJSONString: string,
+  lowerPPURange: string,
+  upperPPURange: string
 ) => gql`
   query getUserActiveOrders {
     ${META}
-    activeAssetSellOrders: orders(where: {active: true, buyAsset: "${buyAssetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
-  num ?? DEFAULT_ORDERBOOK_PAGINATION
-}) {
+    orders(where: {active: true, pricePerUnit_lte: "${upperPPURange}", pricePerUnit_gte: "${lowerPPURange}", ${orderType == OrderType.BUY ? 'buyAsset_in': 'sellAsset_in'}: ${assetIdsJSONString}}, orderBy: createdAt, orderDirection: desc) {
       ${ORDER_FIELDS}
     }
   }

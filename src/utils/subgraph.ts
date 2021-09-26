@@ -19,6 +19,7 @@ export enum StringOrderType {
 }
 
 export const enum OrderType {
+  UNKNOWN = 0,
   BUY = 1,
   SELL = 2,
 }
@@ -84,6 +85,19 @@ export function stringToStringOrderType(
     return StringOrderType.SELL;
   }
   return StringOrderType.UNKNOWN;
+}
+
+export function stringToOrderType(
+  assetTypeString?: string
+): OrderType {
+  const upper = assetTypeString?.toUpperCase();
+  if ('BUY' === upper) {
+    return OrderType.BUY;
+  }
+  if ('SELL' === upper) {
+    return OrderType.SELL;
+  }
+  return OrderType.UNKNOWN;
 }
 
 export const parseFill = (data?: any): Fill | undefined => {
@@ -171,7 +185,7 @@ export const parseOrder = (data?: any): Order | undefined => {
     quantity: BigNumber.from(data.quantity),
     quantityLeft: BigNumber.from(data.quantityLeft),
     pricePerUnit: BigNumber.from(data.pricePerUnit),
-    orderType: stringToStringAssetType(data.orderType),
+    orderType: stringToStringOrderType(data.orderType),
   };
 };
 

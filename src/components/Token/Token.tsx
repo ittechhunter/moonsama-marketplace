@@ -2,17 +2,28 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Media } from 'components';
 import { useLastTradedPriceOnce } from 'hooks/marketplace/useLastTradedPrice';
-import { TokenData } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
 import { truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
-import { StringAssetType, StringOrderType } from 'utils/subgraph';
+import { OrderType, StringAssetType, StringOrderType, stringToOrderType } from 'utils/subgraph';
 import { useStyles } from './Token.styles';
 import LootBox from '../../assets/images/loot-box.png';
 import { width } from '@mui/system';
+import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
+import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
+import { Order } from 'hooks/marketplace/types';
+import { useEffect, useState } from 'react';
+import { useOrder } from 'hooks/marketplace/useOrder';
+import { useAssetOrders, useAssetOrdersCallback } from 'hooks/marketplace/useAssetOrders';
 
-export const Token = ({ meta, staticData }: TokenData) => {
+export interface TokenData {
+  meta: TokenMeta | undefined;
+  staticData: StaticTokenData;
+  order?: Order | undefined;
+}
+
+export const Token = ({ meta, staticData, order }: TokenData) => {
   const {
     container,
     image,
@@ -24,6 +35,7 @@ export const Token = ({ meta, staticData }: TokenData) => {
     lastPriceContainer,
   } = useStyles();
   const { push } = useHistory();
+  const [fetchedOrder, setFetchedOrer] = useState<Order | undefined>(undefined)
 
   const asset = staticData.asset;
 
@@ -31,17 +43,56 @@ export const Token = ({ meta, staticData }: TokenData) => {
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  /*
   const ltp = useLastTradedPriceOnce({
     assetAddress: asset.assetAddress,
     assetId: asset.assetId,
   });
+  */
 
+  const getOrderCB = useAssetOrdersCallback(asset.assetAddress, asset.assetId, false, true)
+
+  useEffect(() => {
+    console.log('useEffect run!')
+    const fetch = async () => {
+      const os: Order[] = await getOrderCB()
+      const o: Order | undefined = os.reduce((prev: Order| undefined, current: Order| undefined) => {
+        if (prev && current) {
+          if (prev.pricePerUnit.lt(current.pricePerUnit)) {
+            return current
+          } else {
+            return prev
+          }
+        }
+        return current
+      }, undefined)
+      console.log('useEffect run fetch', {os, o})
+      if(o) {
+        setFetchedOrer(o)
+      }
+    }
+    if (!order) {
+        fetch()
+    }
+  }, [])
+
+  const finalOrder = order ?? fetchedOrder
+
+  const orderType = stringToOrderType(finalOrder?.orderType)
+
+  /*
   const color =
     ltp?.orderType.valueOf() === StringOrderType.BUY.valueOf()
       ? 'green'
       : '#b90e0e';
-
+  */
   //console.log('STATIC',{staticData})
+
+  console.log('ORDERTYPE', {orderType, original: finalOrder?.orderType})
+  const color =
+    orderType === OrderType.BUY
+      ? 'green'
+      : '#b90e0e';
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
@@ -68,9 +119,9 @@ export const Token = ({ meta, staticData }: TokenData) => {
         <GlitchText className={tokenName}>
           {meta?.name ?? truncateHexString(asset.assetId)}
         </GlitchText>
-        {ltp && (
+        {finalOrder?.pricePerUnit && (
           <PriceBox margin={false} size="small" color={color}>
-            {Fraction.from(ltp.unitPrice, 18)?.toFixed(0)} MOVR
+            {Fraction.from(finalOrder?.pricePerUnit.toString(), 18)?.toFixed(0)} MOVR
           </PriceBox>
         )}
       </div>
