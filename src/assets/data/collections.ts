@@ -49,6 +49,18 @@ export const collections = {
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
       tags: ['native', 'green'],
     },
+    
+   
+    {
+      chainId: 1285,
+      address: '0x63228048121877A9e0f52020834A135074e8207C',
+      display_name: 'TestCollection',
+      symbol: 'TC',
+      type: 'ERC1155',
+      indexing: 'sequential',
+      contractURI: 'ipfs://QmfZtbgLDmcDNf4tvhm1LuLmbBYSASmk6zcSBY2GRzh72S',
+      tags: ['native', 'green'],
+    },
     */
     {
       chainId: 1285,

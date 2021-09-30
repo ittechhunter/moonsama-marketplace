@@ -16,6 +16,7 @@ import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
 import { TokenTrade } from 'components/TokenTrade/TokenTrade';
+import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 
 const PAGE_SIZE = 10;
 
@@ -53,14 +54,14 @@ const FreshTradesPage = () => {
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400 });
 
+  const whitelist = useWhitelistedAddresses(); // REMOVEME later
+
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
       let data = await getPaginatedItems(PAGE_SIZE, take);
       data = data.filter(
-        (x) =>
-          x.staticData.asset.assetAddress.toLowerCase() ===
-          '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
+        (x) => whitelist.includes(x.staticData.asset.assetAddress.toLowerCase())
       ); // REMOVEME later
       setPageLoading(false);
       const isEnd = data.some(({ meta }) => !meta);

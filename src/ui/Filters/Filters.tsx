@@ -135,7 +135,7 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
                   onChange={handlePriceRangeChange}
                   valueLabelDisplay="auto"
                   min={0}
-                  max={400}
+                  max={5000}
                   sx={{
                     "& .MuiSlider-thumb":{
                       color: "#710021",
