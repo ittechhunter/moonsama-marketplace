@@ -50,7 +50,7 @@ export const collections = {
       tags: ['native', 'green'],
     },
     
-   
+   */
     {
       chainId: 1285,
       address: '0x63228048121877A9e0f52020834A135074e8207C',
@@ -60,8 +60,9 @@ export const collections = {
       indexing: 'sequential',
       contractURI: 'ipfs://QmfZtbgLDmcDNf4tvhm1LuLmbBYSASmk6zcSBY2GRzh72S',
       tags: ['native', 'green'],
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-test'
+      
     },
-    */
     {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
@@ -71,6 +72,7 @@ export const collections = {
       indexing: 'sequential',
       contractURI: 'ipfs://QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5',
       tags: ['native', 'green'],
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft'
     },
   ],
 };

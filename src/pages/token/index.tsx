@@ -204,6 +204,8 @@ const TokenPage = () => {
         rarity,
       };
     });
+  
+  const displayRarity = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -419,13 +421,13 @@ const TokenPage = () => {
         </Box>
 
         {/*TODO: Make traits calculation collection specific*/}
-        <Typography color="textSecondary" className={smallText}>
+        {displayRarity ? <Typography color="textSecondary" className={smallText}>
           {transformedMetaData?.map((trait) => (
             <Tooltip title={`${trait.rarity}% have this trait`}>
               <Chip label={trait.label} className={traitChip} />
             </Tooltip>
           ))}
-        </Typography>
+        </Typography> : <Typography>{assetMeta?.description}</Typography>}
 
         <Paper className={card}>
           {ltp && (

@@ -15,4 +15,11 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: 12,
     textAlign: 'center',
   },
+  subContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    marginTop: 12,
+    textAlign: 'left',
+  },
 }));

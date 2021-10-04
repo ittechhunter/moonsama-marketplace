@@ -65,6 +65,8 @@ const CollectionPage = () => {
     id: getAssetEntityId(address?.toLowerCase(), '0'),
   };
 
+  const displayFilters = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
+
   // TODO: wire it to search result
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
@@ -227,9 +229,10 @@ const CollectionPage = () => {
           {/*    </Select>*/}
           {/*  </FormControl>*/}
           {/*</div>*/}
-          <div>
+          
+          {displayFilters && <div>
             <Filters onFiltersUpdate={handleFiltersUpdate} />
-          </div>
+          </div>}
         </Stack>
       </div>
       <Grid container spacing={1}>

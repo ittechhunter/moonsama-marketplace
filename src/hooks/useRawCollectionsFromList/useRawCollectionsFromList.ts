@@ -21,6 +21,7 @@ export type RawCollection = {
   contractURI: string;
   tags: string[];
   min_items: number;
+  subgraph: string;
 };
 
 export type RawCollectionList = {
@@ -57,6 +58,7 @@ const collectionListSchema = yup.object<RawCollectionList>({
             .required(),
           contractURI: yup.string().required(),
           tags: yup.array().of(yup.string().required()).required(),
+          subgraph: yup.string()
         })
         .required()
     )
