@@ -49,8 +49,6 @@ export const collections = {
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
       tags: ['native', 'green'],
     },
-    
-   */
     {
       chainId: 1285,
       address: '0x63228048121877A9e0f52020834A135074e8207C',
@@ -63,6 +61,7 @@ export const collections = {
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-test'
       
     },
+    */
     {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
@@ -74,6 +73,17 @@ export const collections = {
       tags: ['native', 'green'],
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft'
     },
+    {
+      chainId: 1285,
+      address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
+      display_name: '???',
+      symbol: '???',
+      type: 'ERC1155',
+      indexing: 'sequential',
+      contractURI: 'ipfs://QmWox8YqUaYVxSSB7GRhPAuczv6auL8QrkDrkMTcqGEGKA',
+      tags: ['native', 'green'],
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-mx'
+    }
   ],
 };
 
