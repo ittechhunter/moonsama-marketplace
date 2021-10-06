@@ -56,7 +56,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
     console.log('useEffect run!')
     const fetch = async () => {
       const os: Order[] = await getOrderCB()
-      const o: Order | undefined = os.reduce((prev: Order| undefined, current: Order| undefined) => {
+      const o: Order | undefined = os.reduce((prev: Order | undefined, current: Order | undefined) => {
         if (prev && current) {
           if (prev.pricePerUnit.lt(current.pricePerUnit)) {
             return current
@@ -66,13 +66,13 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
         }
         return current
       }, undefined)
-      console.log('useEffect run fetch', {os, o})
-      if(o) {
+      console.log('useEffect run fetch', { os, o })
+      if (o) {
         setFetchedOrer(o)
       }
     }
     if (!order) {
-        fetch()
+      fetch()
     }
   }, [])
 
@@ -88,7 +88,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   */
   //console.log('STATIC',{staticData})
 
-  console.log('ORDERTYPE', {orderType, original: finalOrder?.orderType})
+  console.log('ORDERTYPE', { orderType, original: finalOrder?.orderType })
   const color =
     orderType === OrderType.BUY
       ? 'green'
@@ -100,41 +100,44 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
-    ? `${sup} pieces`
-    : undefined;
+      ? `${sup} pieces`
+      : undefined;
 
   return (
     <Paper className={container}>
       <div
-        role="button"
-        className={imageContainer}
         onClick={handleImageClick}
         onKeyPress={handleImageClick}
-        tabIndex={0}
+        style={{cursor: 'pointer'}}
       >
-        <Media uri={meta?.image} className={image} />
-        {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
-      </div>
-      <div className={nameContainer}>
-        <GlitchText className={tokenName}>
-          {meta?.name ?? truncateHexString(asset.assetId)}
-        </GlitchText>
-        {finalOrder?.pricePerUnit && (
-          <PriceBox margin={false} size="small" color={color}>
-            {Fraction.from(finalOrder?.pricePerUnit.toString(), 18)?.toFixed(0)} MOVR
-          </PriceBox>
-        )}
-      </div>
-      <div className={stockContainer}>
-        {staticData?.symbol && (
-          <Typography color="textSecondary">{staticData.symbol}</Typography>
-        )}
+        <div
+          role="button"
+          className={imageContainer}
+          tabIndex={0}
+        >
+          <Media uri={meta?.image} className={image} />
+          {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
+        </div>
+        <div className={nameContainer}>
+          <GlitchText className={tokenName}>
+            {meta?.name ?? truncateHexString(asset.assetId)}
+          </GlitchText>
+          {finalOrder?.pricePerUnit && (
+            <PriceBox margin={false} size="small" color={color}>
+              {Fraction.from(finalOrder?.pricePerUnit.toString(), 18)?.toFixed(0)} MOVR
+            </PriceBox>
+          )}
+        </div>
+        <div className={stockContainer}>
+          {staticData?.symbol && (
+            <Typography color="textSecondary">{staticData.symbol}</Typography>
+          )}
 
-        {totalSupplyString && (
-          <Typography color="textSecondary">{totalSupplyString}</Typography>
-        )}
-      </div>
-      {/*{ltp && <div className={lastPriceContainer}>
+          {totalSupplyString && (
+            <Typography color="textSecondary">{totalSupplyString}</Typography>
+          )}
+        </div>
+        {/*{ltp && <div className={lastPriceContainer}>
         <Typography color="textSecondary" noWrap className={mr}>
           Last trade
         </Typography>
@@ -142,6 +145,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} MOVR
         </PriceBox>
       </div>}*/}
+      </div>
     </Paper>
   );
 };
