@@ -88,6 +88,7 @@ const TokenPage = () => {
   if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
 
   if (!whitelist.includes(address.toLowerCase())) {
+    console.log({whitelist, address})
     // REMOVEME later
     throw Error('Unsupported token');
   }
@@ -174,18 +175,36 @@ const TokenPage = () => {
 
   const assetMeta = metas?.[0];
 
+  const decimals = asset.assetAddress === '0x1974eeaf317ecf792ff307f25a3521c35eecde86' ? 0 : balanceData?.[0]?.decimals
+
   let userBalanceString = isErc20
     ? Fraction.from(
         balanceData?.[0]?.userBalance?.toString() ?? '0',
-        18
-      )?.toFixed(5) ?? '0'
-    : balanceData?.[0]?.userBalance?.toString() ?? '0';
+        decimals ?? 18
+      )?.toFixed(2) ?? '0'
+    : (
+      decimals && decimals > 1 
+        ? Fraction.from(
+            balanceData?.[0]?.userBalance?.toString() ?? '0',
+            decimals ?? 1
+          )?.toFixed(2) ?? '0'
+        : balanceData?.[0]?.userBalance?.toString() ?? '0'
+    );
 
   const isOwner = userBalanceString !== '0';
 
+  console.log('yoyoyo', {...balanceData?.[0]})
   let totalSupplyString =
-    balanceData?.[0]?.totalSupply?.toString() ??
-    (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
+    balanceData?.[0]?.totalSupply
+    ? (
+      decimals && decimals > 1 
+        ? Fraction.from(
+            balanceData?.[0]?.totalSupply?.toString() ?? '0',
+            decimals ?? 18
+          )?.toFixed(2) ?? '0'
+        : balanceData?.[0]?.totalSupply?.toString()
+    )
+    : (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
 
   //console.log('data', { balanceData, staticData, assetMeta });
 
@@ -347,7 +366,7 @@ const TokenPage = () => {
                     <Button
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot });
+                        setPurchaseData({ order, orderType: ot, decimals });
                       }}
                       variant="contained"
                       color="primary"
@@ -498,7 +517,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset });
+                  setBidData({ orderType: OrderType.BUY, asset, decimals });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
@@ -511,7 +530,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset });
+                  setBidData({ orderType: OrderType.SELL, asset, decimals });
                 }}
                 startIcon={<MoneyIcon />}
                 variant="outlined"
@@ -525,7 +544,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setTransferDialogOpen(true);
-                  setTransferData({ asset });
+                  setTransferData({ asset, decimals });
                 }}
                 startIcon={<SyncAltIcon />}
                 variant="outlined"

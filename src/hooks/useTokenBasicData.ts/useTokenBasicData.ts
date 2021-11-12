@@ -17,6 +17,7 @@ export interface BasicTokenData {
   asset: Asset;
   userBalance: BigNumber;
   totalSupply?: BigNumber;
+  decimals?: number;
   owner?: string;
 }
 
@@ -33,8 +34,9 @@ export const processResults = (
         asset: x,
         userBalance: results[i + offset]?.[0],
         totalSupply: results[i + offset + 1]?.[0],
+        decimals: results[i + offset + 2]?.[0],
       });
-      offset += 1;
+      offset += 2;
       return;
     }
 
@@ -57,8 +59,9 @@ export const processResults = (
         asset: x,
         userBalance: results[i + offset]?.[0],
         totalSupply: results[i + offset + 1]?.[0],
+        decimals: results[i + offset + 2]?.[0],
       });
-      offset += 1;
+      offset += 2;
       return;
     }
   });
@@ -108,6 +111,16 @@ export const useTokenBasicData = (assets: Asset[]) => {
           'totalSupply',
           [],
         ],
+        [
+          [
+            new Interface([
+              'function decimals() view returns (uint8)',
+            ]).getFunction('decimals'),
+          ],
+          asset.assetAddress,
+          'decimals',
+          [],
+        ],
       ];
     }
 
@@ -149,6 +162,16 @@ export const useTokenBasicData = (assets: Asset[]) => {
           asset.assetAddress,
           'totalSupply',
           [asset.assetId],
+        ],
+        [
+          [
+            new Interface([
+              'function decimals() view returns (uint8)',
+            ]).getFunction('decimals'),
+          ],
+          asset.assetAddress,
+          'decimals',
+          [],
         ],
       ];
     }

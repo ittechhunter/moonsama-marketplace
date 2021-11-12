@@ -57,7 +57,7 @@ export function useTransferCallback(query: TransferRequest | undefined): {
     });
 
     console.log({ currentBalance });
-    return currentBalance.lt(amount)
+    return BigNumber.from(amount).eq('0') || currentBalance.lt(amount)
       ? TransferState.INVALID
       : TransferState.VALID;
   }, [

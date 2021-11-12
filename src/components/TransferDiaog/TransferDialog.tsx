@@ -9,7 +9,7 @@ import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent
 import { NumberFieldWithMaxButton } from 'components/form/NumberFieldWithMaxButton';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { StringAssetType } from 'utils/subgraph';
-import { parseEther, formatEther } from '@ethersproject/units';
+import { parseUnits } from '@ethersproject/units';
 import { useBalances } from 'hooks/useBalances/useBalances';
 import {
   TransferState,
@@ -27,7 +27,6 @@ import { ChainId } from '../../constants';
 import { useTransferDialog } from '../../hooks/useTransferDialog/useTransferDialog';
 import { useStyles } from './TransferDialog.styles';
 import { Box, FormControl, OutlinedInput } from '@material-ui/core';
-import { UNIT } from 'components/form/CoinQuantityField';
 import { Fraction } from 'utils/Fraction';
 
 const makeTransferFormDataSchema = (): yup.ObjectSchema<TransferFormData> =>
@@ -106,20 +105,13 @@ export const TransferDialog = () => {
 
   const userBalance = useBalances([transferData?.asset])?.[0];
 
-  const [quantityUnit, unitOptions] = useMemo(() => {
-    return transferData?.asset?.assetType?.valueOf() ===
-      StringAssetType.ERC20.valueOf()
-      ? [UNIT.ETHER, [[1, 'in ether']]]
-      : [UNIT.WEI, [[2, 'in units']]];
-  }, [transferData?.asset?.assetType]);
+  const decimals = transferData?.decimals ?? 0
 
   let quantity: BigNumber;
   let youhave: string | undefined;
   try {
     quantity = quantityText
-      ? quantityUnit === UNIT.ETHER
-        ? parseEther(quantityText)
-        : BigNumber.from(quantityText)
+      ? parseUnits(quantityText, decimals)
       : BigNumber.from('0');
     amountError = undefined;
   } catch {
@@ -128,9 +120,7 @@ export const TransferDialog = () => {
   }
 
   youhave = userBalance
-    ? quantityUnit === UNIT.ETHER
-      ? Fraction.from(userBalance.toString(), 18)?.toFixed(5)
-      : userBalance.toString()
+    ? Fraction.from(userBalance.toString(), decimals)?.toFixed(decimals)
     : '0';
   amountError = undefined;
 
@@ -147,13 +137,19 @@ export const TransferDialog = () => {
     quantity
   );
 
-  /*
+
   console.warn('transferdialog', {
     finalTxSubmitted,
     transferSubmitted,
     transferTx,
+    transferState,
+    quantity: quantity.toString(),
+    quantityText,
+    amountError,
+    to: getValues('recipient') ?? ''
+
   });
-  */
+
 
   const renderBody = () => {
     if (!orderLoaded) {
@@ -268,9 +264,7 @@ export const TransferDialog = () => {
                 label="Amount"
                 setMaxValue={() => {
                   setQuantityText(
-                    quantityUnit?.valueOf() === UNIT.ETHER
-                      ? formatEther(userBalance?.toString() ?? '0')
-                      : userBalance?.toString()
+                    Fraction.from(userBalance?.toString() ?? '0', decimals)?.toFixed(decimals)
                   );
                 }}
                 className={formValue}

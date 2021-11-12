@@ -21,8 +21,6 @@ export const CoinQuantityField = (props: any) => {
   const setValue = props.setValue;
   const setMaxValue = props.setMaxValue;
   const withMaxButton = props.withMaxButton ?? false;
-  const unitOptions: [number, string][] = props.unitOptions ?? [[2, 'wei']];
-  const unit: UNIT | undefined = props.unit ?? UNIT.WEI;
 
   const { formMaxButton } = appStyles();
   const { outlinedInput, coinSelect } = CoinQuantityFieldStyles();

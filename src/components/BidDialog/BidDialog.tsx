@@ -193,6 +193,8 @@ export const BidDialog = () => {
 
   const orderType = bidData?.orderType;
 
+  const decimals = bidData?.decimals ?? 0
+
   const isAssetNative =
     assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
 
