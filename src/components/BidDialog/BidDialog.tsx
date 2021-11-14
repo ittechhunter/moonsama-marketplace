@@ -1,7 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { BigNumber } from '@ethersproject/bignumber';
-import { parseEther } from '@ethersproject/units';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import {
   Box,
   Collapse,
@@ -59,6 +58,10 @@ import * as yup from 'yup';
 import { appStyles } from '../../app.styles';
 import { useStyles } from './BidDialog.styles';
 import { Fraction } from 'utils/Fraction';
+import { buyFungible } from './buyFungible.logic';
+import { buyElse } from './buyElse.logic';
+import { sellFungible } from './sellFungible.logic';
+import { sellElse } from './sellElse.logic';
 
 const makeBidFormDataSchema = (): yup.ObjectSchema<BidFormData> =>
   yup
@@ -160,29 +163,16 @@ export const BidDialog = () => {
   }
 
   let title: string;
-  const name = 'yadabada';
-  let symbol: string | undefined = 'MSAMA';
+  let symbol: string | undefined = bidData?.symbol ?? 'NFT';
   let sellAssetType: StringAssetType | undefined;
   let action: string;
-  let orderAmount: BigNumber;
-  let brutto: BigNumber;
-  let protocolFee: BigNumber;
-  let royaltyFee: BigNumber;
-  let askPerUnitNominator: BigNumber;
-  let askPerUnitDenominator: BigNumber;
-  let amountToApprove: BigNumber;
   let ppu: BigNumber;
-  let quantity: BigNumber;
-  let displayQuantity: string | undefined;
-  let quantityError: string | undefined;
   let ppuError: string | undefined;
+  let displaySellBalance: string | undefined
+  let sellDecimals: number
 
   let sellAssetContract: Asset;
   let buyAssetContract: Asset;
-
-  let netto: BigNumber;
-
-  let availableLabel: string;
 
   const assetAddress = bidData?.asset?.assetAddress;
   const assetId = bidData?.asset?.assetId;
@@ -195,18 +185,11 @@ export const BidDialog = () => {
 
   const decimals = bidData?.decimals ?? 0
 
-  const isAssetNative =
-    assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
-
-  const [quantityUnit, unitOptions] = useMemo(() => {
-    return isAssetNative
-      ? [UNIT.ETHER, [[1, 'in ether']]]
-      : [UNIT.WEI, [[2, 'units']]];
-  }, [isAssetNative]);
+  const isAssetFungible = decimals > 0;
 
   // buy- PPU is always in ether!
   try {
-    ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0');
+    ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0')
     ppuError = undefined;
   } catch {
     ppu = BigNumber.from('0');
@@ -218,10 +201,11 @@ export const BidDialog = () => {
     ppuError = 'Invalid price value';
   }
 
+  let meat
+
   if (orderType === OrderType.BUY) {
     title = 'Create buy offer';
     action = 'buy';
-    availableLabel = 'Total requested';
 
     sellAssetContract = {
       addr: AddressZero,
@@ -230,6 +214,7 @@ export const BidDialog = () => {
     };
 
     sellAssetType = StringAssetType.NATIVE;
+    sellDecimals = 18
 
     buyAssetContract = {
       addr: assetAddress ?? AddressZero,
@@ -238,83 +223,26 @@ export const BidDialog = () => {
     };
 
     // buy- quantity input field is Ether
-    if (isAssetNative) {
-      // buy quantity is the amount of ERC20 to buy in ether
-      try {
-        quantity = quantityText
-          ? parseEther(quantityText)
-          : BigNumber.from('0');
-        quantityError = undefined;
-      } catch {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      if (quantity.lt('0')) {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      orderAmount =
-        ppu && quantity
-          ? ppu.mul(quantity).div(TEN_POW_18)
-          : BigNumber.from('0');
-
-      amountToApprove = orderAmount;
-
-      brutto = orderAmount;
-
-      askPerUnitNominator = BigNumber.from('1');
-      askPerUnitDenominator = ppu ?? BigNumber.from('1');
-
-      royaltyFee =
-        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ??
-        BigNumber.from('0');
-      protocolFee = orderAmount.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
-
-      netto = orderAmount.sub(royaltyFee).sub(protocolFee);
-
-      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0);
-      //displayQuantity = quantity?.toString()
-      //orderAmount = orderAmount.mul(TEN_POW_18)
-
-      // buy- quantity input field is Wei
+    if (isAssetFungible) {
+      console.log('BID-BUY-FUNGIBLE')
+      meat = buyFungible({
+        decimals,
+        ppu,
+        quantityText,
+        feeValue: fee?.value
+      })
     } else {
-      // buy - quantity is the amount of NFT to buy in wei
-      try {
-        quantity = BigNumber.from(quantityText ?? '0');
-        quantityError = undefined;
-      } catch {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      if (quantity.lt('0')) {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      // order amount in MOVR
-      orderAmount = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
-      amountToApprove = orderAmount;
-
-      brutto = orderAmount;
-
-      askPerUnitNominator = BigNumber.from('1');
-      askPerUnitDenominator = ppu ?? BigNumber.from('1');
-
-      royaltyFee =
-        fee?.value?.mul(orderAmount).div(FRACTION_TO_BPS) ??
-        BigNumber.from('0');
-      protocolFee = orderAmount.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
-
-      netto = orderAmount.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = quantity?.toString();
+      console.log('BID-BUY-NON-FUNGIBLE')
+      meat = buyElse({
+        decimals,
+        ppu,
+        quantityText,
+        feeValue: fee?.value
+      })
     }
   } else {
     title = 'Create sell offer';
     action = 'sell';
-    availableLabel = 'Total available';
 
     sellAssetContract = {
       addr: assetAddress ?? AddressZero,
@@ -323,6 +251,7 @@ export const BidDialog = () => {
     };
 
     sellAssetType = assetType;
+    sellDecimals = decimals
 
     buyAssetContract = {
       addr: AddressZero,
@@ -331,69 +260,38 @@ export const BidDialog = () => {
     };
 
     // sell- quantity input field is Ether
-    if (isAssetNative) {
-      // sell- quantity the amount of ERC20 to sell in ether
-      try {
-        quantity = quantityText
-          ? parseEther(quantityText)
-          : BigNumber.from('0');
-        quantityError = undefined;
-      } catch {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      if (quantity.lt('0')) {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      orderAmount = quantity;
-      amountToApprove = orderAmount;
-      brutto =
-        ppu && quantity
-          ? ppu.mul(quantity).div(TEN_POW_18)
-          : BigNumber.from('0');
-
-      askPerUnitNominator = ppu ?? BigNumber.from('1');
-      askPerUnitDenominator = BigNumber.from('1');
-
-      royaltyFee =
-        fee?.value?.mul(brutto).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
-      protocolFee = brutto.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
-
-      netto = brutto.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = Fraction.from(quantity?.toString(), 18)?.toFixed(0);
+    if (isAssetFungible) {
+      console.log('BID-SELL-FUNGIBLE')
+      meat = sellFungible({
+        decimals,
+        ppu,
+        quantityText,
+        feeValue: fee?.value
+      }) 
     } else {
-      // sell - quantity is the amount of NFT to sell in wei
-      try {
-        quantity = BigNumber.from(quantityText ?? '0');
-        quantityError = undefined;
-      } catch {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      if (quantity.lt('0')) {
-        quantity = BigNumber.from('0');
-        quantityError = 'Invalid quantity value';
-      }
-
-      orderAmount = quantity;
-      amountToApprove = orderAmount;
-      brutto = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
-
-      askPerUnitNominator = ppu ?? BigNumber.from('1');
-      askPerUnitDenominator = BigNumber.from('1');
-
-      royaltyFee =
-        fee?.value?.mul(brutto).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
-      protocolFee = brutto.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
-
-      netto = brutto.sub(royaltyFee).sub(protocolFee);
-      displayQuantity = quantity?.toString();
+      console.log('BID-SELL-NON_FUNGIBLE')
+      meat = sellElse({
+        decimals,
+        ppu,
+        quantityText,
+        feeValue: fee?.value
+      }) 
     }
   }
+
+  let {
+    quantity,
+    quantityError,
+    orderAmount,
+    amountToApprove,
+    netto,
+    brutto,
+    askPerUnitNominator,
+    askPerUnitDenominator,
+    royaltyFee,
+    protocolFee,
+    displayQuantity
+  } = meat
 
   const sellBalance = useBalances([
     {
@@ -404,10 +302,8 @@ export const BidDialog = () => {
     },
   ])?.[0];
 
-  const displaySellBalance =
-    sellAssetType?.valueOf() === StringAssetType.ERC20
-      ? Fraction.from(sellBalance, 18)?.toFixed(5)
-      : sellBalance?.toString();
+  displaySellBalance = Fraction.from(sellBalance ?? '0', sellDecimals)?.toFixed(sellDecimals > 0 ? 5: 0)
+
   const hasEnough = sellBalance?.gte(amountToApprove);
 
   const [approvalState, approveCallback] = useApproveCallback({
@@ -583,8 +479,6 @@ export const BidDialog = () => {
                   value={quantityText}
                   setValue={setQuantityText}
                   assetType={assetType}
-                  unit={quantityUnit}
-                  unitOptions={unitOptions}
                 ></CoinQuantityField>
               </div>
               {quantityError && (

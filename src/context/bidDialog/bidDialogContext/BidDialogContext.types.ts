@@ -5,7 +5,9 @@ export type BidData = {
   asset?: Asset;
   orderType: OrderType;
   decimals?: number;
-} | null;
+  name?: string;
+  symbol?: string;
+} | undefined;
 
 export type BidDialogContextType = {
   isBidDialogOpen: boolean;

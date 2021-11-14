@@ -8,7 +8,7 @@ import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStatic
 import { useHistory } from 'react-router-dom';
 import { Button, PriceBox, TableCell, TableRow } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
-import { Fraction } from 'utils/Fraction';
+import { Fraction } from '../../utils/Fraction';
 import {
   formatExpirationDateString,
   getUnitPrice,
@@ -45,15 +45,18 @@ export const TokenOrder = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = staticData?.decimals ?? 0
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
     ? `${sup} pieces`
     : undefined;
   const ppu = getUnitPrice(
+    ot,
     order?.askPerUnitNominator,
     order?.askPerUnitDenominator
   );

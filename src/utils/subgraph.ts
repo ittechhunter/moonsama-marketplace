@@ -11,6 +11,7 @@ import {
 import { AssetType } from './marketplace';
 import { ChainId } from '../constants';
 import { AddressZero } from '@ethersproject/constants';
+import { Fraction } from './Fraction';
 
 export enum StringOrderType {
   UNKNOWN = 'UNKNOWN',
@@ -237,27 +238,39 @@ export const formatExpirationDateString = (date?: string): string => {
 };
 
 export const getUnitPrice = (
+  orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
-  askPerUnitDenominator?: BigNumber
+  askPerUnitDenominator?: BigNumber,
 ) => {
   if (!askPerUnitDenominator || !askPerUnitNominator) {
     return undefined;
   }
-  if (askPerUnitNominator.gt(askPerUnitDenominator)) {
-    return askPerUnitNominator.div(askPerUnitDenominator);
+
+  //BigNumber.from('10').pow(decimals)
+
+  if (OrderType.BUY.valueOf() === orderType?.valueOf()) {
+    return askPerUnitDenominator
   }
-  return askPerUnitDenominator.div(askPerUnitNominator);
+
+  if (OrderType.SELL.valueOf() === orderType?.valueOf()) {
+    return askPerUnitNominator
+  }
+
+  return undefined
 };
 
 export const getDisplayUnitPrice = (
+  decimals: number,
+  orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
-  askPerUnitDenominator?: BigNumber
+  askPerUnitDenominator?: BigNumber,
 ) => {
-  const p = getUnitPrice(askPerUnitNominator, askPerUnitDenominator);
+  const p = getUnitPrice(orderType, askPerUnitNominator, askPerUnitDenominator);
   return p ?? '?';
 };
 
 export const getDisplayQuantity = (
+  decimals: number,
   orderType?: OrderType,
   quantity?: BigNumber,
   askPerUnitNominator?: BigNumber,
@@ -270,7 +283,7 @@ export const getDisplayQuantity = (
     askPerUnitDenominator
   );
 
-  return q ?? '?';
+  return Fraction.from(q, decimals)?.toFixed(decimals > 0? 5: 0) ?? '?';
 };
 
 export const getQuantity = (
@@ -284,17 +297,18 @@ export const getQuantity = (
   }
 
   if (OrderType.SELL === orderType) {
-    return quantity;
+    return quantity
   }
 
   if (!askPerUnitDenominator || !askPerUnitNominator) {
     return undefined;
   }
 
-  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator);
+  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator)
 };
 
 export const getDisplayUnits = (
+  decimals: number,
   orderType?: OrderType,
   quantity?: BigNumber,
   askPerUnitNominator?: BigNumber,
@@ -302,12 +316,13 @@ export const getDisplayUnits = (
 ) => {
   return {
     quantity: getDisplayQuantity(
+      decimals,
       orderType,
       quantity,
       askPerUnitNominator,
       askPerUnitDenominator
     ),
-    unitPrice: getUnitPrice(askPerUnitNominator, askPerUnitDenominator),
+    unitPrice: getUnitPrice(orderType, askPerUnitNominator, askPerUnitDenominator),
   };
 };
 

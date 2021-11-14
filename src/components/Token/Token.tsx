@@ -94,13 +94,15 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
       ? 'green'
       : '#b90e0e';
 
+  const decimals = staticData?.decimals ?? 0
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
+
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
-      ? `${sup} pieces`
+      ? `${sup.toFixed(0)} pieces`
       : undefined;
 
   return (

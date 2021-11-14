@@ -10,7 +10,7 @@ import { GlitchText } from 'ui';
 import { truncateHexString } from 'utils';
 import { StringAssetType } from 'utils/subgraph';
 import { useStyles } from './TokenOwned.styles';
-import LootBox from '../../assets/images/loot-box.png';
+import { Fraction } from 'utils/Fraction';
 
 export const TokenOwned = ({
   meta,
@@ -41,13 +41,15 @@ export const TokenOwned = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = staticData?.decimals ?? 0
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
-    ? `${sup} pieces`
+    ? `${sup.toFixed(0)} pieces`
     : undefined;
 
   return (

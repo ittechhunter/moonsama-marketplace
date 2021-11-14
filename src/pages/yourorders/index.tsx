@@ -36,6 +36,7 @@ import {
   inferOrderTYpe,
   StrategyMap,
   StringAssetType,
+  stringToOrderType,
   stringToStringAssetType,
 } from 'utils/subgraph';
 import { appStyles } from '../../app.styles';
@@ -53,6 +54,7 @@ import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { useUserOrders } from 'hooks/marketplace/useUserOrders';
+import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 
 const geTableHeader = () => {
   return (
@@ -106,14 +108,20 @@ export const MyOrdersPage = () => {
     num: 1000,
   });
 
+  
+  const staticDatas = useTokenStaticData((ordersMap?.userOrders ?? []).map(x => {
+    return stringToOrderType(x.orderType) === OrderType.BUY ? x?.buyAsset: x.sellAsset
+  }))
+  
+
   const getTableBody = (
     orders: Order[] | undefined | null,
-    orderType?: OrderType
+    staticDatas: StaticTokenData[] | undefined
   ) => {
     return (
       <TableBody>
-        {orders && orders.length > 0 ? (
-          orders.map((order) => {
+        {orders && staticDatas && orders.length > 0 ? (
+          orders.map((order, i) => {
             const {
               id,
               seller,
@@ -127,30 +135,36 @@ export const MyOrdersPage = () => {
               expiresAt,
               onlyTo,
               partialAllowed,
+              orderType
             } = order || {};
 
+            
+            const expiration = formatExpirationDateString(expiresAt);
+            const sellerShort = truncateHexString(seller);
+            const ot = stringToOrderType(orderType);
+            console.log(ot)
+            const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
+
             const unitPrice = getUnitPrice(
+              ot,
               askPerUnitNominator,
               askPerUnitDenominator
             );
-            const expiration = formatExpirationDateString(expiresAt);
-            const sellerShort = truncateHexString(seller);
-            const ot =
-              orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
-            const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
 
-            const qty =
-              sellAsset.assetType.valueOf() == StringAssetType.ERC20 &&
-              buyAsset.assetType.valueOf() == StringAssetType.ERC20
-                ? quantityLeft
-                : getDisplayQuantity(
-                    ot,
-                    quantityLeft,
-                    askPerUnitNominator,
-                    askPerUnitDenominator
-                  );
+            const decimals = orderAsset.assetAddress === '0x1974eeaf317ecf792ff307f25a3521c35eecde86' ? 0 : (staticDatas?.[i]?.decimals ?? 0) 
+
+            const qty = getDisplayQuantity(
+              decimals,
+              ot,
+              quantityLeft,
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
 
             const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
+            console.log({displayUnitPrice, unitPrice, ot,
+              askPerUnitNominator,
+              askPerUnitDenominator})
 
             return (
               <TableRow
@@ -294,7 +308,7 @@ export const MyOrdersPage = () => {
             view: (
               <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                 {geTableHeader()}
-                {getTableBody(ordersMap?.userOrders)}
+                {getTableBody(ordersMap?.userOrders, staticDatas)}
               </Table>
             ),
           },

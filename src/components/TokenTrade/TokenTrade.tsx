@@ -17,7 +17,6 @@ import {
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenTrade.styles';
-import LootBox from '../../assets/images/loot-box.png';
 
 export const TokenTrade = ({
   fill,
@@ -54,9 +53,11 @@ export const TokenTrade = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = staticData?.decimals ?? 0
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
@@ -64,6 +65,7 @@ export const TokenTrade = ({
     : undefined;
 
   const ppu = getUnitPrice(
+    ot,
     fill.order?.askPerUnitNominator,
     fill.order?.askPerUnitDenominator
   );

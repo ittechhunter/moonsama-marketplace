@@ -1,4 +1,4 @@
-import { parseEther } from '@ethersproject/units';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import { appStyles } from '../../app.styles';
 
 import { useEffect, useState } from 'react';
@@ -74,7 +74,7 @@ export const PurchaseDialog = () => {
   }
 
   const title = 'Take offer';
-  let symbol: string | undefined = 'MSAMA';
+  let symbol: string | undefined = purchaseData?.symbol ?? 'NFT';
   let assetAddress: string | undefined;
   let assetId: string | undefined;
   let assetType: StringAssetType | undefined;
@@ -104,8 +104,11 @@ export const PurchaseDialog = () => {
 
   const orderHash = order?.id;
 
+  const decimals = purchaseData?.decimals ?? 0
+
   const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
+    orderType,
     order?.askPerUnitNominator,
     order?.askPerUnitDenominator
   );
@@ -161,7 +164,7 @@ export const PurchaseDialog = () => {
     if (isGiveAssetErc20OrNative) {
       // how much we want to sell from our erc20 in ether
       try {
-        sendAmount = parseEther(inputAmountText ?? '0');
+        sendAmount = parseUnits(inputAmountText ?? '0', decimals);
         sendAmountError = undefined;
       } catch {
         sendAmount = BigNumber.from('0');
@@ -213,7 +216,7 @@ export const PurchaseDialog = () => {
     if (isGetAssetErc20OrNative) {
       // input amount to buy is in ether
       try {
-        inputAmount = parseEther(inputAmountText ?? '0');
+        inputAmount = parseUnits(inputAmountText ?? '0', decimals);
         sendAmountError = undefined;
       } catch {
         inputAmount = BigNumber.from('0');

@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { StringAssetType, StringOrderType } from 'utils/subgraph';
+import { OrderType, StringAssetType, StringOrderType } from 'utils/subgraph';
 
 export interface Asset {
   // {asset address}-{asset id}
@@ -81,7 +81,7 @@ export interface Order {
   onlyTo: string;
   partialAllowed: boolean;
   pricePerUnit: BigNumber;
-  orderType: StringAssetType;
+  orderType: string;
 }
 
 export interface Balance {

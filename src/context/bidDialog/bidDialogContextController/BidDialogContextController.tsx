@@ -9,11 +9,11 @@ export const BidDialogContextController = ({
   children,
 }: BidDialogContextControllerProps) => {
   const [isBidDialogOpen, setBidDialogOpen] = useState<boolean>(false);
-  const [bidData, setBidData] = useState<BidData>(null);
+  const [bidData, setBidData] = useState<BidData>(undefined);
 
   useEffect(() => {
     if (!isBidDialogOpen) {
-      setBidData(null);
+      setBidData(undefined);
     }
   }, [isBidDialogOpen]);
 

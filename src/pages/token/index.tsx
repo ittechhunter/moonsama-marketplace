@@ -37,6 +37,7 @@ import {
   inferOrderTYpe,
   StrategyMap,
   StringAssetType,
+  stringToOrderType,
   stringToStringAssetType,
 } from 'utils/subgraph';
 import { appStyles } from '../../app.styles';
@@ -175,21 +176,18 @@ const TokenPage = () => {
 
   const assetMeta = metas?.[0];
 
-  const decimals = asset.assetAddress === '0x1974eeaf317ecf792ff307f25a3521c35eecde86' ? 0 : balanceData?.[0]?.decimals
+  const decimals = asset.assetAddress === '0x1974eeaf317ecf792ff307f25a3521c35eecde86' ? 0 : (balanceData?.[0]?.decimals ?? 0)
+  const tokenName = staticData?.[0]?.name
+  const tokenSymbol = staticData?.[0]?.symbol
 
-  let userBalanceString = isErc20
+  const isFungible = decimals > 0
+
+  let userBalanceString = isFungible
     ? Fraction.from(
         balanceData?.[0]?.userBalance?.toString() ?? '0',
-        decimals ?? 18
+        decimals
       )?.toFixed(2) ?? '0'
-    : (
-      decimals && decimals > 1 
-        ? Fraction.from(
-            balanceData?.[0]?.userBalance?.toString() ?? '0',
-            decimals ?? 1
-          )?.toFixed(2) ?? '0'
-        : balanceData?.[0]?.userBalance?.toString() ?? '0'
-    );
+    : balanceData?.[0]?.userBalance?.toString() ?? '0'
 
   const isOwner = userBalanceString !== '0';
 
@@ -197,10 +195,10 @@ const TokenPage = () => {
   let totalSupplyString =
     balanceData?.[0]?.totalSupply
     ? (
-      decimals && decimals > 1 
+      isFungible
         ? Fraction.from(
             balanceData?.[0]?.totalSupply?.toString() ?? '0',
-            decimals ?? 18
+            decimals
           )?.toFixed(2) ?? '0'
         : balanceData?.[0]?.totalSupply?.toString()
     )
@@ -247,31 +245,29 @@ const TokenPage = () => {
               expiresAt,
               onlyTo,
               partialAllowed,
+              orderType: indexedOrderType
             } = order;
 
-            const unitPrice = getUnitPrice(
-              askPerUnitNominator,
-              askPerUnitDenominator
-            );
             const expiration = formatExpirationDateString(expiresAt);
 
             const sellerShort = truncateHexString(seller);
 
             const ot =
-              orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
+              orderType ?? stringToOrderType(indexedOrderType);
 
-            const qty =
-              (sellAsset.assetType.valueOf() == StringAssetType.ERC20 ||
-                sellAsset.assetType.valueOf() == StringAssetType.NATIVE) &&
-              (buyAsset.assetType.valueOf() == StringAssetType.ERC20 ||
-                buyAsset.assetType.valueOf() == StringAssetType.NATIVE)
-                ? quantityLeft
-                : getDisplayQuantity(
-                    ot,
-                    quantityLeft,
-                    askPerUnitNominator,
-                    askPerUnitDenominator
-                  );
+            const unitPrice = getUnitPrice(
+              ot,
+              askPerUnitNominator,
+              askPerUnitDenominator,
+            );
+
+            const qty = getDisplayQuantity(
+              decimals,
+              ot,
+              quantityLeft,
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
 
             const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
 
@@ -287,19 +283,19 @@ const TokenPage = () => {
 
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2} style={{justifyContent: "start"}}>
                             <Grid item className={subItemTitleCell}>
                               Order ID
                             </Grid>
                             <Grid item>{id}</Grid>
                           </Grid>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2} style={{justifyContent: "start"}}>
                             <Grid item className={subItemTitleCell}>
                               Maker
                             </Grid>
                             <Grid item>{seller}</Grid>
                           </Grid>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2} style={{justifyContent: "start"}}>
                             <Grid item className={subItemTitleCell}>
                               Created at
                             </Grid>
@@ -307,7 +303,7 @@ const TokenPage = () => {
                               {formatExpirationDateString(createdAt)}
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2} style={{justifyContent: "start"}}>
                             <Grid item className={subItemTitleCell}>
                               Available to
                             </Grid>
@@ -315,7 +311,7 @@ const TokenPage = () => {
                               {onlyTo === AddressZero ? 'everyone' : onlyTo}
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2} style={{justifyContent: "start"}}>
                             <Grid item className={subItemTitleCell}>
                               Partial fills allowed
                             </Grid>
@@ -517,7 +513,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals });
+                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol});
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
