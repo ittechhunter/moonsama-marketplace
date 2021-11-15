@@ -11,6 +11,7 @@ import { truncateHexString } from 'utils';
 import { StringAssetType } from 'utils/subgraph';
 import { useStyles } from './TokenOwned.styles';
 import { Fraction } from 'utils/Fraction';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export const TokenOwned = ({
   meta,
@@ -34,6 +35,7 @@ export const TokenOwned = ({
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
+  const decimalOverrides = useDecimalOverrides()
 
   //console.log('FRESH', {asset, action, actionColor})
 
@@ -41,15 +43,15 @@ export const TokenOwned = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = staticData?.decimals ?? 0
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
-    ? `${sup.toFixed(0)} pieces`
+    ? `${sup} pieces`
     : undefined;
 
   return (

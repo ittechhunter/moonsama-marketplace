@@ -38,7 +38,7 @@ export const collections = {
   types: ['ERC20', 'ERC721', 'ERC1155'],
   indexing: ['none', 'sequential'],
   collections: [
-    /*
+    /* */
     {
       chainId: 1285,
       address: '0xaF1F85aD24Bc45fb19f5F8B5166e1Aed41c60844',
@@ -55,13 +55,13 @@ export const collections = {
       display_name: 'TestCollection',
       symbol: 'TC',
       type: 'ERC1155',
+      decimals: 0,
       indexing: 'sequential',
       contractURI: 'ipfs://QmfZtbgLDmcDNf4tvhm1LuLmbBYSASmk6zcSBY2GRzh72S',
       tags: ['native', 'green'],
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-test'
       
     },
-    */
     {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
@@ -77,6 +77,7 @@ export const collections = {
       chainId: 1285,
       address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
       display_name: '???',
+      decimals: 0,
       symbol: '???',
       type: 'ERC1155',
       indexing: 'sequential',
@@ -88,7 +89,6 @@ export const collections = {
       chainId: 1285,
       address: '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
       display_name: 'Metaverse Asset Factory',
-      decimals: 18,
       symbol: 'MAF',
       type: 'ERC1155',
       indexing: 'sequential',

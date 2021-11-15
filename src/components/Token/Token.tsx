@@ -1,21 +1,18 @@
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Media } from 'components';
-import { useLastTradedPriceOnce } from 'hooks/marketplace/useLastTradedPrice';
 import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
 import { truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
-import { OrderType, StringAssetType, StringOrderType, stringToOrderType } from 'utils/subgraph';
+import { OrderType, StringAssetType, stringToOrderType } from 'utils/subgraph';
 import { useStyles } from './Token.styles';
-import LootBox from '../../assets/images/loot-box.png';
-import { width } from '@mui/system';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { Order } from 'hooks/marketplace/types';
 import { useEffect, useState } from 'react';
-import { useOrder } from 'hooks/marketplace/useOrder';
-import { useAssetOrders, useAssetOrdersCallback } from 'hooks/marketplace/useAssetOrders';
+import { useAssetOrdersCallback } from 'hooks/marketplace/useAssetOrders';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -36,6 +33,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   } = useStyles();
   const { push } = useHistory();
   const [fetchedOrder, setFetchedOrer] = useState<Order | undefined>(undefined)
+  const decimalOverrides = useDecimalOverrides()
 
   const asset = staticData.asset;
 
@@ -94,15 +92,16 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
       ? 'green'
       : '#b90e0e';
 
-  const decimals = staticData?.decimals ?? 0
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
+  
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
 
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
-      ? `${sup.toFixed(0)} pieces`
+      ? `${sup} pieces`
       : undefined;
 
   return (

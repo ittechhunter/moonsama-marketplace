@@ -11,6 +11,7 @@ import { getExplorerLink, truncateHexString } from 'utils';
 import { Fraction } from '../../utils/Fraction';
 import {
   formatExpirationDateString,
+  getDisplayUnitPrice,
   getUnitPrice,
   inferOrderTYpe,
   OrderType,
@@ -18,6 +19,7 @@ import {
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export const TokenOrder = ({
   order,
@@ -33,6 +35,7 @@ export const TokenOrder = ({
 
   const { chainId } = useActiveWeb3React();
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
+  const decimalOverrides = useDecimalOverrides()
 
   const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
@@ -45,7 +48,7 @@ export const TokenOrder = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = staticData?.decimals ?? 0
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
@@ -55,14 +58,16 @@ export const TokenOrder = ({
     : sup
     ? `${sup} pieces`
     : undefined;
-  const ppu = getUnitPrice(
+  const ppuD = getDisplayUnitPrice(
+    decimals,
+    5,
     ot,
     order?.askPerUnitNominator,
     order?.askPerUnitDenominator
   );
 
-  const ppuDisplay = ppu
-    ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
+  const ppuDisplay = ppuD
+    ? `${ppuD} MOVR`
     : action;
 
   const expiration = formatExpirationDateString(order?.expiresAt);

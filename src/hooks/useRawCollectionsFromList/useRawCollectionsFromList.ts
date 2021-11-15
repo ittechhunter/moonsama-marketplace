@@ -60,7 +60,7 @@ const collectionListSchema = yup.object<RawCollectionList>({
           contractURI: yup.string().required(),
           tags: yup.array().of(yup.string().required()).required(),
           subgraph: yup.string(),
-          decimals: yup.number().optional().default(1)
+          decimals: yup.number().optional()
         })
         .required()
     )

@@ -4,6 +4,7 @@ import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { useActiveWeb3React } from 'hooks';
 import { FillWithOrder, Order } from 'hooks/marketplace/types';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useHistory } from 'react-router-dom';
@@ -41,6 +42,7 @@ export const TokenTrade = ({
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
+  const decimalOverrides = useDecimalOverrides()
   const ot = inferOrderTYpe(chainId, fill.order.sellAsset, fill.order.buyAsset);
   const asset =
     ot == OrderType.BUY ? fill.order.buyAsset : fill.order.sellAsset;
@@ -53,11 +55,11 @@ export const TokenTrade = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = staticData?.decimals ?? 0
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(decimals > 0? 5: 0);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
@@ -65,6 +67,7 @@ export const TokenTrade = ({
     : undefined;
 
   const ppu = getUnitPrice(
+    decimals,
     ot,
     fill.order?.askPerUnitNominator,
     fill.order?.askPerUnitDenominator

@@ -31,24 +31,21 @@ import {
   Tabs,
 } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
-import {
-  getAssetEntityId,
-  getDisplayQuantity,
-  inferOrderTYpe,
-  StrategyMap,
-  StringAssetType,
-  stringToOrderType,
-  stringToStringAssetType,
-} from 'utils/subgraph';
 import { appStyles } from '../../app.styles';
 import { ExternalLink, Media } from '../../components';
 import { ChainId } from '../../constants';
 import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import {
+  getAssetEntityId,
+  getDisplayQuantity,
+  StrategyMap,
+  StringAssetType,
+  stringToOrderType,
+  stringToStringAssetType,
   formatExpirationDateString,
-  getUnitPrice,
-  OrderType,
+  getDisplayUnitPrice,
+  OrderType
 } from '../../utils/subgraph';
 import { useStyles } from './styles';
 import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
@@ -57,6 +54,7 @@ import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 const geTableHeader = () => {
   return (
@@ -161,6 +159,7 @@ const TokenPage = () => {
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
   const metas = useFetchTokenUri(staticData);
+  const decimalOverrides = useDecimalOverrides()
 
   //console.log('METAS', {metas, staticData})
 
@@ -176,7 +175,7 @@ const TokenPage = () => {
 
   const assetMeta = metas?.[0];
 
-  const decimals = asset.assetAddress === '0x1974eeaf317ecf792ff307f25a3521c35eecde86' ? 0 : (balanceData?.[0]?.decimals ?? 0)
+  const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0
   const tokenName = staticData?.[0]?.name
   const tokenSymbol = staticData?.[0]?.symbol
 
@@ -255,7 +254,9 @@ const TokenPage = () => {
             const ot =
               orderType ?? stringToOrderType(indexedOrderType);
 
-            const unitPrice = getUnitPrice(
+            const displayUnitPrice = getDisplayUnitPrice(
+              decimals,
+              5,
               ot,
               askPerUnitNominator,
               askPerUnitDenominator,
@@ -268,8 +269,6 @@ const TokenPage = () => {
               askPerUnitNominator,
               askPerUnitDenominator
             );
-
-            const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
 
             return (
               <TableRow
@@ -526,7 +525,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset, decimals });
+                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol });
                 }}
                 startIcon={<MoneyIcon />}
                 variant="outlined"

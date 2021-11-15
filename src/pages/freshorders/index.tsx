@@ -20,31 +20,13 @@ import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import {
   useLatestBuyOrdersWithStaticCallback,
-  useLatestOrdersWithStaticCallback,
   useLatestSellOrdersWithStaticCallback,
 } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
 import {
-  formatExpirationDateString,
-  getDisplayQuantity,
-  getUnitPrice,
   inferOrderTYpe,
   OrderType,
-  StrategyMap,
-  StringAssetType,
 } from '../../utils/subgraph';
-import { truncateHexString } from '../../utils';
-import { Fraction } from '../../utils/Fraction';
-import { Typography } from '@material-ui/core';
-import { AddressZero } from '@ethersproject/constants';
-import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import { Link } from 'react-router-dom';
-import { CollectionMeta } from '../../hooks/useFetchCollectionMeta/useFetchCollectionMeta';
 import { useActiveWeb3React } from '../../hooks';
-import FilterIcon from '@mui/icons-material/FilterListSharp';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
