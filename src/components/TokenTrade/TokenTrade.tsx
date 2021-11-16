@@ -59,19 +59,21 @@ export const TokenTrade = ({
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(decimals > 0? 5: 0);
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
     ? `${sup} pieces`
     : undefined;
 
-  const unit =
+  const rawunit =
     ot == OrderType.BUY
       ? fill.buyerSendsAmountFull
       : fill.order?.askPerUnitDenominator
           .mul(fill.buyerSendsAmountFull)
           .div(fill.order?.askPerUnitNominator);
+  
+  const unit = Fraction.from(rawunit?.toString() ?? '0', decimals)?.toSignificant(5)
 
   const ppud = getDisplayUnitPrice(
     decimals,
