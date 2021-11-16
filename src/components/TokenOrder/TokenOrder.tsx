@@ -63,7 +63,8 @@ export const TokenOrder = ({
     5,
     ot,
     order?.askPerUnitNominator,
-    order?.askPerUnitDenominator
+    order?.askPerUnitDenominator,
+    true
   );
 
   const ppuDisplay = ppuD

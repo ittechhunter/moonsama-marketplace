@@ -65,6 +65,7 @@ export const PurchaseDialog = () => {
   const handleClose = () => {
     setLoading(false);
     setPurchaseDialogOpen(false);
+    setGlobalError(undefined)
     setOrderLoaded(false);
     setApprovalSubmitted(false);
     setFinalTxSubmitted(false);

@@ -18,12 +18,14 @@ import {
   useCancelOrderCallback,
 } from 'hooks/marketplace/useCancelOrderCallback';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
+import { appStyles } from 'app.styles';
 
 export const CancelDialog = () => {
   const [finalTxSubmitted, setFinalTxSubmitted] = useState<boolean>(false);
   const { isCancelDialogOpen, setCancelDialogOpen, cancelData } =
     useCancelDialog();
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
+  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
 
   const {
     dialogContainer,
@@ -33,13 +35,18 @@ export const CancelDialog = () => {
     infoContainer,
     successContainer,
     successIcon,
-    nakedInput,
+    nakedInput
   } = useStyles();
+
+  const {
+    formButton
+  } = appStyles()
 
   const { chainId } = useActiveWeb3React();
 
   const handleClose = () => {
     setCancelDialogOpen(false);
+    setGlobalError(undefined)
     setFinalTxSubmitted(false);
   };
 
@@ -65,6 +72,20 @@ export const CancelDialog = () => {
               Should be a jiffy
             </Typography>
           </div>
+        </div>
+      );
+    }
+
+    if (!!globalError) {
+      return (
+        <div className={successContainer}>
+          <Typography>Something went wrong</Typography>
+          <Typography color="textSecondary" variant="h5">
+            {(globalError as Error)?.message as string ?? 'Unknown error'}
+          </Typography>
+          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+            Back
+          </Button>
         </div>
       );
     }
@@ -125,9 +146,14 @@ export const CancelDialog = () => {
         <Divider variant="fullWidth" className={divider} />
 
         <Button
-          onClick={() => {
-            cancelOrderCallback?.();
-            setFinalTxSubmitted(true);
+          onClick={async () => {
+              setFinalTxSubmitted(true);
+              try {
+                await cancelOrderCallback?.();
+              } catch (err) {
+                setGlobalError(err)
+                setFinalTxSubmitted(false);
+              }
           }}
           className={button}
           variant="contained"

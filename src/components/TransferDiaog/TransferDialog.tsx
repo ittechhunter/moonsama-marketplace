@@ -52,6 +52,7 @@ export const TransferDialog = () => {
   const { isTransferDialogOpen, setTransferDialogOpen, transferData } =
     useTransferDialog();
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
+  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
 
   const [quantityText, setQuantityText] = useState<string | undefined>(
     undefined
@@ -77,6 +78,7 @@ export const TransferDialog = () => {
 
   const handleClose = () => {
     setTransferDialogOpen(false);
+    setGlobalError(undefined)
     setFinalTxSubmitted(false);
   };
 
@@ -165,6 +167,21 @@ export const TransferDialog = () => {
         </div>
       );
     }
+
+    if (!!globalError) {
+      return (
+        <div className={successContainer}>
+          <Typography>Something went wrong</Typography>
+          <Typography color="textSecondary" variant="h5">
+            {(globalError as Error)?.message as string ?? 'Unknown error'}
+          </Typography>
+          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+            Back
+          </Button>
+        </div>
+      );
+    }
+
     if (finalTxSubmitted && !transferSubmitted) {
       return (
         <>
@@ -299,9 +316,14 @@ export const TransferDialog = () => {
           </Box>
 
           <Button
-            onClick={() => {
-              transferCallback?.();
+            onClick={async () => {
               setFinalTxSubmitted(true);
+              try {
+                await transferCallback?.();
+              } catch (err) {
+                setGlobalError(err)
+                setFinalTxSubmitted(false);
+              }
             }}
             className={formButton}
             variant="contained"
