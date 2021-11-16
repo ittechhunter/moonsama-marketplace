@@ -270,6 +270,9 @@ const TokenPage = () => {
               askPerUnitDenominator
             );
 
+            const freeForAll = onlyTo === AddressZero
+            const isExlusiveRecipient = onlyTo === account?.toLowerCase()
+
             return (
               <TableRow
                 key={id}
@@ -307,7 +310,7 @@ const TokenPage = () => {
                               Available to
                             </Grid>
                             <Grid item>
-                              {onlyTo === AddressZero ? 'everyone' : onlyTo}
+                              {freeForAll ? 'everyone' : onlyTo}
                             </Grid>
                           </Grid>
                           <Grid container spacing={2} style={{justifyContent: "start"}}>
@@ -359,12 +362,14 @@ const TokenPage = () => {
                     </Button>
                   ) : (
                     <Button
+                      style={isExlusiveRecipient ? {background: "blue"}: {}}
+                      disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals });
+                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName});
                       }}
                       variant="contained"
-                      color="primary"
+                      color={"primary"}
                     >
                       Fill
                     </Button>
@@ -508,7 +513,27 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            {((!isOwner && isErc721) || (isOwner && !isErc721)) && (
+            {!!ordersMap?.sellOrders && ordersMap?.sellOrders.length > 0 && (ordersMap.sellOrders[0].onlyTo === AddressZero || ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
+              <Button
+                style={{background: "green"}}
+                onClick={() => {
+                  setPurchaseDialogOpen(true);
+                  setPurchaseData({
+                    order: ordersMap.sellOrders?.[0] as Order,
+                    orderType: OrderType.SELL,
+                    decimals,
+                    symbol: tokenSymbol,
+                    name: tokenName
+                  });
+                }}
+                startIcon={<AccountBalanceWalletIcon />}
+                variant="contained"
+                color="primary"
+              >
+                Buy now
+              </Button>
+            )}
+            {((!isOwner && isErc721) || !isErc721) && (
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);

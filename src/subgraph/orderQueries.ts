@@ -155,14 +155,14 @@ export const QUERY_TOKEN_PAGE_ORDERS = (
     ${META}
     buyOrders: orders(where: {${
       onlyActive ? 'active: true, ' : ''
-    }buyAsset: "${assetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+    }buyAsset: "${assetId}"}, orderBy: pricePerUnit, orderDirection: desc, skip: ${from}, first: ${
   num ?? DEFAULT_ORDERBOOK_PAGINATION
 }) {
       ${ORDER_FIELDS}
     }
     sellOrders: orders(where: {${
       onlyActive ? 'active: true, ' : ''
-    }sellAsset: "${assetId}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+    }sellAsset: "${assetId}"}, orderBy: pricePerUnit, orderDirection: asc, skip: ${from}, first: ${
   num ?? DEFAULT_ORDERBOOK_PAGINATION
 }) {
       ${ORDER_FIELDS}

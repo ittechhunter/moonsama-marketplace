@@ -50,6 +50,7 @@ export const PurchaseDialog = () => {
   const [finalTxSubmitted, setFinalTxSubmitted] = useState<boolean>(false);
   const { isPurchaseDialogOpen, setPurchaseDialogOpen, purchaseData } =
     usePurchaseDialog();
+  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
 
   const [inputAmountText, setInputAmountText] = useState<string | undefined>(
     undefined
@@ -248,22 +249,7 @@ export const PurchaseDialog = () => {
       setApprovalSubmitted(true);
     }
   }, [approvalState, approvalSubmitted]);
-
-  /*
-  console.warn('FILL', {
-    hasEnough,
-    buyer: account?.toString(),
-    quantity: quantity?.toString(),
-    usergive: usergive?.toString(),
-    userget: userget?.toString(),
-    sendAmount: sendAmount?.toString(),
-    ppu: ppu?.toString(),
-    askPerUnitDenominator: askPerUnitDenominator?.toString(),
-    askPerUnitNominator: askPerUnitNominator?.toString(),
-    isGetAssetErc20OrNative,
-    isGiveAssetErc20OrNative,
-  });
-  */
+  
 
   fee = useFees([feeAsset])?.[0];
   royaltyFee =
@@ -318,6 +304,28 @@ export const PurchaseDialog = () => {
   });
   */
 
+ console.warn('FILL', {
+    hasEnough,
+    buyer: account?.toString(),
+    quantity: quantity?.toString(),
+    usergive: userGive?.toString(),
+    userget: userGet?.toString(),
+    sendAmount: sendAmount?.toString(),
+    ppu: ppu?.toString(),
+    askPerUnitDenominator: askPerUnitDenominator?.toString(),
+    askPerUnitNominator: askPerUnitNominator?.toString(),
+    isGetAssetNative,
+    isGiveAssetNative,
+    getAssetDecimals,
+    giveAssetDecimals,
+    showApproveFlow,
+    approvalState,
+    fillOrderState,
+    fillSubmitted,
+    error,
+    amountToApprove: userGive?.toString()
+  });
+
   const {
     divider,
     borderStyleDashed,
@@ -349,6 +357,20 @@ export const PurchaseDialog = () => {
               Should be a jiffy
             </Typography>
           </div>
+        </div>
+      );
+    }
+
+    if (!!globalError) {
+      return (
+        <div className={successContainer}>
+          <Typography>Something went wrong</Typography>
+          <Typography color="textSecondary" variant="h5">
+            {(globalError as Error)?.message as string ?? 'Unknown error'}
+          </Typography>
+          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+            Back
+          </Button>
         </div>
       );
     }
@@ -607,9 +629,14 @@ export const PurchaseDialog = () => {
           </Button>
         ) : (
           <Button
-            onClick={() => {
-              fillOrderCallback?.();
+            onClick={async () => {       
               setFinalTxSubmitted(true);
+              try {
+                await fillOrderCallback?.();
+              } catch (err) {
+                setGlobalError(err)
+                setFinalTxSubmitted(false);
+              }
             }}
             className={button}
             variant="contained"

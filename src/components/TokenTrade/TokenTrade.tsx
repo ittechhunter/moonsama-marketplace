@@ -12,7 +12,7 @@ import { GlitchText, PriceBox } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
 import {
-  getUnitPrice,
+  getDisplayUnitPrice,
   inferOrderTYpe,
   OrderType,
   StringAssetType,
@@ -66,13 +66,6 @@ export const TokenTrade = ({
     ? `${sup} pieces`
     : undefined;
 
-  const ppu = getUnitPrice(
-    decimals,
-    ot,
-    fill.order?.askPerUnitNominator,
-    fill.order?.askPerUnitDenominator
-  );
-
   const unit =
     ot == OrderType.BUY
       ? fill.buyerSendsAmountFull
@@ -80,8 +73,16 @@ export const TokenTrade = ({
           .mul(fill.buyerSendsAmountFull)
           .div(fill.order?.askPerUnitNominator);
 
-  const ppuDisplay = ppu
-    ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
+  const ppud = getDisplayUnitPrice(
+    decimals,
+    5,
+    ot,
+    fill.order?.askPerUnitNominator,
+    fill.order?.askPerUnitDenominator,
+    true
+  )
+  const ppuDisplay = !!ppud && ppud !== '?'
+    ? `${ppud} MOVR`
     : action;
 
   return (

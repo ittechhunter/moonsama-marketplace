@@ -24,10 +24,10 @@ export const sellElse = (userAsset?: Asset, ppu?: BigNumber, total?: BigNumber, 
         inputAmount = BigNumber.from('0');
         sendAmountError = 'Invalid quantity value';
     }
-    displayTotal = Fraction.from(total?.toString(), getAssetDecimals)?.toFixed(getAssetDecimals > 0 ? 5 : 0);
+    displayTotal = Fraction.from(total?.toString(), giveAssetDecimals)?.toFixed(giveAssetDecimals > 0 ? 5 : 0);
     
     userGive = inputAmount;
-    sendAmount = ppu?.mul(inputAmount).div(parseUnits('1', getAssetDecimals)) ?? BigNumber.from('0');
+    sendAmount = ppu?.mul(inputAmount).div(parseUnits('1', giveAssetDecimals)) ?? BigNumber.from('0');
     //usergive = sendAmount
     userGet = sendAmount
     userGetDisplay = Fraction.from(userGet?.toString(), getAssetDecimals)?.toFixed(getAssetDecimals > 0 ? 5 : 0)

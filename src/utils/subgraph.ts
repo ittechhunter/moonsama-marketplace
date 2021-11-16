@@ -266,6 +266,7 @@ export const getDisplayUnitPrice = (
   orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
   askPerUnitDenominator?: BigNumber,
+  toSignificant = false
 ) => {
   // decimals is the non native token decimals
   const p = getUnitPrice(decimals, orderType, askPerUnitNominator, askPerUnitDenominator);
@@ -273,7 +274,7 @@ export const getDisplayUnitPrice = (
   console.log('dPPU',{multiplier: parseUnits('1', decimals).toString(), decimals, p: p?.toString(), askPerUnitNominator: askPerUnitNominator?.toString(), askPerUnitDenominator: askPerUnitDenominator?.toString()})
   
   // for display we always use 18 decimals because native token prices
-  return !!p ? Fraction.from(p.toString(), 18)?.toFixed(decimalPlaces) : '?';
+  return !!p ? toSignificant ? Fraction.from(p.toString(), 18)?.toSignificant(decimalPlaces) : Fraction.from(p.toString(), 18)?.toFixed(decimalPlaces) : '?';
 };
 
 export const getDisplayQuantity = (

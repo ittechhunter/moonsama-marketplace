@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
 import { truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
-import { OrderType, StringAssetType, stringToOrderType } from 'utils/subgraph';
+import { getDisplayUnitPrice, OrderType, StringAssetType, stringToOrderType } from 'utils/subgraph';
 import { useStyles } from './Token.styles';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -57,9 +57,9 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
       const o: Order | undefined = os.reduce((prev: Order | undefined, current: Order | undefined) => {
         if (prev && current) {
           if (prev.pricePerUnit.lt(current.pricePerUnit)) {
-            return current
-          } else {
             return prev
+          } else {
+            return current
           }
         }
         return current
@@ -98,6 +98,8 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   
   const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
 
+  const displayPPU = getDisplayUnitPrice(decimals, 5, orderType, finalOrder?.askPerUnitNominator, finalOrder?.askPerUnitDenominator, true)
+
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
@@ -123,9 +125,9 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           <GlitchText className={tokenName}>
             {meta?.name ?? truncateHexString(asset.assetId)}
           </GlitchText>
-          {finalOrder?.pricePerUnit && (
+          {displayPPU && displayPPU !== '?' && (
             <PriceBox margin={false} size="small" color={color}>
-              {Fraction.from(finalOrder?.pricePerUnit.toString(), 18)?.toFixed(0)} MOVR
+              {displayPPU} MOVR
             </PriceBox>
           )}
         </div>

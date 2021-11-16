@@ -4,6 +4,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 import { Signer } from '@ethersproject/abstract-signer';
 import { StringAssetType } from './subgraph';
 import { AddressZero } from '@ethersproject/constants';
+import { isAddress } from '@ethersproject/address';
 
 export enum AssetType {
   UNKNOWN = 0,
@@ -310,6 +311,25 @@ export function sanityCheckStrategy(
     !strategy.onlyTo
   ) {
     return false;
+  }
+
+  if (!isAddress(strategy.onlyTo)) {
+    return false
+  }
+
+  const bnStartsAt = BigNumber.from(strategy.startsAt)
+  const bnExpiresAt = BigNumber.from(strategy.expiresAt)
+
+  const expiresZero = bnExpiresAt.eq('0')
+  const startsZero = bnStartsAt.eq('0')
+
+  if (startsZero && !expiresZero) {
+    if(!expiresZero) {
+      const realStartsAt = startsZero ? BigNumber.from(Date.now()).div('1000') : bnStartsAt
+      if (realStartsAt.gt(bnExpiresAt)) {
+        return false
+      }
+    }
   }
 
   if (BigNumber.from(strategy.quantity).eq('0')) {

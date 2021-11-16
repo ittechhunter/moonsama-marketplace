@@ -49,7 +49,7 @@ import {
   CreateOrderData,
   stringAssetTypeToAssetType,
 } from 'utils/marketplace';
-import { getExplorerLink, getRandomInt, TEN_POW_18 } from 'utils';
+import { getExplorerLink, getRandomInt, isAddress } from '../../utils';
 import { SuccessIcon } from 'icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useSubmittedOrderTx } from 'state/transactions/hooks';
@@ -85,9 +85,11 @@ export const BidDialog = () => {
   const { isBidDialogOpen, setBidDialogOpen, bidData } = useBidDialog();
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const [onlyTo, setOnlyTo] = useState<string>(AddressZero);
+  const [onlyTo, setOnlyTo] = useState<{address: string, error?: string}>({address: AddressZero});
   const [startsAt, setStartsAt] = useState<BigNumber>(BigNumber.from('0'));
-  const [expiresAt, setExpiresAt] = useState<BigNumber>(BigNumber.from('0'));
+  const [expiresAt, setExpiresAt] = useState<{date: BigNumber, error?: string}>({date: BigNumber.from('0')});
+
+  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
 
   const [quantityText, setQuantityText] = useState<string | undefined>(
     undefined
@@ -129,8 +131,8 @@ export const BidDialog = () => {
     if (date) {
       setSelectedDate(date);
       const v = BigNumber.from(date.valueOf()).div('1000');
-      if (!v.eq(expiresAt)) {
-        setExpiresAt(v);
+      if (!v.eq(expiresAt.date)) {
+        setExpiresAt({date: v});
       }
     }
   };
@@ -148,10 +150,11 @@ export const BidDialog = () => {
   const handleClose = () => {
     setBidDialogOpen(false);
     setOrderLoaded(false);
+    setGlobalError(undefined)
     setFinalTxSubmitted(false);
-    setExpiresAt(BigNumber.from('0'));
+    setExpiresAt({date: BigNumber.from('0')});
     setPartialAllowed(true);
-    setOnlyTo(AddressZero);
+    setOnlyTo({address: AddressZero});
     setFinalTxSubmitted(false);
     setFinalTxSubmitted(false);
     setQuantityText(undefined);
@@ -186,6 +189,25 @@ export const BidDialog = () => {
   const decimals = bidData?.decimals ?? 0
 
   const isAssetFungible = decimals > 0;
+  const isAssetErc721 = assetType?.valueOf() === StringAssetType.ERC721.valueOf()
+
+  useEffect(() => {
+    if (isAssetErc721) {
+      setQuantityText('1')
+    }
+  }, [isAssetErc721]);
+
+  const handleOnlyToChange = (address: string) => {
+    if (!address || address === '') {
+      setOnlyTo({address: AddressZero})
+      return
+    }
+    if (isAddress(address)) {
+      setOnlyTo({address})
+    } else {
+      setOnlyTo({address: AddressZero, error: 'Invalid address'})
+    }
+  }
 
   // buy- PPU is always in ether!
   try {
@@ -335,23 +357,24 @@ export const BidDialog = () => {
   console.warn('ORDER', {
     askPerUnitDenominator: askPerUnitDenominator.toString(),
     askPerUnitNominator: askPerUnitNominator.toString(),
-    expiresAt: expiresAt.toString(),
+    expiresAt: expiresAt.date.toString(),
     startsAt: startsAt.toString(),
     quantity: orderAmount?.toString(),
     onlyTo,
     partialAllowed,
     amountToApprove: amountToApprove?.toString(),
     hasEnough,
+    globalError
   });
 
-  const { state: createOrderState, callback: createOrderCallback } =
+  const { state: createOrderState, callback: createOrderCallback, error } =
     useCreateOrderCallback(orderData, {
       askPerUnitDenominator,
       askPerUnitNominator,
-      expiresAt: expiresAt,
+      expiresAt: expiresAt.date,
       startsAt: startsAt,
       quantity: orderAmount,
-      onlyTo,
+      onlyTo: onlyTo.address,
       partialAllowed,
     });
 
@@ -392,6 +415,22 @@ export const BidDialog = () => {
         </div>
       );
     }
+
+    if (!!globalError) {
+      return (
+        <div className={successContainer}>
+          <Typography>Something went wrong</Typography>
+          <Typography color="textSecondary" variant="h5">
+            {(globalError as Error)?.message as string ?? 'Unknown error'}
+          </Typography>
+          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+            Back
+          </Button>
+        </div>
+      );
+    }
+
+    
 
     if (finalTxSubmitted && !orderSubmitted) {
       return (
@@ -473,13 +512,17 @@ export const BidDialog = () => {
                 <Typography className={formLabel}>
                   Quantity to {action} *
                 </Typography>
-                <CoinQuantityField
+                {!isAssetErc721 && <CoinQuantityField
                   id="quantity-amount"
                   className={formValue}
                   value={quantityText}
                   setValue={setQuantityText}
                   assetType={assetType}
-                ></CoinQuantityField>
+                ></CoinQuantityField>}
+                {isAssetErc721 && <Typography className={formValue}>
+                  1 {symbolString}
+                </Typography>
+                }
               </div>
               {quantityError && (
                 <div className={fieldError}>{quantityError}</div>
@@ -590,7 +633,7 @@ export const BidDialog = () => {
                       type="text"
                       labelWidth={0}
                       // onChange={onChange}
-                      // onChange={(event) => setOnlyTo(event.target.value)}
+                      onChange={(event) => handleOnlyToChange(event.target.value)}
                       // onBlur={onBlur}
                       // value={value}
                       placeholder={'0x0...'}
@@ -599,6 +642,9 @@ export const BidDialog = () => {
                     {/* /> */}
                   </FormControl>
                 </div>
+                {!!onlyTo.error && (
+                  <div className={fieldError}>{onlyTo.error}</div>
+                )}
               </Collapse>
             </Box>
           </Grid>
@@ -739,15 +785,20 @@ export const BidDialog = () => {
           </Button>
         ) : (
           <Button
-            onClick={() => {
-              createOrderCallback?.();
+            onClick={async () => {
               setFinalTxSubmitted(true);
+              try {
+                await createOrderCallback?.();
+              } catch (err) {
+                setGlobalError(err)
+                setFinalTxSubmitted(false);
+              }
             }}
             className={formButton}
             variant="contained"
             color="primary"
             disabled={
-              createOrderState !== CreateOrderCallbackState.VALID || !hasEnough
+              createOrderState !== CreateOrderCallbackState.VALID || !hasEnough || !!onlyTo.error
             }
           >
             Place offer
