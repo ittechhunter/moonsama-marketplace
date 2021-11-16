@@ -188,7 +188,9 @@ const TokenPage = () => {
       )?.toFixed(2) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0'
 
-  const isOwner = userBalanceString !== '0';
+  userBalanceString = account ? userBalanceString: '0'
+
+  const isOwner = userBalanceString !== '0' && userBalanceString !== '0.0';
 
   console.log('yoyoyo', {...balanceData?.[0]})
   let totalSupplyString =
