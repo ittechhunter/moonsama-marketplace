@@ -49,4 +49,22 @@ export const useStyles = makeStyles((theme) => ({
     color: '#fff !important',
   },
   filterControls: {},
+  accordionHeader: {
+    fontFamily: 'Space Mono, monospace !important',
+  },
+  accordionContent: {
+    maxHeight: '250px',
+    overflowY: 'auto',
+  },
+  filterChip: {
+    border: '1px solid #c5c5c5 !important',
+    color: '#c5c5c5 !important',
+    margin: '0 8px 8px 0',
+    fontSize: '12px !important',
+
+    '&.selected': {
+      background: '#710021 !important',
+      borderColor: '#710021 !important',
+    },
+  },
 }));

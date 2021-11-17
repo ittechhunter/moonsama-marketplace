@@ -89,7 +89,7 @@ export const collections = {
     {
       chainId: 1285,
       address: '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
-      display_name: 'Moonsama Multiverse Asset Factory',
+      display_name: 'Multiverse Asset Factory',
       symbol: 'MMAF',
       type: 'ERC1155',
       indexing: 'sequential',

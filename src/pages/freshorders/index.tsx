@@ -19,8 +19,8 @@ import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
 import {
-  useLatestBuyOrdersWithStaticCallback,
-  useLatestSellOrdersWithStaticCallback,
+  useLatestBuyOrdersForTokenWithStaticCallback,
+  useLatestSellOrdersForTokenWithStaticCallback,
 } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
 import {
   inferOrderTYpe,
@@ -28,6 +28,8 @@ import {
 } from '../../utils/subgraph';
 import { useActiveWeb3React } from '../../hooks';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import { Chip, Stack } from '@mui/material';
+import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -66,6 +68,9 @@ const FreshOrdersPage = () => {
     }[]
   >([]);
 
+  const collections = useRawCollectionsFromList()
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(collections.findIndex(x => x.display_name = 'Moonsama') ?? 0)
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
@@ -80,12 +85,25 @@ const FreshOrdersPage = () => {
     selectLabel,
     dropDown,
     filterControls,
+    filterChip
   } = useStyles();
   const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
   const { chainId } = useActiveWeb3React();
-  const getPaginatedBuyOrders = useLatestBuyOrdersWithStaticCallback();
-  const getPaginatedSellOrders = useLatestSellOrdersWithStaticCallback();
+  const getPaginatedSellOrders = useLatestSellOrdersForTokenWithStaticCallback();
+  const getPaginatedBuyOrders = useLatestBuyOrdersForTokenWithStaticCallback();
+
+  const selectedTokenAddress = collections[selectedIndex]?.address?.toLowerCase()
+
+  const handleSelection = (i: number) => {
+    if (i !== selectedIndex) {
+      setBuyOrders([])
+      setSellOrders([])
+      setSelectedIndex(i)
+      setTake(0)
+      setPaginationEnded(false);
+    }
+  }
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
@@ -97,8 +115,8 @@ const FreshOrdersPage = () => {
     const getCollectionById = async () => {
       setPageLoading(true);
 
-      let buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
-      let sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
+      let buyData = await getPaginatedBuyOrders(selectedTokenAddress, PAGE_SIZE, take);
+      let sellData = await getPaginatedSellOrders(selectedTokenAddress, PAGE_SIZE, take);
 
       buyData = buyData.filter((x) =>
         whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())
@@ -131,7 +149,7 @@ const FreshOrdersPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [take, paginationEnded]);
+  }, [take, paginationEnded, selectedTokenAddress]);
 
   const getTableBody = (
     filteredCollection:
@@ -160,28 +178,6 @@ const FreshOrdersPage = () => {
     );
   };
 
-  const filterBuyOrders = (collection: any) =>
-    collection.filter((item: any) => {
-      const ot = inferOrderTYpe(
-        chainId,
-        item.order.sellAsset,
-        item.order.buyAsset
-      );
-
-      return ot == OrderType.BUY;
-    });
-
-  const filterSellOrders = (collection: any) =>
-    collection.filter((item: any) => {
-      const ot = inferOrderTYpe(
-        chainId,
-        item.order.sellAsset,
-        item.order.buyAsset
-      );
-
-      return ot != OrderType.BUY;
-    });
-
   return (
     <>
       <div className={container}>
@@ -198,16 +194,16 @@ const FreshOrdersPage = () => {
       </Drawer>
 
       <Grid container className={pageContainer} justifyContent="center">
-        {/*<div className={filterControls}>*/}
-        {/*  <Button*/}
-        {/*    startIcon={<FilterIcon />}*/}
-        {/*    variant="outlined"*/}
-        {/*    color="primary"*/}
-        {/*    onClick={() => setIsDrawerOpened(true)}*/}
-        {/*  >*/}
-        {/*    Filter*/}
-        {/*  </Button>*/}
-        {/*</div>*/}
+        <Stack flexDirection="row">
+          {collections.map((collection, i) => {
+              return <Chip
+                key={`${collection.address}-${i}`}
+                label={collection.display_name}
+                variant="outlined"
+                onClick={() => handleSelection(i)}
+                className={`${filterChip}${selectedIndex === i ? ' selected': ''}`} />
+            })}
+        </Stack>
         <Tabs
           containerClassName={tabsContainer}
           tabsClassName={tabs}
@@ -226,7 +222,7 @@ const FreshOrdersPage = () => {
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
-                  {getTableBody(filterBuyOrders(buyOrders))}
+                  {getTableBody(buyOrders)}
                 </Table>
               ),
             },
