@@ -17,6 +17,9 @@ import { useStyles } from './styles';
 import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
 import { TokenTrade } from 'components/TokenTrade/TokenTrade';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
+import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 const PAGE_SIZE = 10;
 
@@ -31,6 +34,7 @@ const FreshTradesPage = () => {
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
+  
   const {
     placeholderContainer,
     container,
@@ -39,6 +43,7 @@ const FreshTradesPage = () => {
     poster,
     glass,
     nftWrapper,
+    filterChip
   } = useStyles();
 
   const sceneRef = useRef(null);
@@ -47,19 +52,25 @@ const FreshTradesPage = () => {
   const glassRef = useRef(null);
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
+  const collections = useRawCollectionsFromList()
+  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined)
+  const [searchCounter, setSearchCounter] = useState<number>(0);
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
+    setSearchCounter((state) => (state += 1));
   }, []);
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400 });
 
   const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
+  const selectedTokenAddress = selectedIndex === undefined ? undefined : collections[selectedIndex]?.address?.toLowerCase()
+
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      let data = await getPaginatedItems(PAGE_SIZE, take);
+      let data = await getPaginatedItems(PAGE_SIZE, take, selectedTokenAddress, setTake);
       data = data.filter(
         (x) => whitelist.includes(x.staticData.asset.assetAddress.toLowerCase())
       ); // REMOVEME later
@@ -82,7 +93,7 @@ const FreshTradesPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [take, paginationEnded]);
+  }, [searchCounter, paginationEnded, selectedTokenAddress]);
 
   const handleTouchMove = (event: any): void => {
     event.preventDefault();
@@ -122,6 +133,16 @@ const FreshTradesPage = () => {
     }
   };
 
+  const handleSelection = (i: number | undefined) => {
+    if (i !== selectedIndex) {
+      setCollection([])
+      setSelectedIndex(i)
+      setTake(0)
+      setSearchCounter(0)
+      setPaginationEnded(false);
+    }
+  }
+
   return (
     <>
       <div className={container}>
@@ -132,7 +153,25 @@ const FreshTradesPage = () => {
           display: 'flex',
           justifyContent: 'center',
         }}
-      ></div>
+      >
+        <Stack flexDirection="row">
+          <Chip
+                key={`all`}
+                label={'All'}
+                variant="outlined"
+                onClick={() => handleSelection(undefined)}
+                className={`${filterChip}${selectedIndex === undefined ? ' selected': ''}`} />
+          {collections.map((collection, i) => {
+              
+              return <Chip
+                key={`${collection.address}-${i}`}
+                label={collection.display_name}
+                variant="outlined"
+                onClick={() => handleSelection(i)}
+                className={`${filterChip}${selectedIndex === i ? ' selected': ''}`} />
+            })}
+        </Stack>
+      </div>
       <Grid container spacing={1} style={{ marginTop: 12 }}>
         {collection
           .map(
