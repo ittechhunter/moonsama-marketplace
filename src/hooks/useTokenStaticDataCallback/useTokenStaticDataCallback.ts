@@ -19,7 +19,6 @@ import { parseEther } from '@ethersproject/units';
 import { QUERY_ACTIVE_ORDERS_FOR_FILTER } from 'subgraph/orderQueries';
 import request from 'graphql-request';
 import { SUBGRAPH_URL } from '../../constants';
-import { integerPropType } from '@mui/utils';
 
 export interface StaticTokenData {
   asset: Asset;
@@ -216,6 +215,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       });
 
       const fetchStatics = async (assets: Asset[], orders?: Order[]) => {
+        console.log('fetch statistics')
         if (orders && orders.length !== assets.length) {
           throw new Error('Orders/assets length mismatch')
         }
@@ -230,10 +230,13 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
           return [];
         }
 
-        //console.log('yolo tryMultiCallCore res', results);
+        console.log('yolo tryMultiCallCore res', results);
         const staticData = processTokenStaticCallResults(assets, results);
+        console.log('staticData', {staticData})
 
         const metas = await fetchUri(staticData);
+
+        console.log(metas)
 
         return metas.map((x, i) => {
           return {
@@ -246,7 +249,9 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
 
       // if we don't have a price range, it's just business as usual
       if (!priceRange || priceRange.length === 0 || priceRange.length !== 2 || !selectedOrderType) {
+        console.log('no price range')
         const statics = await fetchStatics(chosenAssets)
+        console.log('statistics', statics)
         return statics
       }
 

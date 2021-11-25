@@ -23,6 +23,7 @@ export type RawCollection = {
   min_items: number;
   subgraph: string;
   decimals?: number;
+  maxId?: number;
 };
 
 export type RawCollectionList = {
@@ -60,7 +61,8 @@ const collectionListSchema = yup.object<RawCollectionList>({
           contractURI: yup.string().required(),
           tags: yup.array().of(yup.string().required()).required(),
           subgraph: yup.string(),
-          decimals: yup.number().optional()
+          decimals: yup.number().optional(),
+          maxId: yup.number().optional()
         })
         .required()
     )

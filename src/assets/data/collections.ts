@@ -67,6 +67,7 @@ export const collections = {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
       display_name: 'Moonsama',
+      maxId: 1000,
       symbol: 'MSAMA',
       type: 'ERC721',
       indexing: 'sequential',
@@ -78,6 +79,7 @@ export const collections = {
       chainId: 1285,
       address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
       display_name: '???',
+      maxId: 1000,
       decimals: 0,
       symbol: '???',
       type: 'ERC1155',
@@ -91,11 +93,24 @@ export const collections = {
       address: '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
       display_name: 'Multiverse Asset Factory',
       symbol: 'MMAF',
+      maxId: 1000,
       type: 'ERC1155',
       indexing: 'sequential',
       contractURI: 'ipfs://Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm',
       tags: ['native', 'green'],
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-factory'
+    },
+    {
+      chainId: 1285,
+      address: '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf',
+      display_name: 'BlvckMarketNFT',
+      maxId: 1332,
+      symbol: 'BMANFT',
+      type: 'ERC721',
+      indexing: 'sequential',
+      contractURI: 'ipfs://QmVQPRFZq7XZNk79C75ynqPRPdpPaX8bmH4Cb9KhrN1PfH',
+      tags: ['native', 'green'],
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-blvck'
     }
   ],
 };

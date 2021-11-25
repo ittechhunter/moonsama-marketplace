@@ -122,8 +122,8 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
         </div>
         <div className={nameContainer}>
-          <GlitchText className={tokenName}>
-            {meta?.name ?? truncateHexString(asset.assetId)}
+          <GlitchText className={tokenName}>{/** FIXME BLACKLIST */}
+            {meta?.name ? `${meta?.name}${asset.assetAddress.toLowerCase() === '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf'.toLowerCase() ? ` #${truncateHexString(asset.assetId)}` : ''}` : truncateHexString(asset.assetId)}
           </GlitchText>
           {displayPPU && displayPPU !== '?' && (
             <PriceBox margin={false} size="small" color={color}>

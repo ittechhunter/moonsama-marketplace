@@ -8,8 +8,6 @@ import { UserCollection, useUserCollection } from 'hooks/useUserCollection/useUs
 import { useActiveWeb3React } from 'hooks';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenOwned } from 'components/TokenOwned/TokenOwned';
-import { Asset } from 'hooks/marketplace/types';
-import { database } from 'faker';
 
 const PAGE_SIZE = 10;
 

@@ -87,7 +87,7 @@ export const TokenOrder = ({
           <Media uri={meta?.image} className={image} />
         </div>
         <Typography className={tokenName}>
-          {meta?.name ?? truncateHexString(asset.assetId)}
+          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
         </Typography>
       </TableCell>
       <TableCell>

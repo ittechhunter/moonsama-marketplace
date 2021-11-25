@@ -55,6 +55,7 @@ import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import uriToHttp from 'utils/uriToHttp';
 
 const geTableHeader = () => {
   return (
@@ -584,7 +585,7 @@ const TokenPage = () => {
               </ExternalLink>
             )}
             {staticData?.[0]?.tokenURI && (
-              <ExternalLink href={staticData?.[0].tokenURI}>
+              <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
                 <Button>Full metadata↗</Button>
               </ExternalLink>
             )}

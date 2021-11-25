@@ -29,6 +29,7 @@ import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from 'react-hook-form';
+import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 const DEFAULT_PAGE_SIZE = 10;
 const SEARCH_PAGE_SIZE = 50;
@@ -69,10 +70,13 @@ const CollectionPage = () => {
 
   // TODO: wire it to search result
 
+  const collections = useRawCollectionsFromList()
+  const maxId = collections.find((c) => c.address.toLowerCase() === asset.assetAddress)?.maxId ?? 1000
+
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
     asset,
     filters,
-    1000
+    maxId
   ); //useTokenStaticDataCallback(asset)//
   /*
   const f = x(['Black Bird', 'White Shades'])
