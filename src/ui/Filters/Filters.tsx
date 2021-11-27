@@ -7,10 +7,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Slider from '@mui/material/Slider';
 import { Button, Drawer } from 'ui';
 import { useStyles } from './Filters.style';
-import { Chip } from '@material-ui/core';
+import { Chip, TextField } from '@material-ui/core';
 import { MOONSAMA_TRAITS } from 'utils/constants';
 import FilterIcon from '@mui/icons-material/FilterListSharp';
 import { OrderType } from 'utils/subgraph';
+import { Stack } from '@mui/material';
+import { AnyAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import { number } from 'yup';
 
 export interface Filters {
   priceRange: number[];
@@ -20,9 +23,10 @@ export interface Filters {
 
 interface Props {
   onFiltersUpdate: (x: Filters) => void;
+  assetAddress: string
 }
 
-export const Filters = ({ onFiltersUpdate }: Props) => {
+export const Filters = ({ onFiltersUpdate, assetAddress }: Props) => {
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([1, 400]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
@@ -35,8 +39,11 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
     accordionContent,
     filterChip,
     priceRangeWrapper,
+    priceInput,
     filtersTitle,
   } = useStyles();
+
+  const isMoonsama = assetAddress.toLowerCase() == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
 
   const handleApplyFilters = () => {
     onFiltersUpdate({
@@ -51,7 +58,32 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
     event: Event,
     newValue: number | number[]
   ) => {
+    console.log('click', newValue)
     setPriceRange(newValue as number[]);
+  };
+
+  const handlePriceRangeChange2 = (
+    event: any,
+    to:boolean
+  ) => {
+    console.log(event.target.value)
+    if(!event.target.value && event.target.value !== 0) {
+      return
+    }
+
+    const val = Number.parseFloat(event.target.value)
+
+    if(!val && val !== 0) {
+      return
+    }
+    
+    const newRange = to? [priceRange[0], val]: [val, priceRange[1]]
+
+    console.log('click', newRange)
+
+    if (JSON.stringify(newRange) !== JSON.stringify(priceRange)) {
+      setPriceRange(newRange);
+    }
   };
 
   const handleOrderTypeClick = (orderType: OrderType | undefined) => {
@@ -129,6 +161,30 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
                 <Typography className={accordionHeader}>Price</Typography>
               </AccordionSummary>
               <AccordionDetails>
+                
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={{ xs: 1, sm: 2, md: 8 }}
+                  justifyContent="flex-end"
+                  alignItems="center"
+                >
+                  <TextField
+                    className={priceInput}
+                    placeholder="Min"
+                    variant="outlined"
+                    onChange={(event: any) => handlePriceRangeChange2(event, false)}
+                    defaultValue={priceRange[0]}
+                  />
+                  <div>TO</div>
+                  <TextField
+                    className={priceInput}
+                    placeholder="Max"
+                    variant="outlined"
+                    onChange={(event: any) => handlePriceRangeChange2(event, true)}
+                    defaultValue={priceRange[1]}
+                  />
+                </Stack>
+                {/*
                 <Slider
                   getAriaLabel={() => 'Price range'}
                   value={priceRange}
@@ -152,9 +208,12 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
                   <div>{`${priceRange[0]} MOVR`}</div>
                   <div>{`${priceRange[1]} MOVR`}</div>
                 </div>
+                */}
+              
               </AccordionDetails>
             </Accordion>
-            <Accordion defaultExpanded square className={filterAccordion}>
+
+            {isMoonsama && <Accordion defaultExpanded square className={filterAccordion}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel2a-content"
@@ -177,6 +236,7 @@ export const Filters = ({ onFiltersUpdate }: Props) => {
                 </div>
               </AccordionDetails>
             </Accordion>
+            }
             <Button
               className={applyFiltersButton}
               onClick={handleApplyFilters}

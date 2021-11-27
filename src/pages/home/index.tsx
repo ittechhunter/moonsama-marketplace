@@ -49,13 +49,6 @@ const HomePage = () => {
           </Button>
         </NavLink>
       </div>
-
-      <Typography variant="h5" className={betaTitle}>
-        STILL IN BETA
-      </Typography>
-      <Typography align="center" className={betaText}>
-        Report to us if you find something weird
-      </Typography>
     </div>
   );
 };

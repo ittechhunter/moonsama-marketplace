@@ -61,7 +61,7 @@ const MyNFTsPage = () => {
                     <Grid
                       item
                       key={`${token.staticData.asset.id}-${i}`}
-                      xl={3}
+                      lg={3}
                       md={4}
                       sm={6}
                       xs={12}

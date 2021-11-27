@@ -194,7 +194,13 @@ const FreshOrdersPage = () => {
       </Drawer>
 
       <Grid container className={pageContainer} justifyContent="center">
-        <Stack flexDirection="row">
+        <Stack
+          direction={{ xs: 'row' }}
+          flexWrap={{xs: 'wrap'}}
+          //spacing={{ xs: 1 }}
+          justifyContent="center"
+          alignItems="center"
+        >
           {collections.map((collection, i) => {
               return <Chip
                 key={`${collection.address}-${i}`}

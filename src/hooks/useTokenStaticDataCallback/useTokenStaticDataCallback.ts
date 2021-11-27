@@ -19,6 +19,7 @@ import { parseEther } from '@ethersproject/units';
 import { QUERY_ACTIVE_ORDERS_FOR_FILTER } from 'subgraph/orderQueries';
 import request from 'graphql-request';
 import { SUBGRAPH_URL } from '../../constants';
+import { TEN_POW_18 } from 'utils';
 
 export interface StaticTokenData {
   asset: Asset;
@@ -255,7 +256,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
         return statics
       }
 
-      const rangeInWei = priceRange.map(x => parseEther(x.toString()))
+      const rangeInWei = priceRange.map(x => parseEther(x.toString()).mul(TEN_POW_18) )
 
       let canStop = false
       let ordersFetch: any[] = []
@@ -271,7 +272,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
           SUBGRAPH_URL,
           query
         );
-        //console.debug('YOLO getOrders', result);
+        console.log('YOLO getOrders', result);
 
         const orders = result?.orders;
 

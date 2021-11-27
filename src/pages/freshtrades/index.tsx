@@ -154,7 +154,13 @@ const FreshTradesPage = () => {
           justifyContent: 'center',
         }}
       >
-        <Stack flexDirection="row">
+        <Stack
+          direction={{ xs: 'row' }}
+          flexWrap={{xs: 'wrap'}}
+          //spacing={{ xs: 1 }}
+          justifyContent="center"
+          alignItems="center"
+        >
           <Chip
                 key={`all`}
                 label={'All'}
@@ -180,7 +186,7 @@ const FreshTradesPage = () => {
                 <Grid
                   item
                   key={`${token.staticData.asset.id}-${i}`}
-                  xl={3}
+                  lg={3}
                   md={4}
                   sm={6}
                   xs={12}

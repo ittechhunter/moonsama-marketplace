@@ -48,4 +48,11 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     fontSize: '12px',
   },
+  priceInput: {
+    width: '40% !important',
+
+    '& .MuiOutlinedInput-root': {
+      width: '100% !important'
+    }
+  }
 }));

@@ -2,10 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 
 import { Token as TokenComponent } from 'components';
@@ -66,12 +62,14 @@ const CollectionPage = () => {
     id: getAssetEntityId(address?.toLowerCase(), '0'),
   };
 
-  const displayFilters = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
+  const displayFilters = assetType === StringAssetType.ERC721
 
   // TODO: wire it to search result
 
   const collections = useRawCollectionsFromList()
-  const maxId = collections.find((c) => c.address.toLowerCase() === asset.assetAddress)?.maxId ?? 1000
+  const recognizedCollection = collections.find((c) => c.address.toLowerCase() === asset.assetAddress)
+  const maxId = recognizedCollection?.maxId ?? 1000
+  const collectionName = recognizedCollection ? recognizedCollection.display_name : `Collection ${truncateHexString(address)}`
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
     asset,
@@ -166,7 +164,7 @@ const CollectionPage = () => {
     <>
       <div className={container}>
         <GlitchText fontSize={48}>
-          Collection {truncateHexString(address)}
+          {collectionName}
         </GlitchText>
         {/*<Grid className={collectionStats} container spacing={1}>
             <Grid xl={3}>
@@ -235,7 +233,7 @@ const CollectionPage = () => {
           {/*</div>*/}
           
           {displayFilters && <div>
-            <Filters onFiltersUpdate={handleFiltersUpdate} />
+            <Filters onFiltersUpdate={handleFiltersUpdate} assetAddress={asset.assetAddress} />
           </div>}
         </Stack>
       </div>
