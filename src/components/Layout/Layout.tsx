@@ -42,7 +42,7 @@ export const Layout = ({ children }: LayoutProps) => {
             </Grid>
             <Grid item className={buttonContainer}>
               {!showRegularMenu ? (
-                <Box style={{ display: 'flex ' }}>
+                <Box style={{ display: 'flex ' }} onClick={() => setIsDrawerOpened(false)}>
                   {/*<NavLink href="/" className={navItem}>*/}
                   {/*  Welcome*/}
                   {/*</NavLink>*/}
@@ -71,6 +71,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   open={isDrawerOpened}
                   onClose={() => setIsDrawerOpened(false)}
                   onOpen={() => setIsDrawerOpened(true)}
+                  onClick={() => setIsDrawerOpened(false)}
                 >
                   <Box>
                     <NavLink href="/" className={navItemDrawer}>

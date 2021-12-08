@@ -86,7 +86,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   */
   //console.log('STATIC',{staticData})
 
-  console.log('ORDERTYPE', { orderType, original: finalOrder?.orderType })
+  //console.log('ORDERTYPE', { orderType, original: finalOrder?.orderType })
   const color =
     orderType === OrderType.BUY
       ? 'green'
@@ -100,7 +100,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
 
   const displayPPU = getDisplayUnitPrice(decimals, 5, orderType, finalOrder?.askPerUnitNominator, finalOrder?.askPerUnitDenominator, true)
 
-  const totalSupplyString = isErc721
+  const totalSupplyString = isErc721 || sup?.toString() === '1'
     ? 'unique'
     : sup
       ? `${sup} pieces`
@@ -133,7 +133,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
         </div>
         <div className={stockContainer}>
           {staticData?.symbol && (
-            <Typography color="textSecondary">{staticData.symbol}</Typography>
+            <Typography color="textSecondary">{`${staticData.symbol} #${asset.assetId}`}</Typography>
           )}
 
           {totalSupplyString && (

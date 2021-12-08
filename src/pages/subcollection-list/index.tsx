@@ -10,48 +10,60 @@ import {
 import Grid from '@material-ui/core/Grid';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { GlitchText } from 'ui';
 import { appStyles } from '../../app.styles';
-import { collectionListStyles } from './collection-list.styles';
+import { collectionListStyles } from './subcollection-list.styles';
 import {
   useRawCollectionsFromList,
   RawCollection,
+  useRawcollection,
+  RawSubcollection,
 } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import {
   CollectionMeta,
   useFetchCollectionMeta,
+  useFetchSubcollectionMeta,
 } from 'hooks/useFetchCollectionMeta/useFetchCollectionMeta';
 import { ExternalLink, Media } from 'components';
 import { getExplorerLink, truncateHexString } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { StringAssetType } from 'utils/subgraph';
 
-export const CollectionListPage = () => {
-  const rawCollections = useRawCollectionsFromList();
-  const metas = useFetchCollectionMeta(rawCollections);
+export const SubcollectionListPage = () => {
+
+  let { address } =
+    useParams<{ address: string }>();
+
+
+  const collection = useRawcollection(address)
+  const subcollections = collection?.subcollections ?? []
+  const metas = useFetchSubcollectionMeta(subcollections);
 
   //console.warn('HERE', { rawCollections, metas });
-
-  const collections: RawCollection[] = rawCollections ?? [];
 
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <GlitchText fontSize={48}>Featured collections</GlitchText>
+        <GlitchText fontSize={48}>{collection?.display_name}</GlitchText>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <GlitchText fontSize={24}>Subcollections</GlitchText>
       </div>
 
       <Grid container spacing={2} style={{ marginTop: 12 }}>
-        {collections.map((collection: RawCollection, i) => {
-          return CollectionListItem(collection, metas[i], i);
+        {subcollections.map((subcollection, i) => {
+          return SubcollectionListItem(collection, collection?.subcollections?.[i], metas[i], i);
         })}
       </Grid>
     </>
   );
 };
 
-const CollectionListItem = (
-  collection: RawCollection,
+const SubcollectionListItem = (
+  collection: RawCollection | undefined,
+  subcollection: RawSubcollection | undefined,
   meta: CollectionMeta | undefined,
   i: number
 ) => {
@@ -76,13 +88,15 @@ const CollectionListItem = (
 
   //console.warn('META', { meta });
 
-  const isErc20 = collection.type.valueOf() === StringAssetType.ERC20.valueOf();
-  const subcollection = collection.subcollections
+  const isErc20 = collection?.type.valueOf() === StringAssetType.ERC20.valueOf();
+  
+  const itemsize = subcollection?.tokens.length
+  const itemstring = !!itemsize && itemsize > 0 ? `${itemsize} items` : ''
 
   return (
       <Grid
         item
-        key={`${collection?.address ?? 'collection'}-${i}`}
+        key={`${collection?.address ?? 'collection'}-${subcollection?.id}-${i}`}
         xl={3}
         md={4}
         sm={6}
@@ -96,8 +110,8 @@ const CollectionListItem = (
             }}
             to={
               isErc20
-                ? `/token/${collection.type}/${collection.address}/0`
-                : !!subcollection ? `/subcollections/${collection.address}` : `/collection/${collection.type}/${collection.address}/0`
+                ? `/token/${collection?.type}/${collection?.address}/0`
+                : `/collection/${collection?.type}/${collection?.address}/${subcollection?.id ?? '0'}`
             }
           >
             <div className={mediaContainer}>
@@ -116,10 +130,16 @@ const CollectionListItem = (
               color="textSecondary"
               component="div"
             >
-              <div className={collectionName}>{collection.display_name}</div>
-              <div className={collectionSymbol}>{collection.symbol}</div>
+              <div className={collectionName}>{meta?.name}</div>
+              <div className={collectionSymbol}>{itemstring}</div>
             </Typography>
-            <div className={collectionType}>{collection.type}</div>
+            {/*<div className={collectionType}>By {meta?.artist}</div>*/}
+            {meta?.external_link && meta?.artist && (
+                <ExternalLink href={meta.external_link}>
+                  {meta.artist}
+                </ExternalLink>
+              )}
+            {/*
             {collection?.address && chainId && (
               <ExternalLink
                 href={getExplorerLink(chainId, collection.address, 'address')}
@@ -127,6 +147,7 @@ const CollectionListItem = (
                 {truncateHexString(collection.address)}↗
               </ExternalLink>
             )}
+            */}
           </CardContent>
 
           <Collapse in={isCollectionExpanded} timeout="auto" unmountOnExit>
@@ -134,11 +155,6 @@ const CollectionListItem = (
               <Typography paragraph className={collectionDescription}>
                 {meta?.description}
               </Typography>
-              {meta?.external_link && (
-                <ExternalLink href={meta?.external_link}>
-                  External site↗
-                </ExternalLink>
-              )}
             </CardContent>
           </Collapse>
           <CardActions disableSpacing style={{ maxHeight: 0 }}>

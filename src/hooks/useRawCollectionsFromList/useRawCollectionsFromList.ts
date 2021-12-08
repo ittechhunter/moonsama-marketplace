@@ -11,6 +11,12 @@ const enum Indexing {
   None = 'none',
 }
 
+export type RawSubcollection = {
+  id: string
+  uri: string
+  tokens: number[]
+}
+
 export type RawCollection = {
   chainId: number;
   address: string;
@@ -24,6 +30,9 @@ export type RawCollection = {
   subgraph: string;
   decimals?: number;
   maxId?: number;
+  minId: number;
+  idSearchOn: boolean,
+  subcollections?: RawSubcollection[]
 };
 
 export type RawCollectionList = {
@@ -62,7 +71,10 @@ const collectionListSchema = yup.object<RawCollectionList>({
           tags: yup.array().of(yup.string().required()).required(),
           subgraph: yup.string(),
           decimals: yup.number().optional(),
-          maxId: yup.number().optional()
+          minId: yup.number().required(),
+          maxId: yup.number().optional(),
+          subcollections: yup.array(),
+          idSearchOn: yup.boolean().required()
         })
         .required()
     )
@@ -81,4 +93,15 @@ export function useRawCollectionsFromList(): RawCollection[] {
   }, [chainId]);
 
   return list;
+}
+
+export function useRawcollection(address: string) {
+  const { chainId } = useActiveWeb3React();
+  const collections = useRawCollectionsFromList();
+  const collection = useMemo(() => {
+    const collection = collections.find(collection => collection.address.toLowerCase() === address?.toLowerCase())
+    return collection
+  }, [chainId, address]);
+
+  return collection;
 }

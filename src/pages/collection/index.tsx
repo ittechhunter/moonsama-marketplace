@@ -25,21 +25,40 @@ import { useStyles } from './styles';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from 'react-hook-form';
-import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { useRawcollection, useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { useFetchSubcollectionMeta } from 'hooks/useFetchCollectionMeta/useFetchCollectionMeta';
 
 const DEFAULT_PAGE_SIZE = 10;
 const SEARCH_PAGE_SIZE = 50;
 
 const CollectionPage = () => {
+
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
       staticData: StaticTokenData;
     }[]
   >([]);
-  const { address, type } = useParams<{ address: string; type: string }>();
+  const { address, type, subcollectionId } = useParams<{ address: string; type: string; subcollectionId: string }>();
   const assetType = stringToStringAssetType(type);
-  const [take, setTake] = useState<number>(1);
+  const asset: Asset = {
+    assetAddress: address?.toLowerCase(),
+    assetType: assetType,
+    assetId: '0',
+    id: getAssetEntityId(address?.toLowerCase(), '0'),
+  };
+  const recognizedCollection = useRawcollection(asset.assetAddress)
+  const maxId = recognizedCollection?.maxId ?? 1000
+  const searchBarOn = recognizedCollection?.idSearchOn ?? true
+  const subcollection = recognizedCollection?.subcollections?.find(x => x.id === subcollectionId)
+  const submeta = useFetchSubcollectionMeta(subcollection ? [subcollection]: undefined);
+  
+  //console.log('SUBMETA', submeta)
+  const isSubcollection = subcollectionId !== '0'
+
+  const minId = isSubcollection ? 0: recognizedCollection?.minId ?? 1
+
+  const [take, setTake] = useState<number>(minId);
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
@@ -55,26 +74,20 @@ const CollectionPage = () => {
   } = useStyles();
   const { register, handleSubmit } = useForm();
 
-  const asset: Asset = {
-    assetAddress: address?.toLowerCase(),
-    assetType: assetType,
-    assetId: '0',
-    id: getAssetEntityId(address?.toLowerCase(), '0'),
-  };
+  
 
   const displayFilters = assetType === StringAssetType.ERC721
 
   // TODO: wire it to search result
 
-  const collections = useRawCollectionsFromList()
-  const recognizedCollection = collections.find((c) => c.address.toLowerCase() === asset.assetAddress)
-  const maxId = recognizedCollection?.maxId ?? 1000
+  
   const collectionName = recognizedCollection ? recognizedCollection.display_name : `Collection ${truncateHexString(address)}`
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
     asset,
     filters,
-    maxId
+    maxId,
+    subcollectionId
   ); //useTokenStaticDataCallback(asset)//
   /*
   const f = x(['Black Bird', 'White Shades'])
@@ -101,7 +114,7 @@ const CollectionPage = () => {
   }, [searchSize]);
 
   const handleTokenSearch = useCallback(async ({ tokenID }) => {
-    if (tokenID) {
+    if (!!tokenID) {
       setPaginationEnded(true);
       setPageLoading(true);
       const data = await getItemsWithFilter(1, BigNumber.from(tokenID), setTake);
@@ -118,7 +131,7 @@ const CollectionPage = () => {
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
 
-  console.log('before FETCH', { searchSize, address, take, paginationEnded, searchCounter, filters });
+  //console.log('before FETCH', { searchSize, address, take, paginationEnded, searchCounter, filters });
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
@@ -153,12 +166,14 @@ const CollectionPage = () => {
   const handleFiltersUpdate = useCallback(async (filters: Filters) => {
     console.log('FILTER', filters);
     setCollection([]);
-    setTake(0);
+    setTake(minId);
     setFilters(filters);
     setPageLoading(true);
     setPaginationEnded(false);
     setSearchCounter((state) => (state += 1));
   }, []);
+
+  
 
   return (
     <>
@@ -166,6 +181,9 @@ const CollectionPage = () => {
         <GlitchText fontSize={48}>
           {collectionName}
         </GlitchText>
+        {isSubcollection && !!submeta?.[0]?.name && <GlitchText fontSize={24}>
+          {submeta?.[0].name}
+        </GlitchText>}
         {/*<Grid className={collectionStats} container spacing={1}>
             <Grid xl={3}>
               <div className={statItem}>1k <span>Items</span></div>
@@ -191,7 +209,7 @@ const CollectionPage = () => {
           justifyContent="flex-end"
           alignItems="center"
         >
-          <div>
+          {searchBarOn && <div>
             <TextField
               placeholder="Search by token ID"
               variant="outlined"
@@ -209,7 +227,7 @@ const CollectionPage = () => {
               }}
               {...register('tokenID')}
             />
-          </div>
+          </div>}
           {/*<div>*/}
           {/*  <FormControl sx={{ m: 1, minWidth: 80 }}>*/}
           {/*    <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>*/}
@@ -239,7 +257,7 @@ const CollectionPage = () => {
       </div>
       <Grid container spacing={1}>
         {collection.map(
-          (token, i) =>
+          (token, i) => 
             token && (
               <Grid
                 item

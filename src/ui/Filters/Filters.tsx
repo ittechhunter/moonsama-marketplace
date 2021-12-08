@@ -223,9 +223,10 @@ export const Filters = ({ onFiltersUpdate, assetAddress }: Props) => {
               </AccordionSummary>
               <AccordionDetails>
                 <div className={accordionContent}>
-                  {Object.keys(MOONSAMA_TRAITS).map((trait) => (
+                  {Object.keys(MOONSAMA_TRAITS).map((trait,i) => (
                     <Chip
                       label={trait}
+                      key={`${trait}-${i}`}
                       variant="outlined"
                       onClick={() => handleTraitClick(trait)}
                       className={`${filterChip} ${

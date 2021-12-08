@@ -1,5 +1,10 @@
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 
+export type MetaAttributes = {
+    display_type: string;
+    trait_type: string;
+    value: number | string;
+}
 export type TokenMeta = {
   description?: string;
   external_url?: string;
@@ -10,11 +15,7 @@ export type TokenMeta = {
   animation_url?: string;
   youtube_url?: string;
   decimals?: string;
-  attributes?: {
-    display_type: string;
-    trait_type: string;
-    value: number | string;
-  };
+  attributes?: MetaAttributes[];
   properties?: any;
 };
 

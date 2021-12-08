@@ -56,6 +56,7 @@ import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import uriToHttp from 'utils/uriToHttp';
+import { getMinecraftSkinUrl } from 'utils/meta';
 
 const geTableHeader = () => {
   return (
@@ -225,6 +226,7 @@ const TokenPage = () => {
     });
   
   const displayRarity = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
+  const minecraftskin = getMinecraftSkinUrl(assetMeta?.attributes)
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -395,7 +397,7 @@ const TokenPage = () => {
   return (
     <Grid container className={pageContainer} justifyContent="center">
       <Grid item md={8} xs={12} className={imageContainer}>
-        <Media uri={assetMeta?.image ?? currencyLogo} className={image} />
+        <Media uri={assetMeta?.image} className={image} />
         {/*<img src={LootBox} className={image}/>*/}
       </Grid>
       <Grid item md={4} xs={12}>
@@ -579,6 +581,11 @@ const TokenPage = () => {
             )}
           </Box>
           <Box className={externals}>
+            {minecraftskin && (
+              <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
+                <Button>Minecraft skin↗</Button>
+              </ExternalLink>
+            )}
             {assetMeta?.external_url && (
               <ExternalLink href={assetMeta?.external_url}>
                 <Button>External site↗</Button>

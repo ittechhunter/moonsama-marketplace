@@ -165,7 +165,7 @@ const FreshOrdersPage = () => {
       <TableBody>
         {filteredCollection && filteredCollection.length > 0 ? (
           filteredCollection.map(
-            (token, i) => token && <TokenOrder {...token} />
+            (token, i) => token && <TokenOrder key={`${token.staticData.asset.id}-${i}`} {...token} />
           )
         ) : (
           <TableRow>

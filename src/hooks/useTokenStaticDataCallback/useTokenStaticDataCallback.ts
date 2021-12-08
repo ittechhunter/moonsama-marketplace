@@ -20,6 +20,7 @@ import { QUERY_ACTIVE_ORDERS_FOR_FILTER } from 'subgraph/orderQueries';
 import request from 'graphql-request';
 import { SUBGRAPH_URL } from '../../constants';
 import { TEN_POW_18 } from 'utils';
+import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 export interface StaticTokenData {
   asset: Asset;
@@ -142,6 +143,8 @@ const chooseAssets = (assetType: StringAssetType, assetAddress: string, offset: 
   const offsetNum = BigNumber.from(offset).toNumber();
   let chosenAssets: Asset[];
 
+
+  // in this case offsetnum should be substracted one
   if (ids?.length > 0) {
     //console.log('xxxx')
     if (offsetNum >= ids.length) {
@@ -150,7 +153,7 @@ const chooseAssets = (assetType: StringAssetType, assetAddress: string, offset: 
     const to = offsetNum + num >= ids.length ? ids.length : offsetNum + num;
     const chosenIds = ids.slice(offsetNum, to);
 
-    //console.log('xxxx', {ids, offsetNum, num, to, chosenIds})
+    console.log('xxxx', {ids, offsetNum, num, to, chosenIds})
     chosenAssets = chosenIds.map((x) => {
       return {
         assetId: x.toString(),
@@ -186,13 +189,19 @@ const chooseAssets = (assetType: StringAssetType, assetAddress: string, offset: 
 export const useTokenStaticDataCallbackArrayWithFilter = (
   { assetAddress, assetType }: TokenStaticCallbackInput,
   filter?: Filters,
-  maxId?: number
+  maxId?: number,
+  subcollectionId?: string
 ) => {
   const { chainId } = useActiveWeb3React();
   const multi = useMulticall2Contract();
 
   const fetchUri = useFetchTokenUriCallback();
-  const ids = useMoonsamaAttrIds(filter?.traits) ?? [];
+
+  let ids =  useMoonsamaAttrIds(filter?.traits) ?? []
+  let coll = useRawcollection(assetAddress ?? '')
+  if (!!subcollectionId && subcollectionId !== '0') {
+    ids = coll?.subcollections?.find(c => c.id === subcollectionId)?.tokens ?? []
+  }
 
   const priceRange = filter?.priceRange
   const selectedOrderType = filter?.selectedOrderType
