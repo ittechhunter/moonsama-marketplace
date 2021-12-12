@@ -106,6 +106,7 @@ export const collections = {
       symbol: 'MMA',
       type: 'ERC1155',
       subcollections: [
+        /*
         {
             id: "1", // subcollection ID yumi
             uri: "ipfs://Qma8t7WqhjqexekvUiMqEFec5AJo8iAP1JQ9YX4quzBrc6",
@@ -149,6 +150,52 @@ export const collections = {
         {
             id: "9", // subcollection ID - ruben
             uri: "ipfs://QmSMo4rR7JMGmRMZQzho1aMnxF3Jai6R2YVgSH2TeYhZNb",
+            tokens: [25,26,27]
+        }
+        */
+       {
+            id: "1", // subcollection ID yumi
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [1,2,3]
+        },
+        {
+            id: "2", // subcollection ID tiff
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [4,5,6]
+        },
+        {
+            id: "3", // subcollection ID marlua
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [7,8,9]
+        },
+        {
+            id: "4", // subcollection ID bmc
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [10,11,12]
+        },
+        {
+            id: "5", // subcollection ID Majan
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [13,14,15]
+        },
+        {
+            id: "6", // subcollection ID ksmk
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [16,17,18]
+        },
+        {
+            id: "7", // subcollection ID - wangdoodle
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [19,20,21]
+        },
+        {
+            id: "8", // subcollection ID - tako
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [22,23,24]
+        },
+        {
+            id: "9", // subcollection ID - ruben
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
             tokens: [25,26,27]
         }
       ],
