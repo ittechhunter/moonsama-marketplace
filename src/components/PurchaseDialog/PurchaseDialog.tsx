@@ -1,4 +1,4 @@
-import { parseEther } from '@ethersproject/units';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import { appStyles } from '../../app.styles';
 
 import { useEffect, useState } from 'react';
@@ -38,6 +38,10 @@ import { Fraction } from 'utils/Fraction';
 import { AddressZero } from '@ethersproject/constants';
 import { Fee, useFees } from 'hooks/useFees/useFees';
 import { Asset } from 'hooks/marketplace/types';
+import { sellNative } from './sellNative.logic';
+import { sellElse } from './sellElse';
+import { buyNative } from './buyNative';
+import { buyElse } from './buyElse';
 
 export const PurchaseDialog = () => {
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
@@ -46,6 +50,7 @@ export const PurchaseDialog = () => {
   const [finalTxSubmitted, setFinalTxSubmitted] = useState<boolean>(false);
   const { isPurchaseDialogOpen, setPurchaseDialogOpen, purchaseData } =
     usePurchaseDialog();
+  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
 
   const [inputAmountText, setInputAmountText] = useState<string | undefined>(
     undefined
@@ -60,6 +65,7 @@ export const PurchaseDialog = () => {
   const handleClose = () => {
     setLoading(false);
     setPurchaseDialogOpen(false);
+    setGlobalError(undefined)
     setOrderLoaded(false);
     setApprovalSubmitted(false);
     setFinalTxSubmitted(false);
@@ -68,60 +74,64 @@ export const PurchaseDialog = () => {
 
   const order = purchaseData?.order;
   const orderType = purchaseData?.orderType;
-  const strategy = order?.strategy;
 
-  if (!orderLoaded && account && order && orderType && strategy) {
+  if (!orderLoaded && account && order && orderType) {
     setOrderLoaded(true);
   }
 
   const title = 'Take offer';
-  let symbol: string | undefined = 'MSAMA';
+  let symbol: string | undefined = purchaseData?.symbol ?? 'NFT';
   let assetAddress: string | undefined;
   let assetId: string | undefined;
   let assetType: StringAssetType | undefined;
   let action: string;
-  let usergive: BigNumber;
-  let userget: BigNumber;
-  let inputAmount: BigNumber;
-  let sendAmount: BigNumber;
-  let sendAmountError: string | undefined;
-  let displayTotal: string | undefined;
-  let userGetDisplay: string | undefined;
-  let inputUnit: UNIT;
-  let unitOptions: (string | number)[][];
-  let fee: Fee
-  let feeAsset: Asset | undefined
-  let royaltyFee: BigNumber
-  let protocolFee: BigNumber
-  let showFee = false
+  let fee: Fee;
+  let royaltyFee: BigNumber;
+  let protocolFee: BigNumber;
   let availableLabel: string;
-  let netto: BigNumber | undefined
+  let netto: BigNumber | undefined;
 
   const {
     askPerUnitNominator,
     askPerUnitDenominator,
     quantityLeft: quantity,
-  } = strategy ?? {};
+  } = order ?? {};
 
   const orderHash = order?.id;
 
-  const partialAllowed = strategy?.partialAllowed;
+  const decimals = purchaseData?.decimals ?? 0
+  const isAssetFungible = decimals > 0;
+
+  const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
-    strategy?.askPerUnitNominator,
-    strategy?.askPerUnitDenominator
+    decimals,
+    orderType,
+    order?.askPerUnitNominator,
+    order?.askPerUnitDenominator
   );
+
+  // this is in native, always 18 decimals
   const displayppu = ppu ? Fraction.from(ppu.toString(), 18)?.toFixed(5) : '?';
   const symbolString = symbol ? ` ${symbol.toString()}` : '';
 
   const userAsset = order?.buyAsset;
   const getAsset = order?.sellAsset;
 
-  const isGetAssetErc20OrNative =
-    getAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf() ||
+  const isGetAssetNative =
     getAsset?.assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
-  const isGiveAssetErc20OrNative =
-    userAsset?.assetType?.valueOf() === StringAssetType.ERC20.valueOf() ||
-    userAsset?.assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
+
+  const isGiveAssetNative = !isGetAssetNative
+
+  let giveAssetDecimals = 0
+  let getAssetDecimals = 0
+  
+  if(isGetAssetNative) {
+    getAssetDecimals = 18
+    giveAssetDecimals = decimals
+  } else {
+    getAssetDecimals = decimals
+    giveAssetDecimals = 18
+  }
 
   const total = getQuantity(
     orderType,
@@ -133,16 +143,16 @@ export const PurchaseDialog = () => {
   useEffect(() => {
     if (total) {
       if (!partialAllowed) {
-        //console.warn('SETT');
         setInputAmountText(total?.toString());
       }
 
       if (total.eq('1')) {
-        //console.warn('SETT');
         setInputAmountText(total?.toString());
       }
     }
   }, [partialAllowed, total]);
+
+  let meat;
 
   if (orderType === OrderType.BUY) {
     action = 'SELL';
@@ -152,51 +162,25 @@ export const PurchaseDialog = () => {
     assetAddress = userAsset?.assetAddress;
     assetId = userAsset?.assetId;
     assetType = userAsset?.assetType;
-    
-
-    // user asset desides
-    [inputUnit, unitOptions] = isGiveAssetErc20OrNative
-      ? [UNIT.ETHER, [[1, 'in ether']]]
-      : [UNIT.WEI, [[2, 'in units']]];
 
     // we sell our erc20 into a buy order
-    if (isGiveAssetErc20OrNative) {
-      // how much we want to sell from our erc20 in ether
-      try {
-        sendAmount = parseEther(inputAmountText ?? '0');
-        sendAmountError = undefined;
-      } catch {
-        sendAmount = BigNumber.from('0');
-        sendAmountError = 'Invalid quantity value';
-      }
-      displayTotal = Fraction.from(total?.toString(), 18)?.toFixed(5);
-
-      sendAmount = ppu?.mul(sendAmount).div(TEN_POW_18) ?? BigNumber.from('0');
-      usergive = sendAmount ?? BigNumber.from('0');
-
-      userget = sendAmount ?? BigNumber.from('0');
-      userGetDisplay = Fraction.from(userget?.toString(), 18)?.toFixed(5);
-
+    if (isGiveAssetNative) {
+      meat = sellNative(
+        ppu,
+        total,
+        inputAmountText,
+        giveAssetDecimals,
+        getAssetDecimals
+      )
     } else {
-      try {
-        sendAmount = BigNumber.from(inputAmountText ?? '0');
-        sendAmountError = undefined;
-      } catch {
-        sendAmount = BigNumber.from('0');
-        sendAmountError = 'Invalid quantity value';
-      }
-      displayTotal = total?.toString();
-      usergive = sendAmount;
-      sendAmount = ppu?.mul(sendAmount) ?? BigNumber.from('0');
-      //usergive = sendAmount
-      userget = sendAmount ?? BigNumber.from('0');
-      userGetDisplay = isGetAssetErc20OrNative
-        ? Fraction.from(userget?.toString(), 18)?.toFixed(5)
-        : userget?.toString();
-
-      // we give an NFT and we check the royalty of it
-      feeAsset = userAsset
-      showFee = true
+      meat = sellElse(
+        userAsset,
+        ppu,
+        total,
+        inputAmountText,
+        giveAssetDecimals,
+        getAssetDecimals
+      )
     }
   } else {
     action = 'BUY';
@@ -207,56 +191,45 @@ export const PurchaseDialog = () => {
     assetId = getAsset?.assetId;
     assetType = getAsset?.assetType;
 
-    // other asset decides
-    [inputUnit, unitOptions] = isGetAssetErc20OrNative
-      ? [UNIT.ETHER, [[1, 'in ether']]]
-      : [UNIT.WEI, [[2, 'in wei']]];
-
-    // we buy into a sell order, which is an erc20 token
-    if (isGetAssetErc20OrNative) {
-      // input amount to buy is in ether
-      try {
-        inputAmount = parseEther(inputAmountText ?? '0');
-        sendAmountError = undefined;
-      } catch {
-        inputAmount = BigNumber.from('0');
-        sendAmountError = 'Invalid quantity value';
-      }
-      displayTotal = Fraction.from(total?.toString(), 18)?.toFixed(5);
-
-      userget = inputAmount ?? BigNumber.from('0');
-      usergive = ppu?.mul(inputAmount).div(TEN_POW_18) ?? BigNumber.from('0');
-
-      sendAmount = userget;
-
-      //usergive = sendAmount
-      userGetDisplay = userget?.toString();
+    // we buy into a sell order, which is the native token
+    if (isGetAssetNative) {
+      meat = buyNative(
+        ppu,
+        total,
+        inputAmountText,
+        giveAssetDecimals,
+        getAssetDecimals
+      )
 
       // we buy into a sell order, which is an NFT
     } else {
-      // input is in wei
-      try {
-        inputAmount = BigNumber.from(inputAmountText ?? '0');
-        sendAmountError = undefined;
-      } catch {
-        inputAmount = BigNumber.from('0');
-        sendAmountError = 'Invalid quantity value';
-      }
-      displayTotal = total?.toString();
-
-      userget = inputAmount ?? BigNumber.from('0');
-      sendAmount = userget;
-      usergive = ppu?.mul(sendAmount) ?? BigNumber.from('0');
-      //usergive = sendAmount
-      userGetDisplay = userget?.toString();
+      meat = buyElse(
+        ppu,
+        total,
+        inputAmountText,
+        giveAssetDecimals,
+        getAssetDecimals
+      )
     }
   }
+
+  const {
+    userGive,
+    userGet,
+    sendAmount,
+    sendAmountError,
+    userGetDisplay,
+    userGiveDisplay,
+    feeAsset,
+    showFee,
+    displayTotal
+  } = meat
 
   const [approvalState, approveCallback] = useApproveCallback({
     assetAddress: userAsset?.assetAddress,
     assetId: userAsset?.assetId,
     assetType: userAsset?.assetType,
-    amountToApprove: usergive,
+    amountToApprove: userGive,
   });
 
   const userAssetBalance = useBalances([
@@ -268,44 +241,35 @@ export const PurchaseDialog = () => {
     },
   ])?.[0];
 
-  const hasEnough = userAssetBalance?.gte(usergive);
+  const hasEnough = userAssetBalance?.gte(userGive);
 
-  const displayBalance = isGiveAssetErc20OrNative
-    ? Fraction.from(userAssetBalance?.toString(), 18)?.toFixed(5)
-    : userAssetBalance?.toString();
+  const displayBalance = Fraction.from(userAssetBalance?.toString(), giveAssetDecimals)?.toFixed(giveAssetDecimals > 0 ? 5: 0)
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
   }, [approvalState, approvalSubmitted]);
-
-  /*
-  console.warn('FILL', {
-    hasEnough,
-    buyer: account?.toString(),
-    quantity: quantity?.toString(),
-    usergive: usergive?.toString(),
-    userget: userget?.toString(),
-    sendAmount: sendAmount?.toString(),
-    ppu: ppu?.toString(),
-    askPerUnitDenominator: askPerUnitDenominator?.toString(),
-    askPerUnitNominator: askPerUnitNominator?.toString(),
-    isGetAssetErc20OrNative,
-    isGiveAssetErc20OrNative,
-  });
-  */
+  
 
   fee = useFees([feeAsset])?.[0];
   royaltyFee =
-      fee?.value?.mul(userget).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
-  protocolFee = userget.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
+    fee?.value?.mul(userGet).div(FRACTION_TO_BPS) ?? BigNumber.from('0');
+  protocolFee = userGet.mul(PROTOCOL_FEE_BPS).div(FRACTION_TO_BPS);
 
   if (showFee) {
-    netto = userget.sub(protocolFee).sub(royaltyFee)
+    netto = userGet.sub(protocolFee).sub(royaltyFee);
   }
 
-  console.log('fee', {showFee,royaltyFee, protocolFee, isGiveAssetErc20OrNative, isGetAssetErc20OrNative})
+  console.log('fee', {
+    showFee,
+    royaltyFee,
+    protocolFee,
+    isGiveAssetNative,
+    giveAssetDecimals,
+    isGetAssetNative,
+    getAssetDecimals
+  });
 
   const {
     state: fillOrderState,
@@ -321,7 +285,7 @@ export const PurchaseDialog = () => {
       native:
         userAsset?.assetAddress === AddressZero &&
         userAsset?.assetType.valueOf() === StringAssetType.NATIVE,
-      usergive,
+      userGive,
     }
   );
 
@@ -330,7 +294,7 @@ export const PurchaseDialog = () => {
   const showApproveFlow =
     approvalState === ApprovalState.NOT_APPROVED ||
     approvalState === ApprovalState.PENDING;
-  
+
   /*
   console.log('approveflow', {
     showApproveFlow,
@@ -340,6 +304,28 @@ export const PurchaseDialog = () => {
     error,
   });
   */
+
+ console.warn('FILL', {
+    hasEnough,
+    buyer: account?.toString(),
+    quantity: quantity?.toString(),
+    usergive: userGive?.toString(),
+    userget: userGet?.toString(),
+    sendAmount: sendAmount?.toString(),
+    ppu: ppu?.toString(),
+    askPerUnitDenominator: askPerUnitDenominator?.toString(),
+    askPerUnitNominator: askPerUnitNominator?.toString(),
+    isGetAssetNative,
+    isGiveAssetNative,
+    getAssetDecimals,
+    giveAssetDecimals,
+    showApproveFlow,
+    approvalState,
+    fillOrderState,
+    fillSubmitted,
+    error,
+    amountToApprove: userGive?.toString()
+  });
 
   const {
     divider,
@@ -372,6 +358,20 @@ export const PurchaseDialog = () => {
               Should be a jiffy
             </Typography>
           </div>
+        </div>
+      );
+    }
+
+    if (!!globalError) {
+      return (
+        <div className={successContainer}>
+          <Typography>Something went wrong</Typography>
+          <Typography color="textSecondary" variant="h5">
+            {(globalError as Error)?.message as string ?? 'Unknown error'}
+          </Typography>
+          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+            Back
+          </Button>
         </div>
       );
     }
@@ -497,10 +497,14 @@ export const PurchaseDialog = () => {
                       id="input-amount"
                       className={formValue}
                       value={inputAmountText}
-                      unitOptions={unitOptions}
-                      unit={inputUnit}
                       setValue={setInputAmountText}
-                      setMaxValue={() => {}}
+                      setMaxValue={() => {
+                        console.log('maaax', total?.toString())
+                        console.log( Fraction.from(total?.toString() ?? '0', giveAssetDecimals)?.toFixed(giveAssetDecimals))
+                        setInputAmountText(
+                          Fraction.from(total?.toString() ?? '0', giveAssetDecimals)?.toFixed(giveAssetDecimals)
+                        );
+                      }}
                       withMaxButton={true}
                       // onChange={handleInputAmountChange}
                       // inputProps={{ min: 0, max: total?.toNumber() }}
@@ -527,29 +531,33 @@ export const PurchaseDialog = () => {
                 </div>
 
                 {showFee && protocolFee && (
-                    <div className={infoContainer}>
-                      <Typography className={formLabel}>Protocol fee</Typography>
-                      <Typography className={`${formValue}`}>
-                        {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)} MOVR
-                      </Typography>
-                    </div>
-                  )}
+                  <div className={infoContainer}>
+                    <Typography className={formLabel}>Protocol fee</Typography>
+                    <Typography className={`${formValue}`}>
+                      {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
+                      MOVR
+                    </Typography>
+                  </div>
+                )}
 
-                  {showFee && royaltyFee && (
-                    <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue}`}>
-                        {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)} MOVR
-                      </Typography>
-                    </div>
-                  )}
+                {showFee && royaltyFee && (
+                  <div className={infoContainer}>
+                    <Typography className={formLabel}>Royalty fee</Typography>
+                    <Typography className={`${formValue}`}>
+                      {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
+                      MOVR
+                    </Typography>
+                  </div>
+                )}
 
-                  {showFee && netto && <div className={infoContainer}>
+                {showFee && netto && (
+                  <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
                     </Typography>
-                  </div>}
+                  </div>
+                )}
               </>
             )}
 
@@ -562,10 +570,14 @@ export const PurchaseDialog = () => {
                       id="input-amount"
                       className={formValue}
                       value={inputAmountText}
-                      unitOptions={unitOptions}
-                      unit={inputUnit}
                       setValue={setInputAmountText}
-                      setMaxValue={() => {}}
+                      setMaxValue={() => {
+                        console.log('maaax', total?.toString())
+                        console.log( Fraction.from(total?.toString() ?? '0', getAssetDecimals)?.toFixed(getAssetDecimals))
+                        setInputAmountText(
+                          Fraction.from(total?.toString() ?? '0', getAssetDecimals)?.toFixed(getAssetDecimals)
+                        );
+                      }}
                       withMaxButton={true}
                       symbolString={symbolString}
                       // onChange={handleInputAmountChange}
@@ -595,7 +607,7 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
-                    {Fraction.from(usergive?.toString(), 18)?.toFixed(5)} MOVR
+                    {userGiveDisplay} MOVR
                   </Typography>
                 </div>
               </>
@@ -618,9 +630,14 @@ export const PurchaseDialog = () => {
           </Button>
         ) : (
           <Button
-            onClick={() => {
-              fillOrderCallback?.();
+            onClick={async () => {       
               setFinalTxSubmitted(true);
+              try {
+                await fillOrderCallback?.();
+              } catch (err) {
+                setGlobalError(err)
+                setFinalTxSubmitted(false);
+              }
             }}
             className={button}
             variant="contained"

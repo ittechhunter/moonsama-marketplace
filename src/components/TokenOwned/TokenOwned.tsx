@@ -10,7 +10,8 @@ import { GlitchText } from 'ui';
 import { truncateHexString } from 'utils';
 import { StringAssetType } from 'utils/subgraph';
 import { useStyles } from './TokenOwned.styles';
-import LootBox from '../../assets/images/loot-box.png'
+import { Fraction } from 'utils/Fraction';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export const TokenOwned = ({
   meta,
@@ -34,6 +35,7 @@ export const TokenOwned = ({
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
+  const decimalOverrides = useDecimalOverrides()
 
   //console.log('FRESH', {asset, action, actionColor})
 
@@ -41,14 +43,19 @@ export const TokenOwned = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+ /*
+ const sup = Fraction.from(staticData.
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
     ? `${sup} pieces`
     : undefined;
+  */
+ const totalSupplyString = undefined
 
   return (
     <Paper className={container}>
@@ -64,7 +71,7 @@ export const TokenOwned = ({
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>
-          {meta?.name ?? truncateHexString(asset.assetId)}
+          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
         </GlitchText>
       </div>
       <div className={stockContainer}>

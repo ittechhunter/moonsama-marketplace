@@ -10,6 +10,7 @@ import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
 import { CollectionListPage } from './collection-list';
 import MyNFTsPage from './mynfts';
+import { SubcollectionListPage } from './subcollection-list';
 
 export const Routing = () => (
   <Switch>
@@ -19,7 +20,7 @@ export const Routing = () => (
     <Route path="/collections">
       <CollectionListPage />
     </Route>
-    <Route path="/collection/:type/:address">
+    <Route path="/collection/:type/:address/:subcollectionId">
       <CollectionPage />
     </Route>
     <Route path="/token/:type/:address/:id">
@@ -43,6 +44,9 @@ export const Routing = () => (
     </Route>
     <Route path="/mynfts">
       <MyNFTsPage />
+    </Route>
+    <Route path="/subcollections/:address">
+      <SubcollectionListPage />
     </Route>
   </Switch>
 );

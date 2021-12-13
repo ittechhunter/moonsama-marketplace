@@ -4,7 +4,7 @@ import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '../constants';
-import { hexZeroPad, hexlify, hexValue } from '@ethersproject/bytes';
+import { hexZeroPad } from '@ethersproject/bytes';
 
 export * as marketplace from './marketplace';
 export * as subgraph from './subgraph';
@@ -85,7 +85,7 @@ const EXPLORER_PREFIXES: { [chainId in ChainId]: string } = {
   56: 'bscscan.com',
   246: 'explorer.energyweb.org',
   73799: 'volta-explorer.energyweb.org',
-  1285: 'blockscout.moonriver.moonbeam.network',
+  1285: 'moonriver.moonscan.io',
 };
 
 export function getExplorerLink(
@@ -158,3 +158,5 @@ export const parseTokenUri = (uri?: string, tokenID?: string | number) => {
 
   return uri;
 };
+
+

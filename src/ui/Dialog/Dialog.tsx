@@ -5,31 +5,37 @@ import Typography from '@material-ui/core/Typography';
 import { useStyles } from './Dialog.styles';
 
 export const Dialog = ({ title, children, onClose, ...props }: DialogProps) => {
-  const { dialogContainer, dialogTitle, paperStyles, closeButton } = useStyles();
+  const { dialogContainer, dialogTitle, paperStyles, closeButton } =
+    useStyles();
   const handleClose = () => {
     onClose && onClose({}, 'escapeKeyDown');
   };
   return (
-    <DialogUI className={dialogContainer} PaperProps={{
-      className: paperStyles,
-    }} onClose={onClose} {...props}>
+    <DialogUI
+      className={dialogContainer}
+      PaperProps={{
+        className: paperStyles,
+      }}
+      onClose={onClose}
+      {...props}
+    >
       <div>
-      <DialogTitle className={dialogTitle} disableTypography>
-        <Typography variant="h4">{title}</Typography>
-        {onClose ? (
-          <div>
-            <IconButton
-              className={closeButton}
-              aria-label="close"
-              onClick={handleClose}
-            >
-              &times;
-            </IconButton>
-          </div>
-        ) : null}
-      </DialogTitle>
+        <DialogTitle className={dialogTitle} disableTypography>
+          <Typography variant="h4">{title}</Typography>
+          {onClose ? (
+            <div>
+              <IconButton
+                className={closeButton}
+                aria-label="close"
+                onClick={handleClose}
+              >
+                &times;
+              </IconButton>
+            </div>
+          ) : null}
+        </DialogTitle>
 
-      {children}
+        {children}
       </div>
     </DialogUI>
   );

@@ -1,34 +1,35 @@
 import Grid from '@material-ui/core/Grid';
 import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
-import { Button, GlitchText, Loader, Table, TableBody, TableCell, TableHeader, TableRow, Tabs, Drawer } from 'ui';
+import {
+  Button,
+  GlitchText,
+  Loader,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  Tabs,
+  Drawer,
+} from 'ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Order } from 'hooks/marketplace/types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useStyles } from './styles';
-import { useLatestBuyOrdersWithStaticCallback, useLatestOrdersWithStaticCallback, useLatestSellOrdersWithStaticCallback } from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
 import {
-  formatExpirationDateString, getDisplayQuantity,
-  getUnitPrice,
+  useLatestBuyOrdersForTokenWithStaticCallback,
+  useLatestSellOrdersForTokenWithStaticCallback,
+} from 'hooks/useLatestOrdersWithStaticCallback/useLatestOrdersWithStaticCallback';
+import {
   inferOrderTYpe,
-  OrderType, StrategyMap,
-  StringAssetType,
+  OrderType,
 } from '../../utils/subgraph';
-import { truncateHexString } from '../../utils';
-import { Fraction } from '../../utils/Fraction';
-import { Typography } from '@material-ui/core';
-import { AddressZero } from '@ethersproject/constants';
-import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import { Link } from 'react-router-dom';
-import { CollectionMeta } from '../../hooks/useFetchCollectionMeta/useFetchCollectionMeta';
 import { useActiveWeb3React } from '../../hooks';
-import FilterIcon from '@mui/icons-material/FilterListSharp';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import { Chip, Stack } from '@mui/material';
+import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -67,16 +68,42 @@ const FreshOrdersPage = () => {
     }[]
   >([]);
 
+  const collections = useRawCollectionsFromList()
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(collections.findIndex(x => x.display_name = 'Moonsama') ?? 0)
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
-  const { placeholderContainer, container, pageContainer, tabsContainer, tabs, select, selectLabel, dropDown, filterControls } = useStyles();
-  const whitelist = useWhitelistedAddresses() // REMOVEME later
+  const {
+    placeholderContainer,
+    container,
+    pageContainer,
+    tabsContainer,
+    tabs,
+    select,
+    selectLabel,
+    dropDown,
+    filterControls,
+    filterChip
+  } = useStyles();
+  const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
   const { chainId } = useActiveWeb3React();
-  const getPaginatedBuyOrders = useLatestBuyOrdersWithStaticCallback();
-  const getPaginatedSellOrders = useLatestSellOrdersWithStaticCallback();
+  const getPaginatedSellOrders = useLatestSellOrdersForTokenWithStaticCallback();
+  const getPaginatedBuyOrders = useLatestBuyOrdersForTokenWithStaticCallback();
+
+  const selectedTokenAddress = collections[selectedIndex]?.address?.toLowerCase()
+
+  const handleSelection = (i: number) => {
+    if (i !== selectedIndex) {
+      setBuyOrders([])
+      setSellOrders([])
+      setSelectedIndex(i)
+      setTake(0)
+      setPaginationEnded(false);
+    }
+  }
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));
@@ -87,16 +114,21 @@ const FreshOrdersPage = () => {
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      
-      let buyData = await getPaginatedBuyOrders(PAGE_SIZE, take);
-      let sellData = await getPaginatedSellOrders(PAGE_SIZE, take);
 
-      buyData = buyData.filter(x => whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())) // REMOVEME later
-      sellData = sellData.filter(x => whitelist.includes(x.order.sellAsset.assetAddress.toLowerCase())) // REMOVEME later
-      
+      let buyData = await getPaginatedBuyOrders(selectedTokenAddress, PAGE_SIZE, take);
+      let sellData = await getPaginatedSellOrders(selectedTokenAddress, PAGE_SIZE, take);
+
+      buyData = buyData.filter((x) =>
+        whitelist.includes(x.order.buyAsset.assetAddress.toLowerCase())
+      ); // REMOVEME later
+      sellData = sellData.filter((x) =>
+        whitelist.includes(x.order.sellAsset.assetAddress.toLowerCase())
+      ); // REMOVEME later
+
       setPageLoading(false);
 
-      const isEnd = buyData.some(({ meta }) => !meta) || sellData.some(({ meta }) => !meta);
+      const isEnd =
+        buyData.some(({ meta }) => !meta) || sellData.some(({ meta }) => !meta);
 
       if (isEnd) {
         const buyPieces = buyData.filter(({ meta }) => !!meta);
@@ -117,23 +149,25 @@ const FreshOrdersPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [take, paginationEnded]);
-
-
+  }, [take, paginationEnded, selectedTokenAddress]);
 
   const getTableBody = (
-    filteredCollection: {
-      meta: TokenMeta | undefined;
-      staticData: StaticTokenData;
-      order: Order;
-    }[] | undefined | null,
+    filteredCollection:
+      | {
+          meta: TokenMeta | undefined;
+          staticData: StaticTokenData;
+          order: Order;
+        }[]
+      | undefined
+      | null
   ) => {
     return (
       <TableBody>
-        {filteredCollection && filteredCollection.length > 0 ?
-          filteredCollection.map((token, i) =>
-            token && (<TokenOrder {...token} />))
-         : (
+        {filteredCollection && filteredCollection.length > 0 ? (
+          filteredCollection.map(
+            (token, i) => token && <TokenOrder key={`${token.staticData.asset.id}-${i}`} {...token} />
+          )
+        ) : (
           <TableRow>
             <TableCell style={{ textAlign: 'center' }} colSpan={7}>
               No records available...
@@ -143,18 +177,6 @@ const FreshOrdersPage = () => {
       </TableBody>
     );
   };
-
-  const filterBuyOrders = (collection: any) => collection.filter((item: any) => {
-    const ot = inferOrderTYpe(chainId, item.order.sellAsset, item.order.buyAsset);
-
-    return ot == OrderType.BUY;
-  });
-
-  const filterSellOrders = (collection: any) => collection.filter((item: any) => {
-    const ot = inferOrderTYpe(chainId, item.order.sellAsset, item.order.buyAsset);
-
-    return ot != OrderType.BUY;
-  });
 
   return (
     <>
@@ -172,16 +194,22 @@ const FreshOrdersPage = () => {
       </Drawer>
 
       <Grid container className={pageContainer} justifyContent="center">
-        {/*<div className={filterControls}>*/}
-        {/*  <Button*/}
-        {/*    startIcon={<FilterIcon />}*/}
-        {/*    variant="outlined"*/}
-        {/*    color="primary"*/}
-        {/*    onClick={() => setIsDrawerOpened(true)}*/}
-        {/*  >*/}
-        {/*    Filter*/}
-        {/*  </Button>*/}
-        {/*</div>*/}
+        <Stack
+          direction={{ xs: 'row' }}
+          flexWrap={{xs: 'wrap'}}
+          //spacing={{ xs: 1 }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          {collections.map((collection, i) => {
+              return <Chip
+                key={`${collection.address}-${i}`}
+                label={collection.display_name}
+                variant="outlined"
+                onClick={() => handleSelection(i)}
+                className={`${filterChip}${selectedIndex === i ? ' selected': ''}`} />
+            })}
+        </Stack>
         <Tabs
           containerClassName={tabsContainer}
           tabsClassName={tabs}
@@ -200,7 +228,7 @@ const FreshOrdersPage = () => {
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                   {geTableHeader()}
-                  {getTableBody(filterBuyOrders(buyOrders))}
+                  {getTableBody(buyOrders)}
                 </Table>
               ),
             },

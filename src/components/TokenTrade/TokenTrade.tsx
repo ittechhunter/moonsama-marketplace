@@ -4,6 +4,7 @@ import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { useActiveWeb3React } from 'hooks';
 import { FillWithOrder, Order } from 'hooks/marketplace/types';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useHistory } from 'react-router-dom';
@@ -11,13 +12,12 @@ import { GlitchText, PriceBox } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
 import {
-  getUnitPrice,
+  getDisplayUnitPrice,
   inferOrderTYpe,
   OrderType,
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenTrade.styles';
-import LootBox from '../../assets/images/loot-box.png'
 
 export const TokenTrade = ({
   fill,
@@ -37,11 +37,12 @@ export const TokenTrade = ({
     tokenName,
     mr,
     lastPriceContainer,
-    smallText
+    smallText,
   } = useStyles();
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
+  const decimalOverrides = useDecimalOverrides()
   const ot = inferOrderTYpe(chainId, fill.order.sellAsset, fill.order.buyAsset);
   const asset =
     ot == OrderType.BUY ? fill.order.buyAsset : fill.order.sellAsset;
@@ -54,29 +55,36 @@ export const TokenTrade = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
     ? `${sup} pieces`
     : undefined;
 
-  const ppu = getUnitPrice(
-    fill.order.strategy?.askPerUnitNominator,
-    fill.order.strategy?.askPerUnitDenominator
-  );
-
-  const unit =
+  const rawunit =
     ot == OrderType.BUY
       ? fill.buyerSendsAmountFull
-      : fill.order.strategy?.askPerUnitDenominator
+      : fill.order?.askPerUnitDenominator
           .mul(fill.buyerSendsAmountFull)
-          .div(fill.order.strategy?.askPerUnitNominator);
+          .div(fill.order?.askPerUnitNominator);
+  
+  const unit = Fraction.from(rawunit?.toString() ?? '0', decimals)?.toSignificant(5)
 
-  const ppuDisplay = ppu
-    ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
+  const ppud = getDisplayUnitPrice(
+    decimals,
+    5,
+    ot,
+    fill.order?.askPerUnitNominator,
+    fill.order?.askPerUnitDenominator,
+    true
+  )
+  const ppuDisplay = !!ppud && ppud !== '?'
+    ? `${ppud} MOVR`
     : action;
 
   return (
@@ -92,29 +100,38 @@ export const TokenTrade = ({
         {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</GlitchText>
+        <GlitchText className={tokenName}>
+          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
+        </GlitchText>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}
         </PriceBox>
       </div>
       <div className={stockContainer}>
-        {staticData?.symbol && <Typography color="textSecondary">{staticData.symbol}</Typography>}
-        {totalSupplyString && <Typography color="textSecondary">{totalSupplyString}</Typography>}
+        {staticData?.symbol && (
+          <Typography color="textSecondary">{staticData.symbol}</Typography>
+        )}
+        {totalSupplyString && (
+          <Typography color="textSecondary">{totalSupplyString}</Typography>
+        )}
       </div>
       <div className={lastPriceContainer}>
-
-        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}><Typography className={smallText} noWrap>
-          {unit?.toString()} taken
-        </Typography></ExternalLink>
+        <ExternalLink href={getExplorerLink(chainId, fill.id, 'transaction')}>
+          <Typography className={smallText} noWrap>
+            {unit?.toString()} taken
+          </Typography>
+        </ExternalLink>
         <Typography color="textSecondary" noWrap className={mr}>
           by
         </Typography>
         {/*<Typography color="textSecondary" noWrap>
           {truncateHexString(order.seller)}
         </Typography>*/}
-        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}><Typography className={smallText} noWrap>
-          {truncateHexString(fill.buyer)}
-        </Typography></ExternalLink>
+        <ExternalLink href={getExplorerLink(chainId, fill.buyer, 'address')}>
+          <Typography className={smallText} noWrap>
+            {truncateHexString(fill.buyer)}
+          </Typography>
+        </ExternalLink>
       </div>
     </Paper>
   );

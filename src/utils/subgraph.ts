@@ -7,11 +7,12 @@ import {
   FillWithOrder,
   LastTradedPrice,
   Order,
-  SimpleOrderStrategy,
 } from '../hooks/marketplace/types';
 import { AssetType } from './marketplace';
 import { ChainId } from '../constants';
 import { AddressZero } from '@ethersproject/constants';
+import { Fraction } from './Fraction';
+import { parseEther, parseUnits } from '@ethersproject/units';
 
 export enum StringOrderType {
   UNKNOWN = 'UNKNOWN',
@@ -20,6 +21,7 @@ export enum StringOrderType {
 }
 
 export const enum OrderType {
+  UNKNOWN = 0,
   BUY = 1,
   SELL = 2,
 }
@@ -87,6 +89,19 @@ export function stringToStringOrderType(
   return StringOrderType.UNKNOWN;
 }
 
+export function stringToOrderType(
+  assetTypeString?: string
+): OrderType {
+  const upper = assetTypeString?.toUpperCase();
+  if ('BUY' === upper) {
+    return OrderType.BUY;
+  }
+  if ('SELL' === upper) {
+    return OrderType.SELL;
+  }
+  return OrderType.UNKNOWN;
+}
+
 export const parseFill = (data?: any): Fill | undefined => {
   if (!data) {
     return undefined;
@@ -126,7 +141,16 @@ export const parseFillWithOrder = (data?: any): FillWithOrder | undefined => {
       strategyType: data.order.strategyType.id,
       buyAsset: parseAsset(data.order.buyAsset) as Asset,
       sellAsset: parseAsset(data.order.sellAsset) as Asset,
-      strategy: parseStrategy(data.order.strategy),
+      askPerUnitDenominator: BigNumber.from(data.order.askPerUnitDenominator),
+      askPerUnitNominator: BigNumber.from(data.order.askPerUnitNominator),
+      startsAt: data.order.startsAt,
+      expiresAt: data.order.expiresAt,
+      onlyTo: data.order.onlyTo,
+      partialAllowed: data.order.partialAllowed,
+      quantity: BigNumber.from(data.order.quantity),
+      quantityLeft: BigNumber.from(data.order.quantityLeft),
+      pricePerUnit: BigNumber.from(data.order.pricePerUnit),
+      orderType: stringToStringAssetType(data.order.orderType),
     },
   };
 };
@@ -149,11 +173,21 @@ export const parseOrder = (data?: any): Order | undefined => {
     ...data,
     seller: data.seller.id,
     strategyType: data.strategyType.id,
-    strategy: parseStrategy(data.strategy),
     cancel: parseCancel(data.cancel),
     buyAsset: parseAsset(data.buyAsset),
     sellAsset: parseAsset(data.sellAsset),
     fills: data.fills.map((x: any) => parseFill(x)),
+    askPerUnitDenominator: BigNumber.from(data.askPerUnitDenominator),
+    askPerUnitNominator: BigNumber.from(data.askPerUnitNominator),
+    startsAt: data.startsAt,
+    expiresAt: data.expiresAt,
+    id: data.id,
+    onlyTo: data.onlyTo,
+    partialAllowed: data.partialAllowed,
+    quantity: BigNumber.from(data.quantity),
+    quantityLeft: BigNumber.from(data.quantityLeft),
+    pricePerUnit: BigNumber.from(data.pricePerUnit),
+    orderType: stringToStringOrderType(data.orderType),
   };
 };
 
@@ -166,23 +200,6 @@ export const parseAsset = (data?: any): Asset | undefined => {
     assetId: data.assetId,
     assetType: stringToStringAssetType(data.assetType),
     id: data.id,
-  };
-};
-
-export const parseStrategy = (data?: any): SimpleOrderStrategy | undefined => {
-  if (!data) {
-    return undefined;
-  }
-  return {
-    askPerUnitDenominator: BigNumber.from(data.askPerUnitDenominator),
-    askPerUnitNominator: BigNumber.from(data.askPerUnitNominator),
-    startsAt: data.startsAt,
-    expiresAt: data.expiresAt,
-    id: data.id,
-    onlyTo: data.onlyTo,
-    partialAllowed: data.partialAllowed,
-    quantity: BigNumber.from(data.quantity),
-    quantityLeft: BigNumber.from(data.quantityLeft),
   };
 };
 
@@ -222,27 +239,46 @@ export const formatExpirationDateString = (date?: string): string => {
 };
 
 export const getUnitPrice = (
+  decimals: number,
+  orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
-  askPerUnitDenominator?: BigNumber
+  askPerUnitDenominator?: BigNumber,
 ) => {
-  if (!askPerUnitDenominator || !askPerUnitNominator) {
+  if (!askPerUnitDenominator || !askPerUnitNominator || !orderType) {
     return undefined;
   }
-  if (askPerUnitNominator.gt(askPerUnitDenominator)) {
-    return askPerUnitNominator.div(askPerUnitDenominator);
+
+  // decimals must be the non-native token decimals
+  if (orderType.valueOf() === OrderType.BUY.valueOf()) {
+    return parseUnits('1', decimals).mul(askPerUnitDenominator).div(askPerUnitNominator)
   }
-  return askPerUnitDenominator.div(askPerUnitNominator);
+
+  if (orderType.valueOf() === OrderType.SELL.valueOf()) {
+    return parseUnits('1', decimals).mul(askPerUnitNominator).div(askPerUnitDenominator)
+  }
+
+  return undefined
 };
 
 export const getDisplayUnitPrice = (
+  decimals: number,
+  decimalPlaces: number,
+  orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
-  askPerUnitDenominator?: BigNumber
+  askPerUnitDenominator?: BigNumber,
+  toSignificant = false
 ) => {
-  const p = getUnitPrice(askPerUnitNominator, askPerUnitDenominator);
-  return p ?? '?';
+  // decimals is the non native token decimals
+  const p = getUnitPrice(decimals, orderType, askPerUnitNominator, askPerUnitDenominator);
+  //return !!p ? Fraction.from(p?.toString(), decimals)?.toFixed(decimalPlaces) : '?';
+  //console.log('dPPU',{multiplier: parseUnits('1', decimals).toString(), decimals, p: p?.toString(), askPerUnitNominator: askPerUnitNominator?.toString(), askPerUnitDenominator: askPerUnitDenominator?.toString()})
+  
+  // for display we always use 18 decimals because native token prices
+  return !!p ? toSignificant ? Fraction.from(p.toString(), 18)?.toSignificant(decimalPlaces) : Fraction.from(p.toString(), 18)?.toFixed(decimalPlaces) : '?';
 };
 
 export const getDisplayQuantity = (
+  decimals: number,
   orderType?: OrderType,
   quantity?: BigNumber,
   askPerUnitNominator?: BigNumber,
@@ -255,7 +291,7 @@ export const getDisplayQuantity = (
     askPerUnitDenominator
   );
 
-  return q ?? '?';
+  return Fraction.from(q, decimals)?.toFixed(decimals > 0? 5: 0) ?? '?';
 };
 
 export const getQuantity = (
@@ -269,17 +305,18 @@ export const getQuantity = (
   }
 
   if (OrderType.SELL === orderType) {
-    return quantity;
+    return quantity
   }
 
   if (!askPerUnitDenominator || !askPerUnitNominator) {
     return undefined;
   }
 
-  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator);
+  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator)
 };
 
 export const getDisplayUnits = (
+  decimals: number,
   orderType?: OrderType,
   quantity?: BigNumber,
   askPerUnitNominator?: BigNumber,
@@ -287,12 +324,13 @@ export const getDisplayUnits = (
 ) => {
   return {
     quantity: getDisplayQuantity(
+      decimals,
       orderType,
       quantity,
       askPerUnitNominator,
       askPerUnitDenominator
     ),
-    unitPrice: getUnitPrice(askPerUnitNominator, askPerUnitDenominator),
+    unitPrice: getUnitPrice(decimals, orderType, askPerUnitNominator, askPerUnitDenominator),
   };
 };
 

@@ -26,13 +26,13 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
           cursor: 'pointer',
         },
         '*::-webkit-scrollbar-track': {
-          '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+          '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
         },
         '*::-webkit-scrollbar-thumb': {
           backgroundColor: 'rgba(210, 2, 62, 0.6)',
-          outline: '0'
-        }
-      }
+          outline: '0',
+        },
+      },
     },
     MuiButton: {
       root: {
@@ -73,8 +73,8 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
         paddingRight: '0 !important',
 
         [defaultTheme.breakpoints.down('sm')]: {
-            width: '100%',
-         },
+          width: '100%',
+        },
       },
       notchedOutline: {
         borderColor: colors.text?.disabled || 'white',
@@ -106,12 +106,12 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       root: {
         backgroundColor: '#111',
         border: '0 !important',
-      }
+      },
     },
     MuiTableRow: {
       root: {
         borderBottom: '1px solid #000',
-      }
+      },
     },
     MuiTableCell: {
       root: {
@@ -119,28 +119,28 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
       },
       head: {
         lineHeight: 1,
-      }
+      },
     },
     MuiSvgIcon: {
       root: {
         color: '#fff',
-      }
+      },
     },
     MuiPaper: {
       root: {
         '& a': {
-          textDecoration: 'none'
+          textDecoration: 'none',
         },
         '& a:hover': {
           textDecoration: 'underline',
-          color: '#d2023e'
+          color: '#d2023e',
         },
-      }
+      },
     },
     MuiFormControl: {
       root: {
         maxWidth: '100%',
-      }
+      },
     },
     MuiInputAdornment: {
       positionStart: {
@@ -151,14 +151,14 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
     },
     MuiGrid: {
       root: {
-        justifyContent: 'center'
+        justifyContent: 'center',
       },
     },
     MuiCircularProgress: {
       root: {
         margin: '0 auto',
-      }
-    }
+      },
+    },
   },
 });
 

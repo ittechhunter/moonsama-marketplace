@@ -1,23 +1,11 @@
 import { AddressZero } from '@ethersproject/constants';
 import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import MoneyIcon from '@mui/icons-material/Money';
-import SyncAltIcon from '@mui/icons-material/SyncAlt';
-import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
-import { useActiveWeb3React, useBidDialog } from 'hooks';
-import { LastTradedPrice, Order } from 'hooks/marketplace/types';
-import { useTokenPageOrders } from 'hooks/marketplace/useTokenPageOrders';
-import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
-import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
+import { useActiveWeb3React } from 'hooks';
+import { Order } from 'hooks/marketplace/types';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
-import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
-import { useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Button,
   GlitchText,
@@ -29,30 +17,22 @@ import {
   TableRow,
   Tabs,
 } from 'ui';
-import { getExplorerLink, truncateHexString } from 'utils';
+import { truncateHexString } from 'utils';
 import {
-  getAssetEntityId,
   getDisplayQuantity,
-  inferOrderTYpe,
+  getDisplayUnitPrice,
   StrategyMap,
-  StringAssetType,
-  stringToStringAssetType,
-} from 'utils/subgraph';
-import { appStyles } from '../../app.styles';
-import { ExternalLink, Media } from '../../components';
-import { ChainId } from '../../constants';
-import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
-import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
-import {
+  stringToOrderType,
   formatExpirationDateString,
-  getUnitPrice,
   OrderType,
 } from '../../utils/subgraph';
+import { appStyles } from '../../app.styles';
+import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
+import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import { useStyles } from './styles';
-import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
-import { Fraction } from 'utils/Fraction';
-import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { useUserOrders } from 'hooks/marketplace/useUserOrders';
+import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 const geTableHeader = () => {
   return (
@@ -100,60 +80,74 @@ export const MyOrdersPage = () => {
 
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
   const { setCancelData, setCancelDialogOpen } = useCancelDialog();
+  const decimalOverrides = useDecimalOverrides()
 
   const ordersMap = useUserOrders({
     from: 0,
     num: 1000,
   });
 
+  
+  const staticDatas = useTokenStaticData((ordersMap?.userOrders ?? []).map(x => {
+    return stringToOrderType(x.orderType) === OrderType.BUY ? x?.buyAsset: x.sellAsset
+  }))
+  
+
   const getTableBody = (
     orders: Order[] | undefined | null,
-    orderType?: OrderType
+    staticDatas: StaticTokenData[] | undefined
   ) => {
     return (
       <TableBody>
-        {orders && orders.length > 0 ? (
-          orders.map((order) => {
+        {orders && staticDatas && orders.length > 0 ? (
+          orders.map((order, i) => {
             const {
               id,
               seller,
               createdAt,
               strategyType,
-              strategy,
               sellAsset,
               buyAsset,
-            } = order;
-            const {
               quantityLeft,
               askPerUnitDenominator,
               askPerUnitNominator,
               expiresAt,
               onlyTo,
               partialAllowed,
-            } = strategy || {};
+              orderType
+            } = order || {};
 
-            const unitPrice = getUnitPrice(
+            
+            const expiration = formatExpirationDateString(expiresAt);
+            const sellerShort = truncateHexString(seller);
+            const ot = stringToOrderType(orderType);
+            console.log(ot)
+            const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
+
+            
+            const decimals = decimalOverrides[orderAsset.assetAddress.toLowerCase()] ?? staticDatas?.[i]?.decimals ?? 0 
+            console.log('yada', {decimals, decimalOverrides})
+
+
+            const displayUnitPrice = getDisplayUnitPrice(
+              decimals,
+              5,
+              ot,
               askPerUnitNominator,
               askPerUnitDenominator
             );
-            const expiration = formatExpirationDateString(expiresAt);
-            const sellerShort = truncateHexString(seller);
-            const ot =
-              orderType ?? inferOrderTYpe(chainId, sellAsset, buyAsset);
-            const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
 
-            const qty =
-              sellAsset.assetType.valueOf() == StringAssetType.ERC20 &&
-              buyAsset.assetType.valueOf() == StringAssetType.ERC20
-                ? quantityLeft
-                : getDisplayQuantity(
-                    ot,
-                    quantityLeft,
-                    askPerUnitNominator,
-                    askPerUnitDenominator
-                  );
+            const qty = getDisplayQuantity(
+              decimals,
+              ot,
+              quantityLeft,
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
 
-            const displayUnitPrice = Fraction.from(unitPrice, 18)?.toFixed(5);
+            console.log({displayUnitPrice, ot,
+              askPerUnitNominator,
+              askPerUnitDenominator})
 
             return (
               <TableRow
@@ -297,7 +291,7 @@ export const MyOrdersPage = () => {
             view: (
               <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
                 {geTableHeader()}
-                {getTableBody(ordersMap?.userOrders)}
+                {getTableBody(ordersMap?.userOrders, staticDatas)}
               </Table>
             ),
           },

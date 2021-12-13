@@ -5,17 +5,9 @@ import {
   SUBGRAPH_MAX_BLOCK_DELAY,
   SUBGRAPH_URL,
 } from '../../constants';
-import {
-  QUERY_ASSET_ORDERS,
-  QUERY_ORDER,
-  QUERY_TOKEN_PAGE_ORDERS,
-} from '../../subgraph/orderQueries';
+import { QUERY_TOKEN_PAGE_ORDERS } from '../../subgraph/orderQueries';
 import { Order } from './types';
-import {
-  parseStrategy,
-  parseOrder,
-  getAssetEntityId,
-} from '../../utils/subgraph';
+import { parseOrder, getAssetEntityId } from '../../utils/subgraph';
 import { useState, useCallback, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { AddressZero } from '@ethersproject/constants';

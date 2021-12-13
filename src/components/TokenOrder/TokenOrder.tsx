@@ -8,15 +8,18 @@ import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStatic
 import { useHistory } from 'react-router-dom';
 import { Button, PriceBox, TableCell, TableRow } from 'ui';
 import { getExplorerLink, truncateHexString } from 'utils';
-import { Fraction } from 'utils/Fraction';
+import { Fraction } from '../../utils/Fraction';
 import {
   formatExpirationDateString,
+  getDisplayUnitPrice,
   getUnitPrice,
   inferOrderTYpe,
-  OrderType, StrategyMap,
+  OrderType,
+  StrategyMap,
   StringAssetType,
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export const TokenOrder = ({
   order,
@@ -27,16 +30,12 @@ export const TokenOrder = ({
   staticData: StaticTokenData;
   order: Order;
 }) => {
-  const {
-    image,
-    imageContainer,
-    tokenName,
-    smallText
-  } = useStyles();
+  const { image, imageContainer, tokenName, smallText } = useStyles();
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
+  const decimalOverrides = useDecimalOverrides()
 
   const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
@@ -49,24 +48,30 @@ export const TokenOrder = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
+  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = staticData?.totalSupply?.toString();
+  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
     ? `${sup} pieces`
     : undefined;
-  const ppu = getUnitPrice(
-    order.strategy?.askPerUnitNominator,
-    order.strategy?.askPerUnitDenominator
+  const ppuD = getDisplayUnitPrice(
+    decimals,
+    5,
+    ot,
+    order?.askPerUnitNominator,
+    order?.askPerUnitDenominator,
+    true
   );
 
-  const ppuDisplay = ppu
-    ? `${Fraction.from(ppu.toString(), 18)?.toFixed(0)} MOVR`
+  const ppuDisplay = ppuD
+    ? `${ppuD} MOVR`
     : action;
 
-  const expiration = formatExpirationDateString(order.strategy?.expiresAt);
+  const expiration = formatExpirationDateString(order?.expiresAt);
   const strategyType = StrategyMap[order.strategyType.toLowerCase()];
 
   return (
@@ -81,7 +86,9 @@ export const TokenOrder = ({
         >
           <Media uri={meta?.image} className={image} />
         </div>
-        <Typography className={tokenName}>{meta?.name ?? truncateHexString(asset.assetId)}</Typography>
+        <Typography className={tokenName}>
+          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
+        </Typography>
       </TableCell>
       <TableCell>
         <PriceBox margin={false} size="small" color={actionColor}>

@@ -3,7 +3,7 @@ import { useBlockNumber } from 'state/application/hooks';
 import { SUBGRAPH_MAX_BLOCK_DELAY, SUBGRAPH_URL } from '../../constants';
 import { QUERY_ORDER } from '../../subgraph/orderQueries';
 import { Order } from './types';
-import { parseStrategy, parseOrder } from '../../utils/subgraph';
+import { parseOrder } from '../../utils/subgraph';
 import { useState, useCallback, useEffect } from 'react';
 
 const fetchOrderFromSubgraph = async (
@@ -22,18 +22,15 @@ const fetchOrderFromSubgraph = async (
   }
 
   const raworder = result?.order;
-  const rawstrategy = result?.strategy;
 
   const porder = parseOrder(raworder);
-  const strategy = parseStrategy(rawstrategy);
 
-  console.debug('YOLO getOrder ', { porder, strategy });
+  console.debug('YOLO getOrder ', { porder });
 
-  if (!porder || !strategy) {
+  if (!porder) {
     return undefined;
   }
 
-  porder.strategy = strategy;
   return porder;
 };
 

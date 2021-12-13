@@ -1,9 +1,8 @@
-import { ChainId } from '../../../constants';
-import { Asset, Order } from 'hooks/marketplace/types';
-import { OrderType } from '../../../utils/subgraph';
+import { Asset } from 'hooks/marketplace/types';
 
 export type TransferData = {
   asset: Partial<Asset>;
+  decimals?: number;
 } | null;
 
 export type TransferDialogContextType = {

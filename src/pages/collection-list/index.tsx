@@ -77,9 +77,9 @@ const CollectionListItem = (
   //console.warn('META', { meta });
 
   const isErc20 = collection.type.valueOf() === StringAssetType.ERC20.valueOf();
+  const subcollection = collection.subcollections
 
   return (
-    <>
       <Grid
         item
         key={`${collection?.address ?? 'collection'}-${i}`}
@@ -97,7 +97,7 @@ const CollectionListItem = (
             to={
               isErc20
                 ? `/token/${collection.type}/${collection.address}/0`
-                : `/collection/${collection.type}/${collection.address}`
+                : !!subcollection ? `/subcollections/${collection.address}` : `/collection/${collection.type}/${collection.address}/0`
             }
           >
             <div className={mediaContainer}>
@@ -130,8 +130,10 @@ const CollectionListItem = (
           </CardContent>
 
           <Collapse in={isCollectionExpanded} timeout="auto" unmountOnExit>
-            <CardContent style={{ padding: '8px 16px'}}>
-              <Typography paragraph className={collectionDescription}>{meta?.description}</Typography>
+            <CardContent style={{ padding: '8px 16px' }}>
+              <Typography paragraph className={collectionDescription}>
+                {meta?.description}
+              </Typography>
               {meta?.external_link && (
                 <ExternalLink href={meta?.external_link}>
                   External site↗
@@ -152,6 +154,5 @@ const CollectionListItem = (
           </CardActions>
         </Card>
       </Grid>
-    </>
   );
 };

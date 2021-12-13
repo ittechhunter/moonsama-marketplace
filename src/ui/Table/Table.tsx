@@ -40,9 +40,9 @@ export const TableRow = ({
                 onClick={() => setOpen(!open)}
               >
                 {open ? (
-                  <KeyboardArrowUpIcon style={{fill: "#d2023e"}} />
+                  <KeyboardArrowUpIcon style={{ fill: '#d2023e' }} />
                 ) : (
-                  <KeyboardArrowDownIcon style={{fill: "#d2023e"}} />
+                  <KeyboardArrowDownIcon style={{ fill: '#d2023e' }} />
                 )}
               </IconButton>
             )}
@@ -87,9 +87,12 @@ export const Table = ({
   ...props
 }: TableProps & { isExpandable?: boolean }) => {
   return (
-    <TableContainer component={Paper} style={{
-      borderRadius: 0
-    }}>
+    <TableContainer
+      component={Paper}
+      style={{
+        borderRadius: 0,
+      }}
+    >
       <MaterialTable {...props} size="medium">
         <TableContext.Provider value={{ isExpandable }}>
           {children}

@@ -30,7 +30,7 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     fontSize: '11px',
 
     '& > p': {
-      fontSize: '12px'
+      fontSize: '12px',
     },
   },
   walletName: {
@@ -79,11 +79,11 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     marginBottom: '1rem',
   },
   walletOption: {
-    background: '#fff'
+    background: '#fff',
   },
   walletPendingText: {
     textAlign: 'center',
     marginTop: '8px',
     fontSize: '12px',
-  }
+  },
 }));

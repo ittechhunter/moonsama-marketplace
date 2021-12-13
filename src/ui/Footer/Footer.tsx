@@ -14,12 +14,18 @@ export const Footer = () => {
         <Typography variant="h6">Join the community</Typography>
 
         <div className={iconsWrapper}>
-          <a href="https://twitter.com/moonsamaNFT" target="_blank"><Twitter className={icon} /></a>
-          <a href="https://t.me/moonsamaNFT" target="_blank"><Telegram className={icon} /></a>
+          <a href="https://twitter.com/moonsamaNFT" target="_blank">
+            <Twitter className={icon} />
+          </a>
+          <a href="https://t.me/moonsamaNFT" target="_blank">
+            <Telegram className={icon} />
+          </a>
           {/*<a href="#" target="_blank"><Discord className={icon} /></a>*/}
         </div>
 
-        <Typography align="center" className={copyrightText}>&copy; 2021 Moonsama</Typography>
+        <Typography align="center" className={copyrightText}>
+          &copy; 2021 Moonsama
+        </Typography>
       </div>
     </Container>
   );

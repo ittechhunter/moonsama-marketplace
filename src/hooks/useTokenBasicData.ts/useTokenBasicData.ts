@@ -1,22 +1,20 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
-import { ChainId, WMOVR_ADDRESS } from '../../constants';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
 import {
-  useERC1155Contract,
-  useERC20Contract,
-  useERC721Contract,
   useMulticall2Contract,
 } from 'hooks/useContracts/useContracts';
 import { StringAssetType } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback, useEffect, useState } from 'react';
 import { Asset } from 'hooks/marketplace/types';
+import { AddressZero } from '@ethersproject/constants';
 
 export interface BasicTokenData {
   asset: Asset;
   userBalance: BigNumber;
   totalSupply?: BigNumber;
+  decimals?: number;
   owner?: string;
 }
 
@@ -33,8 +31,9 @@ export const processResults = (
         asset: x,
         userBalance: results[i + offset]?.[0],
         totalSupply: results[i + offset + 1]?.[0],
+        decimals: results[i + offset + 2]?.[0],
       });
-      offset += 1;
+      offset += 2;
       return;
     }
 
@@ -46,7 +45,7 @@ export const processResults = (
             ? BigNumber.from('1')
             : BigNumber.from('0'),
         totalSupply: results[i + offset + 1]?.[0],
-        owner: results[i + offset]?.[0]
+        owner: results[i + offset]?.[0],
       });
       offset += 1;
       return;
@@ -57,8 +56,9 @@ export const processResults = (
         asset: x,
         userBalance: results[i + offset]?.[0],
         totalSupply: results[i + offset + 1]?.[0],
+        decimals: results[i + offset + 2]?.[0],
       });
-      offset += 1;
+      offset += 2;
       return;
     }
   });
@@ -71,41 +71,47 @@ export const useTokenBasicData = (assets: Asset[]) => {
 
   const [datas, setBasicDatas] = useState<BasicTokenData[] | undefined>();
 
-  const erc20 = useERC20Contract(
-    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
-    true
-  );
-  const erc1155 = useERC1155Contract(
-    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
-    true
-  );
-  const erc721 = useERC721Contract(
-    WMOVR_ADDRESS[ChainId.MOONRIVER] as string,
-    true
-  );
-
   const getCalldata = (asset: Asset) => {
     if (
       !asset ||
       !asset.assetAddress ||
       !asset.assetId ||
-      !asset.assetType ||
-      !account
+      !asset.assetType
     ) {
       return [];
     }
+
+    const sanitizedAddres = account ?? AddressZero
     if (asset.assetType?.valueOf() === StringAssetType.ERC20) {
       return [
         [
-          [erc20?.interface.getFunction('balanceOf')],
+          [
+            new Interface([
+              'function balanceOf(address) view returns (uint256)',
+            ]).getFunction('balanceOf'),
+          ],
           asset.assetAddress,
           'balanceOf',
-          [account],
+          [sanitizedAddres],
         ],
         [
-          [erc20?.interface.getFunction('totalSupply')],
+          [
+            new Interface([
+              'function totalSupply() view returns (uint256)',
+            ]).getFunction('totalSupply'),
+          ],
           asset.assetAddress,
           'totalSupply',
+          [],
+        ],
+        [
+          [
+            new Interface([
+              'function decimals() view returns (uint8)',
+            ]).getFunction('decimals'),
+          ],
+          asset.assetAddress,
+          'decimals',
           [],
         ],
       ];
@@ -114,7 +120,11 @@ export const useTokenBasicData = (assets: Asset[]) => {
     if (asset.assetType?.valueOf() === StringAssetType.ERC721) {
       return [
         [
-          [erc721?.interface.getFunction('ownerOf')],
+          [
+            new Interface([
+              'function ownerOf(uint256) view returns (address)',
+            ]).getFunction('ownerOf'),
+          ],
           asset.assetAddress,
           'ownerOf',
           [asset.assetId],
@@ -135,10 +145,14 @@ export const useTokenBasicData = (assets: Asset[]) => {
     if (asset.assetType?.valueOf() === StringAssetType.ERC1155) {
       return [
         [
-          [erc1155?.interface.getFunction('balanceOf')],
+          [
+            new Interface([
+              'function balanceOf(address,uint256) view returns (uint256)',
+            ]).getFunction('balanceOf'),
+          ],
           asset.assetAddress,
           'balanceOf',
-          [account, asset.assetId],
+          [sanitizedAddres, asset.assetId],
         ],
         [
           [
@@ -149,6 +163,16 @@ export const useTokenBasicData = (assets: Asset[]) => {
           asset.assetAddress,
           'totalSupply',
           [asset.assetId],
+        ],
+        [
+          [
+            new Interface([
+              'function decimals() view returns (uint8)',
+            ]).getFunction('decimals'),
+          ],
+          asset.assetAddress,
+          'decimals',
+          [],
         ],
       ];
     }
@@ -175,7 +199,7 @@ export const useTokenBasicData = (assets: Asset[]) => {
   }, [chainId, multi, account, JSON.stringify(assets)]);
 
   useEffect(() => {
-    if (chainId && multi && account) {
+    if (chainId && multi) {
       fetchBasicDatas();
     }
   }, [chainId, multi, account, JSON.stringify(assets)]);

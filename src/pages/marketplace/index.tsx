@@ -10,7 +10,6 @@ import {
   Strategy,
 } from 'utils/marketplace';
 import { useCreateOrderCallback } from 'hooks/marketplace/useCreateOrderCallback';
-import { SimpleOrderStrategy } from 'hooks/marketplace/types';
 import { AddressZero } from '@ethersproject/constants';
 import {
   ApprovalState,

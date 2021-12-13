@@ -20,7 +20,7 @@ export const useStyles = makeStyles((theme) => ({
   navItem: {
     margin: '0 20px',
 
-    'a': {
+    a: {
       textDecoration: 'none !important',
     },
   },
@@ -47,5 +47,5 @@ export const useStyles = makeStyles((theme) => ({
       left: '10px',
       top: '8px',
     },
-  }
+  },
 }));

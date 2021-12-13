@@ -8,6 +8,7 @@ export type PurchaseData = {
   chainId?: ChainId;
   name?: string;
   symbol?: string;
+  decimals?: number;
 } | null;
 
 export type PurchaseDialogContextType = {

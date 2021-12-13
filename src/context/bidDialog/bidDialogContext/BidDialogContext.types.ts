@@ -4,7 +4,10 @@ import { OrderType } from '../../../utils/subgraph';
 export type BidData = {
   asset?: Asset;
   orderType: OrderType;
-} | null;
+  decimals?: number;
+  name?: string;
+  symbol?: string;
+} | undefined;
 
 export type BidDialogContextType = {
   isBidDialogOpen: boolean;

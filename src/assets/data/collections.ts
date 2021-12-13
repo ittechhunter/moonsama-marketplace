@@ -38,27 +38,180 @@ export const collections = {
   types: ['ERC20', 'ERC721', 'ERC1155'],
   indexing: ['none', 'sequential'],
   collections: [
-    /*
+    /* 
     {
       chainId: 1285,
       address: '0xaF1F85aD24Bc45fb19f5F8B5166e1Aed41c60844',
       display_name: 'SamaMoo',
       symbol: 'SAMAMOO',
       type: 'ERC721',
-      indexing: 'sequential',
       contractURI: 'ipfs://QmQzz765Q6j2LjWJHPmComm1i7Kpeccz27x6tpTeHFFCxg',
-      tags: ['native', 'green'],
+    },
+    {
+      chainId: 1285,
+      address: '0x63228048121877A9e0f52020834A135074e8207C',
+      display_name: 'TestCollection',
+      symbol: 'TC',
+      type: 'ERC1155',
+      decimals: 0,
+      contractURI: 'ipfs://QmfZtbgLDmcDNf4tvhm1LuLmbBYSASmk6zcSBY2GRzh72S',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-test'
+      
     },
     */
     {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
       display_name: 'Moonsama',
+      minId: 1,
+      maxId: 1001,
+      idSearchOn: true,
       symbol: 'MSAMA',
       type: 'ERC721',
-      indexing: 'sequential',
       contractURI: 'ipfs://QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5',
-      tags: ['native', 'green'],
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft'
+    },
+    {
+      chainId: 1285,
+      address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
+      display_name: '???',
+      minId: 1,
+      maxId: 2,
+      idSearchOn: false,
+      decimals: 0,
+      symbol: '???',
+      type: 'ERC1155',
+      contractURI: 'ipfs://QmWox8YqUaYVxSSB7GRhPAuczv6auL8QrkDrkMTcqGEGKA',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-mx'
+    },
+    {
+      chainId: 1285,
+      address: '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
+      display_name: 'Multiverse Asset Factory',
+      symbol: 'MMAF',
+      minId: 1,
+      maxId: 6,
+      idSearchOn: true,
+      type: 'ERC1155',
+      contractURI: 'ipfs://Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-factory'
+    },
+    {
+      chainId: 1285,
+      address: '0xdea45e7c6944cb86a268661349e9c013836c79a2',
+      display_name: 'Multiverse Art',
+      minId: 1,
+      maxId: 28,
+      idSearchOn: true,
+      symbol: 'MMA',
+      type: 'ERC1155',
+      subcollections: [
+        /*
+        {
+            id: "1", // subcollection ID yumi
+            uri: "ipfs://Qma8t7WqhjqexekvUiMqEFec5AJo8iAP1JQ9YX4quzBrc6",
+            tokens: [1,2,3]
+        },
+        {
+            id: "2", // subcollection ID tiff
+            uri: "ipfs://QmTgEUjfD6PodGXfUMFQzmyG1NwL2bafVFTrwtfWkdQeRj",
+            tokens: [4,5,6]
+        },
+        {
+            id: "3", // subcollection ID marlua
+            uri: "ipfs://QmWbyqCZaWQRySmwDSseCaC9RpPJZjwWPXD1TFBAgizASL",
+            tokens: [7,8,9]
+        },
+        {
+            id: "4", // subcollection ID bmc
+            uri: "ipfs://QmRu9G1D9jDg3QGNZs5G6vtseet4H4fP8jBzkLWSNWMdbY",
+            tokens: [10,11,12]
+        },
+        {
+            id: "5", // subcollection ID Majan
+            uri: "ipfs://QmaPCumjynv9FPyFALdDQLvARLyvHQuDTisKqK6qSr8yGz",
+            tokens: [13,14,15]
+        },
+        {
+            id: "6", // subcollection ID ksmk
+            uri: "ipfs://QmUd5MFYPSwzWzQ1vWpbpN65XUMerasbLG2s9ryV17XqEC",
+            tokens: [16,17,18]
+        },
+        {
+            id: "7", // subcollection ID - wangdoodle
+            uri: "ipfs://QmcRoxnA2zJK4HJpxTUAgmbbTTp1i22adqsgecJCXkA1vZ",
+            tokens: [19,20,21]
+        },
+        {
+            id: "8", // subcollection ID - tako
+            uri: "ipfs://QmY1o1dXRyJkf4RwddoTWz3cUQFaP5HcuwYjquotVjxs7q",
+            tokens: [22,23,24]
+        },
+        {
+            id: "9", // subcollection ID - ruben
+            uri: "ipfs://QmSMo4rR7JMGmRMZQzho1aMnxF3Jai6R2YVgSH2TeYhZNb",
+            tokens: [25,26,27]
+        }
+        */
+       {
+            id: "1", // subcollection ID yumi
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [1,2,3]
+        },
+        {
+            id: "2", // subcollection ID tiff
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [4,5,6]
+        },
+        {
+            id: "3", // subcollection ID marlua
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [7,8,9]
+        },
+        {
+            id: "4", // subcollection ID bmc
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [10,11,12]
+        },
+        {
+            id: "5", // subcollection ID Majan
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [13,14,15]
+        },
+        {
+            id: "6", // subcollection ID ksmk
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [16,17,18]
+        },
+        {
+            id: "7", // subcollection ID - wangdoodle
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [19,20,21]
+        },
+        {
+            id: "8", // subcollection ID - tako
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [22,23,24]
+        },
+        {
+            id: "9", // subcollection ID - ruben
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [25,26,27]
+        }
+      ],
+      contractURI: 'ipfs://QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz',
+    },
+    {
+      chainId: 1285,
+      address: '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf',
+      display_name: 'BlvckMarketNFT',
+      minId: 0,
+      maxId: 1333,
+      idSearchOn: true,
+      symbol: 'BMANFT',
+      type: 'ERC721',
+      contractURI: 'ipfs://QmVQPRFZq7XZNk79C75ynqPRPdpPaX8bmH4Cb9KhrN1PfH',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-blvck'
     }
   ],
 };

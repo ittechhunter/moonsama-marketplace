@@ -100,7 +100,7 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     // marginTop: theme.spacing(4),
     flexDirection: 'column',
-    gap: 16
+    gap: 16,
   },
   subHeader: {
     fontSize: 22,
@@ -124,14 +124,14 @@ export const useStyles = makeStyles((theme) => ({
   transferButton: {
     '&:hover': {
       backgroundColor: '#dcdcdc',
-      color: 'black'
-    }
+      color: 'black',
+    },
   },
   newSellButton: {
     '&:hover': {
       backgroundColor: '#dcdcdc',
-      color: 'black'
-    }
+      color: 'black',
+    },
   },
   tradeContainer: {
     display: 'flex',
@@ -148,5 +148,5 @@ export const useStyles = makeStyles((theme) => ({
     background: 'transparent',
     border: '2px solid #111',
     margin: '0 5px 5px 0',
-  }
+  },
 }));

@@ -76,7 +76,7 @@ export function useFillOrderCallback(
   orderHash?: string,
   fillData?: FillOrderCallbackData,
   nativeOptions?: {
-    usergive?: BigNumber;
+    userGive?: BigNumber;
     native: boolean;
   }
 ): {
@@ -96,8 +96,8 @@ export function useFillOrderCallback(
   const addTransaction = useTransactionAdder();
 
   const inputOptions =
-    nativeOptions?.native && nativeOptions?.usergive
-      ? { value: nativeOptions.usergive.toString() }
+    nativeOptions?.native && nativeOptions?.userGive
+      ? { value: nativeOptions.userGive.toString() }
       : {};
 
   return useMemo(() => {

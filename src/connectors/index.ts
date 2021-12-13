@@ -55,7 +55,7 @@ export const walletconnect = new WalletConnectConnector({
   pollingInterval: 5000,
   bridge: 'https://bridge.walletconnect.org',
   chainId: CHAIN_ID,
-  supportedChainIds: [CHAIN_ID]
+  supportedChainIds: [CHAIN_ID],
 });
 
 export interface WalletInfo {

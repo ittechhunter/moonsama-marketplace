@@ -29,10 +29,7 @@ export const useAssetOrders = (
     */
     const result = await request(
       SUBGRAPH_URL,
-      QUERY_ASSET_ORDERS(isBuy, onlyActive),
-      {
-        asset: assetEntityId,
-      }
+      QUERY_ASSET_ORDERS(isBuy, onlyActive, assetEntityId)
     );
 
     console.debug('YOLO getAssetOrders', result);
@@ -61,4 +58,29 @@ export const useAssetOrders = (
   }, [fetchAssetOrders, blockNumber]);
 
   return orders;
+};
+
+export const useAssetOrdersCallback = (
+  assetAddress: string,
+  assetId: string,
+  isBuy = false,
+  onlyActive = false
+) => {
+  const fetchAssetOrders = useCallback(async () => {
+    const assetEntityId = getAssetEntityId(assetAddress, assetId);
+
+    const result = await request(
+      SUBGRAPH_URL,
+      QUERY_ASSET_ORDERS(isBuy, onlyActive, assetEntityId)
+    );
+    const orders = result?.orders;
+
+    if (!orders) {
+      return []
+    }
+    const res = orders.map((x: any) => parseOrder(x));
+    return res
+  }, [assetAddress, assetId, onlyActive, isBuy]);
+
+  return fetchAssetOrders;
 };

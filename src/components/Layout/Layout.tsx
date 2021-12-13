@@ -2,10 +2,9 @@ import { useCallback, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { useMediaQuery } from 'beautiful-react-hooks'
+import { useMediaQuery } from 'beautiful-react-hooks';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@material-ui/core/IconButton';
-
 
 import { Header, NavLink, Drawer, Footer } from 'ui';
 
@@ -30,7 +29,11 @@ export const Layout = ({ children }: LayoutProps) => {
         <Container maxWidth={false}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item xl={3} className={nav}>
-              {showRegularMenu && <IconButton onClick={() => setIsDrawerOpened(true)}><MenuIcon /></IconButton>}
+              {showRegularMenu && (
+                <IconButton onClick={() => setIsDrawerOpened(true)}>
+                  <MenuIcon />
+                </IconButton>
+              )}
               <NavLink href="/" className={navItem}>
                 <div className={logo}>
                   <img src={WhiteLogo} alt="" />
@@ -39,7 +42,7 @@ export const Layout = ({ children }: LayoutProps) => {
             </Grid>
             <Grid item className={buttonContainer}>
               {!showRegularMenu ? (
-                <Box style={{ display: 'flex ' }}>
+                <Box style={{ display: 'flex ' }} onClick={() => setIsDrawerOpened(false)}>
                   {/*<NavLink href="/" className={navItem}>*/}
                   {/*  Welcome*/}
                   {/*</NavLink>*/}
@@ -68,6 +71,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   open={isDrawerOpened}
                   onClose={() => setIsDrawerOpened(false)}
                   onOpen={() => setIsDrawerOpened(true)}
+                  onClick={() => setIsDrawerOpened(false)}
                 >
                   <Box>
                     <NavLink href="/" className={navItemDrawer}>
@@ -102,4 +106,3 @@ export const Layout = ({ children }: LayoutProps) => {
     </>
   );
 };
-
