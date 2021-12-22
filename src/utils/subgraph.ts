@@ -89,9 +89,7 @@ export function stringToStringOrderType(
   return StringOrderType.UNKNOWN;
 }
 
-export function stringToOrderType(
-  assetTypeString?: string
-): OrderType {
+export function stringToOrderType(assetTypeString?: string): OrderType {
   const upper = assetTypeString?.toUpperCase();
   if ('BUY' === upper) {
     return OrderType.BUY;
@@ -242,7 +240,7 @@ export const getUnitPrice = (
   decimals: number,
   orderType?: OrderType,
   askPerUnitNominator?: BigNumber,
-  askPerUnitDenominator?: BigNumber,
+  askPerUnitDenominator?: BigNumber
 ) => {
   if (!askPerUnitDenominator || !askPerUnitNominator || !orderType) {
     return undefined;
@@ -250,14 +248,18 @@ export const getUnitPrice = (
 
   // decimals must be the non-native token decimals
   if (orderType.valueOf() === OrderType.BUY.valueOf()) {
-    return parseUnits('1', decimals).mul(askPerUnitDenominator).div(askPerUnitNominator)
+    return parseUnits('1', decimals)
+      .mul(askPerUnitDenominator)
+      .div(askPerUnitNominator);
   }
 
   if (orderType.valueOf() === OrderType.SELL.valueOf()) {
-    return parseUnits('1', decimals).mul(askPerUnitNominator).div(askPerUnitDenominator)
+    return parseUnits('1', decimals)
+      .mul(askPerUnitNominator)
+      .div(askPerUnitDenominator);
   }
 
-  return undefined
+  return undefined;
 };
 
 export const getDisplayUnitPrice = (
@@ -269,12 +271,21 @@ export const getDisplayUnitPrice = (
   toSignificant = false
 ) => {
   // decimals is the non native token decimals
-  const p = getUnitPrice(decimals, orderType, askPerUnitNominator, askPerUnitDenominator);
+  const p = getUnitPrice(
+    decimals,
+    orderType,
+    askPerUnitNominator,
+    askPerUnitDenominator
+  );
   //return !!p ? Fraction.from(p?.toString(), decimals)?.toFixed(decimalPlaces) : '?';
   //console.log('dPPU',{multiplier: parseUnits('1', decimals).toString(), decimals, p: p?.toString(), askPerUnitNominator: askPerUnitNominator?.toString(), askPerUnitDenominator: askPerUnitDenominator?.toString()})
-  
+
   // for display we always use 18 decimals because native token prices
-  return !!p ? toSignificant ? Fraction.from(p.toString(), 18)?.toSignificant(decimalPlaces) : Fraction.from(p.toString(), 18)?.toFixed(decimalPlaces) : '?';
+  return !!p
+    ? toSignificant
+      ? Fraction.from(p.toString(), 18)?.toSignificant(decimalPlaces)
+      : Fraction.from(p.toString(), 18)?.toFixed(decimalPlaces)
+    : '?';
 };
 
 export const getDisplayQuantity = (
@@ -291,7 +302,7 @@ export const getDisplayQuantity = (
     askPerUnitDenominator
   );
 
-  return Fraction.from(q, decimals)?.toFixed(decimals > 0? 5: 0) ?? '?';
+  return Fraction.from(q, decimals)?.toFixed(decimals > 0 ? 5 : 0) ?? '?';
 };
 
 export const getQuantity = (
@@ -305,14 +316,14 @@ export const getQuantity = (
   }
 
   if (OrderType.SELL === orderType) {
-    return quantity
+    return quantity;
   }
 
   if (!askPerUnitDenominator || !askPerUnitNominator) {
     return undefined;
   }
 
-  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator)
+  return quantity.mul(askPerUnitNominator).div(askPerUnitDenominator);
 };
 
 export const getDisplayUnits = (
@@ -330,7 +341,12 @@ export const getDisplayUnits = (
       askPerUnitNominator,
       askPerUnitDenominator
     ),
-    unitPrice: getUnitPrice(decimals, orderType, askPerUnitNominator, askPerUnitDenominator),
+    unitPrice: getUnitPrice(
+      decimals,
+      orderType,
+      askPerUnitNominator,
+      askPerUnitDenominator
+    ),
   };
 };
 

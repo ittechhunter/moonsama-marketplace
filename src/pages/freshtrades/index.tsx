@@ -1,25 +1,18 @@
-import Grid from '@material-ui/core/Grid';
-import { TokenOrder } from '../../components/TokenOrder/TokenOrder';
-import { GlitchText, Loader } from 'ui';
-import React, {
-  ChangeEvent,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { FillWithOrder, Order } from 'hooks/marketplace/types';
-import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
-import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
-import { useBottomScrollListener } from 'react-bottom-scroll-listener';
-import { useStyles } from './styles';
-import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
-import { TokenTrade } from 'components/TokenTrade/TokenTrade';
-import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
-import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import { TokenTrade } from 'components/TokenTrade/TokenTrade';
+import { useClasses } from 'hooks';
+import { FillWithOrder } from 'hooks/marketplace/types';
+import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
+import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
 import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
+import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useBottomScrollListener } from 'react-bottom-scroll-listener';
+import { GlitchText, Loader } from 'ui';
+import { styles } from './styles';
 
 const PAGE_SIZE = 10;
 
@@ -34,7 +27,7 @@ const FreshTradesPage = () => {
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
-  
+
   const {
     placeholderContainer,
     container,
@@ -43,8 +36,8 @@ const FreshTradesPage = () => {
     poster,
     glass,
     nftWrapper,
-    filterChip
-  } = useStyles();
+    filterChip,
+  } = useClasses(styles);
 
   const sceneRef = useRef(null);
   const canvasRef = useRef(null);
@@ -52,8 +45,10 @@ const FreshTradesPage = () => {
   const glassRef = useRef(null);
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
-  const collections = useRawCollectionsFromList()
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined)
+  const collections = useRawCollectionsFromList();
+  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(
+    undefined
+  );
   const [searchCounter, setSearchCounter] = useState<number>(0);
 
   const handleScrollToBottom = useCallback(() => {
@@ -65,14 +60,22 @@ const FreshTradesPage = () => {
 
   const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
-  const selectedTokenAddress = selectedIndex === undefined ? undefined : collections[selectedIndex]?.address?.toLowerCase()
+  const selectedTokenAddress =
+    selectedIndex === undefined
+      ? undefined
+      : collections[selectedIndex]?.address?.toLowerCase();
 
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
-      let data = await getPaginatedItems(PAGE_SIZE, take, selectedTokenAddress, setTake);
-      data = data.filter(
-        (x) => whitelist.includes(x.staticData.asset.assetAddress.toLowerCase())
+      let data = await getPaginatedItems(
+        PAGE_SIZE,
+        take,
+        selectedTokenAddress,
+        setTake
+      );
+      data = data.filter((x) =>
+        whitelist.includes(x.staticData.asset.assetAddress.toLowerCase())
       ); // REMOVEME later
       setPageLoading(false);
       const isEnd = data.some(({ meta }) => !meta);
@@ -135,13 +138,13 @@ const FreshTradesPage = () => {
 
   const handleSelection = (i: number | undefined) => {
     if (i !== selectedIndex) {
-      setCollection([])
-      setSelectedIndex(i)
-      setTake(0)
-      setSearchCounter(0)
+      setCollection([]);
+      setSelectedIndex(i);
+      setTake(0);
+      setSearchCounter(0);
       setPaginationEnded(false);
     }
-  }
+  };
 
   return (
     <>
@@ -156,26 +159,33 @@ const FreshTradesPage = () => {
       >
         <Stack
           direction={{ xs: 'row' }}
-          flexWrap={{xs: 'wrap'}}
+          flexWrap={{ xs: 'wrap' }}
           //spacing={{ xs: 1 }}
           justifyContent="center"
           alignItems="center"
         >
           <Chip
-                key={`all`}
-                label={'All'}
-                variant="outlined"
-                onClick={() => handleSelection(undefined)}
-                className={`${filterChip}${selectedIndex === undefined ? ' selected': ''}`} />
+            key={`all`}
+            label={'All'}
+            variant="outlined"
+            onClick={() => handleSelection(undefined)}
+            className={`${filterChip}${
+              selectedIndex === undefined ? ' selected' : ''
+            }`}
+          />
           {collections.map((collection, i) => {
-              
-              return <Chip
+            return (
+              <Chip
                 key={`${collection.address}-${i}`}
                 label={collection.display_name}
                 variant="outlined"
                 onClick={() => handleSelection(i)}
-                className={`${filterChip}${selectedIndex === i ? ' selected': ''}`} />
-            })}
+                className={`${filterChip}${
+                  selectedIndex === i ? ' selected' : ''
+                }`}
+              />
+            );
+          })}
         </Stack>
       </div>
       <Grid container spacing={1} style={{ marginTop: 12 }}>

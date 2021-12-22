@@ -1,15 +1,13 @@
 import { AddressZero } from '@ethersproject/constants';
-import { Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useClasses } from 'hooks';
 import { Order } from 'hooks/marketplace/types';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
 import { Link } from 'react-router-dom';
 import {
   Button,
-  GlitchText,
-  PriceBox,
   Table,
   TableBody,
   TableCell,
@@ -29,7 +27,7 @@ import {
 import { appStyles } from '../../app.styles';
 import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
-import { useStyles } from './styles';
+import { styles } from './styles';
 import { useUserOrders } from 'hooks/marketplace/useUserOrders';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
@@ -55,7 +53,8 @@ const geTableHeader = () => {
 export const MyOrdersPage = () => {
   const { chainId, account } = useActiveWeb3React();
 
-  const { formBox, formLabel, formValue, formValueTokenDetails } = appStyles();
+  const { formBox, formLabel, formValue, formValueTokenDetails } =
+    useClasses(appStyles);
 
   const {
     image,
@@ -76,22 +75,24 @@ export const MyOrdersPage = () => {
     tradeContainer,
     tradeRow,
     copyAddressButton,
-  } = useStyles();
+  } = useClasses(styles);
 
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
   const { setCancelData, setCancelDialogOpen } = useCancelDialog();
-  const decimalOverrides = useDecimalOverrides()
+  const decimalOverrides = useDecimalOverrides();
 
   const ordersMap = useUserOrders({
     from: 0,
     num: 1000,
   });
 
-  
-  const staticDatas = useTokenStaticData((ordersMap?.userOrders ?? []).map(x => {
-    return stringToOrderType(x.orderType) === OrderType.BUY ? x?.buyAsset: x.sellAsset
-  }))
-  
+  const staticDatas = useTokenStaticData(
+    (ordersMap?.userOrders ?? []).map((x) => {
+      return stringToOrderType(x.orderType) === OrderType.BUY
+        ? x?.buyAsset
+        : x.sellAsset;
+    })
+  );
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -114,20 +115,20 @@ export const MyOrdersPage = () => {
               expiresAt,
               onlyTo,
               partialAllowed,
-              orderType
+              orderType,
             } = order || {};
 
-            
             const expiration = formatExpirationDateString(expiresAt);
             const sellerShort = truncateHexString(seller);
             const ot = stringToOrderType(orderType);
-            console.log(ot)
+            console.log(ot);
             const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
 
-            
-            const decimals = decimalOverrides[orderAsset.assetAddress.toLowerCase()] ?? staticDatas?.[i]?.decimals ?? 0 
-            console.log('yada', {decimals, decimalOverrides})
-
+            const decimals =
+              decimalOverrides[orderAsset.assetAddress.toLowerCase()] ??
+              staticDatas?.[i]?.decimals ??
+              0;
+            console.log('yada', { decimals, decimalOverrides });
 
             const displayUnitPrice = getDisplayUnitPrice(
               decimals,
@@ -145,9 +146,12 @@ export const MyOrdersPage = () => {
               askPerUnitDenominator
             );
 
-            console.log({displayUnitPrice, ot,
+            console.log({
+              displayUnitPrice,
+              ot,
               askPerUnitNominator,
-              askPerUnitDenominator})
+              askPerUnitDenominator,
+            });
 
             return (
               <TableRow

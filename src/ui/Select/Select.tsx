@@ -1,7 +1,9 @@
-import Sel, { SelectProps } from '@material-ui/core/Select';
+import Sel, { SelectProps } from '@mui/material/Select';
 
 export const Select = ({ children, ...props }: SelectProps) => {
-  return <>
-    <Sel {...props}>{children}</Sel>
-  </>
+  return (
+    <>
+      <Sel {...props}>{children}</Sel>
+    </>
+  );
 };

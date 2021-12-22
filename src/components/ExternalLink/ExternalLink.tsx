@@ -1,8 +1,9 @@
-import { LinkProps } from '@material-ui/core';
-import { useStyles } from './ExternalLink.styles';
+import { LinkProps } from '@mui/material';
+import { useClasses } from 'hooks';
+import { styles as style } from './ExternalLink.styles';
 
 export const ExternalLink = ({ href, children }: LinkProps) => {
-  const styles = useStyles();
+  const styles = useClasses(style);
 
   return (
     <a

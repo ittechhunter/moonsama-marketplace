@@ -1,8 +1,8 @@
 import { AddressZero } from '@ethersproject/constants';
-import { Chip, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import { Chip, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -10,7 +10,7 @@ import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import MoneyIcon from '@mui/icons-material/Money';
 import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
-import { useActiveWeb3React, useBidDialog } from 'hooks';
+import { useActiveWeb3React, useBidDialog, useClasses } from 'hooks';
 import { LastTradedPrice, Order } from 'hooks/marketplace/types';
 import { useTokenPageOrders } from 'hooks/marketplace/useTokenPageOrders';
 import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
@@ -45,14 +45,13 @@ import {
   stringToStringAssetType,
   formatExpirationDateString,
   getDisplayUnitPrice,
-  OrderType
+  OrderType,
 } from '../../utils/subgraph';
-import { useStyles } from './styles';
+import { styles } from './styles';
 import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
 import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
-
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import uriToHttp from 'utils/uriToHttp';
@@ -89,7 +88,7 @@ const TokenPage = () => {
   if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
 
   if (!whitelist.includes(address.toLowerCase())) {
-    console.log({whitelist, address})
+    console.log({ whitelist, address });
     // REMOVEME later
     throw Error('Unsupported token');
   }
@@ -97,7 +96,6 @@ const TokenPage = () => {
   if (assetType.valueOf() === StringAssetType.ERC20.valueOf())
     throw Error('ERC20 trades are not enabled yet');
 
-  //console.log('ID!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', id);
   if (!id) {
     if (assetType.valueOf() !== StringAssetType.ERC20.valueOf()) {
       throw Error('Token ID was not given');
@@ -123,7 +121,8 @@ const TokenPage = () => {
     assetAddress: address?.toLowerCase(),
   }) as LastTradedPrice;
 
-  const { formBox, formLabel, formValue, formValueTokenDetails } = appStyles();
+  const { formBox, formLabel, formValue, formValueTokenDetails } =
+    useClasses(appStyles);
 
   const {
     image,
@@ -145,7 +144,7 @@ const TokenPage = () => {
     tradeRow,
     smallText,
     traitChip,
-  } = useStyles();
+  } = useClasses(styles);
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
@@ -161,7 +160,7 @@ const TokenPage = () => {
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
   const metas = useFetchTokenUri(staticData);
-  const decimalOverrides = useDecimalOverrides()
+  const decimalOverrides = useDecimalOverrides();
 
   //console.log('METAS', {metas, staticData})
 
@@ -177,35 +176,35 @@ const TokenPage = () => {
 
   const assetMeta = metas?.[0];
 
-  const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0
-  const tokenName = staticData?.[0]?.name
-  const tokenSymbol = staticData?.[0]?.symbol
+  const decimals =
+    decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
+  const tokenName = staticData?.[0]?.name;
+  const tokenSymbol = staticData?.[0]?.symbol;
 
-  const isFungible = decimals > 0
+  const isFungible = decimals > 0;
 
   let userBalanceString = isFungible
     ? Fraction.from(
         balanceData?.[0]?.userBalance?.toString() ?? '0',
         decimals
       )?.toFixed(2) ?? '0'
-    : balanceData?.[0]?.userBalance?.toString() ?? '0'
+    : balanceData?.[0]?.userBalance?.toString() ?? '0';
 
-  userBalanceString = account ? userBalanceString: '0'
+  userBalanceString = account ? userBalanceString : '0';
 
   const isOwner = userBalanceString !== '0' && userBalanceString !== '0.0';
 
-  console.log('yoyoyo', {...balanceData?.[0]})
-  let totalSupplyString =
-    balanceData?.[0]?.totalSupply
-    ? (
-      isFungible
-        ? Fraction.from(
-            balanceData?.[0]?.totalSupply?.toString() ?? '0',
-            decimals
-          )?.toFixed(2) ?? '0'
-        : balanceData?.[0]?.totalSupply?.toString()
-    )
-    : (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
+  console.log('yoyoyo', { ...balanceData?.[0] });
+  let totalSupplyString = balanceData?.[0]?.totalSupply
+    ? isFungible
+      ? Fraction.from(
+          balanceData?.[0]?.totalSupply?.toString() ?? '0',
+          decimals
+        )?.toFixed(2) ?? '0'
+      : balanceData?.[0]?.totalSupply?.toString()
+    : asset.assetType.valueOf() === StringAssetType.ERC721
+    ? '1'
+    : undefined;
 
   //console.log('data', { balanceData, staticData, assetMeta });
 
@@ -224,9 +223,11 @@ const TokenPage = () => {
         rarity,
       };
     });
-  
-  const displayRarity = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
-  const minecraftskin = getMinecraftSkinUrl(assetMeta?.attributes)
+
+  const displayRarity =
+    asset.assetAddress ==
+    '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase();
+  const minecraftskin = getMinecraftSkinUrl(assetMeta?.attributes);
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -249,22 +250,21 @@ const TokenPage = () => {
               expiresAt,
               onlyTo,
               partialAllowed,
-              orderType: indexedOrderType
+              orderType: indexedOrderType,
             } = order;
 
             const expiration = formatExpirationDateString(expiresAt);
 
             const sellerShort = truncateHexString(seller);
 
-            const ot =
-              orderType ?? stringToOrderType(indexedOrderType);
+            const ot = orderType ?? stringToOrderType(indexedOrderType);
 
             const displayUnitPrice = getDisplayUnitPrice(
               decimals,
               5,
               ot,
               askPerUnitNominator,
-              askPerUnitDenominator,
+              askPerUnitDenominator
             );
 
             const qty = getDisplayQuantity(
@@ -275,8 +275,8 @@ const TokenPage = () => {
               askPerUnitDenominator
             );
 
-            const freeForAll = onlyTo === AddressZero
-            const isExlusiveRecipient = onlyTo === account?.toLowerCase()
+            const freeForAll = onlyTo === AddressZero;
+            const isExlusiveRecipient = onlyTo === account?.toLowerCase();
 
             return (
               <TableRow
@@ -290,19 +290,31 @@ const TokenPage = () => {
 
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
                             <Grid item className={subItemTitleCell}>
                               Order ID
                             </Grid>
                             <Grid item>{id}</Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
                             <Grid item className={subItemTitleCell}>
                               Maker
                             </Grid>
                             <Grid item>{seller}</Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
                             <Grid item className={subItemTitleCell}>
                               Created at
                             </Grid>
@@ -310,15 +322,21 @@ const TokenPage = () => {
                               {formatExpirationDateString(createdAt)}
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
                             <Grid item className={subItemTitleCell}>
                               Available to
                             </Grid>
-                            <Grid item>
-                              {freeForAll ? 'everyone' : onlyTo}
-                            </Grid>
+                            <Grid item>{freeForAll ? 'everyone' : onlyTo}</Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
                             <Grid item className={subItemTitleCell}>
                               Partial fills allowed
                             </Grid>
@@ -367,14 +385,20 @@ const TokenPage = () => {
                     </Button>
                   ) : (
                     <Button
-                      style={isExlusiveRecipient ? {background: "blue"}: {}}
+                      style={isExlusiveRecipient ? { background: 'blue' } : {}}
                       disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName});
+                        setPurchaseData({
+                          order,
+                          orderType: ot,
+                          decimals,
+                          symbol: tokenSymbol,
+                          name: tokenName,
+                        });
                       }}
                       variant="contained"
-                      color={"primary"}
+                      color={'primary'}
                     >
                       Fill
                     </Button>
@@ -445,13 +469,17 @@ const TokenPage = () => {
         </Box>
 
         {/*TODO: Make traits calculation collection specific*/}
-        {displayRarity ? <Typography color="textSecondary" className={smallText}>
-          {transformedMetaData?.map((trait) => (
-            <Tooltip title={`${trait.rarity}% have this trait`}>
-              <Chip label={trait.label} className={traitChip} />
-            </Tooltip>
-          ))}
-        </Typography> : <Typography>{assetMeta?.description}</Typography>}
+        {displayRarity ? (
+          <Typography color="textSecondary" className={smallText}>
+            {transformedMetaData?.map((trait) => (
+              <Tooltip title={`${trait.rarity}% have this trait`}>
+                <Chip label={trait.label} className={traitChip} />
+              </Tooltip>
+            ))}
+          </Typography>
+        ) : (
+          <Typography>{assetMeta?.description}</Typography>
+        )}
 
         <Paper className={card}>
           {ltp && (
@@ -518,31 +546,40 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            {!!ordersMap?.sellOrders && ordersMap?.sellOrders.length > 0 && (ordersMap.sellOrders[0].onlyTo === AddressZero || ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
-              <Button
-                style={{background: "green"}}
-                onClick={() => {
-                  setPurchaseDialogOpen(true);
-                  setPurchaseData({
-                    order: ordersMap.sellOrders?.[0] as Order,
-                    orderType: OrderType.SELL,
-                    decimals,
-                    symbol: tokenSymbol,
-                    name: tokenName
-                  });
-                }}
-                startIcon={<AccountBalanceWalletIcon />}
-                variant="contained"
-                color="primary"
-              >
-                Buy now
-              </Button>
-            )}
+            {!!ordersMap?.sellOrders &&
+              ordersMap?.sellOrders.length > 0 &&
+              (ordersMap.sellOrders[0].onlyTo === AddressZero ||
+                ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
+                <Button
+                  style={{ background: 'green' }}
+                  onClick={() => {
+                    setPurchaseDialogOpen(true);
+                    setPurchaseData({
+                      order: ordersMap.sellOrders?.[0] as Order,
+                      orderType: OrderType.SELL,
+                      decimals,
+                      symbol: tokenSymbol,
+                      name: tokenName,
+                    });
+                  }}
+                  startIcon={<AccountBalanceWalletIcon />}
+                  variant="contained"
+                  color="primary"
+                >
+                  Buy now
+                </Button>
+              )}
             {((!isOwner && isErc721) || !isErc721) && (
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol});
+                  setBidData({
+                    orderType: OrderType.BUY,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                  });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
@@ -555,7 +592,13 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol });
+                  setBidData({
+                    orderType: OrderType.SELL,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                  });
                 }}
                 startIcon={<MoneyIcon />}
                 variant="outlined"

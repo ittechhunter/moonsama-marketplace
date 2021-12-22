@@ -1,13 +1,13 @@
+import { Typography } from '@mui/material';
+import Container from '@mui/material/Container';
+import { useClasses } from 'hooks';
+import { Telegram, Twitter } from 'icons';
 import React from 'react';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-
-import { Discord, Telegram, Twitter } from 'icons';
-import { useStyles } from './Footer.styles';
-import { Typography } from '@material-ui/core';
+import { styles } from './Footer.styles';
 
 export const Footer = () => {
-  const { footerWrapper, iconsWrapper, copyrightText, icon } = useStyles();
+  const { footerWrapper, iconsWrapper, copyrightText, icon } =
+    useClasses(styles);
   return (
     <Container maxWidth={false}>
       <div className={footerWrapper}>

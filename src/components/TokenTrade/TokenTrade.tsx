@@ -1,8 +1,8 @@
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useClasses } from 'hooks';
 import { FillWithOrder, Order } from 'hooks/marketplace/types';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
@@ -17,7 +17,7 @@ import {
   OrderType,
   StringAssetType,
 } from 'utils/subgraph';
-import { useStyles } from './TokenTrade.styles';
+import { styles } from './TokenTrade.styles';
 
 export const TokenTrade = ({
   fill,
@@ -38,11 +38,11 @@ export const TokenTrade = ({
     mr,
     lastPriceContainer,
     smallText,
-  } = useStyles();
+  } = useClasses(styles);
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
-  const decimalOverrides = useDecimalOverrides()
+  const decimalOverrides = useDecimalOverrides();
   const ot = inferOrderTYpe(chainId, fill.order.sellAsset, fill.order.buyAsset);
   const asset =
     ot == OrderType.BUY ? fill.order.buyAsset : fill.order.sellAsset;
@@ -55,11 +55,17 @@ export const TokenTrade = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
+  const decimals =
+    decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ??
+    staticData?.decimals ??
+    0;
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
+  const sup = Fraction.from(
+    staticData?.totalSupply?.toString() ?? '0',
+    decimals
+  )?.toFixed(0);
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
@@ -72,8 +78,11 @@ export const TokenTrade = ({
       : fill.order?.askPerUnitDenominator
           .mul(fill.buyerSendsAmountFull)
           .div(fill.order?.askPerUnitNominator);
-  
-  const unit = Fraction.from(rawunit?.toString() ?? '0', decimals)?.toSignificant(5)
+
+  const unit = Fraction.from(
+    rawunit?.toString() ?? '0',
+    decimals
+  )?.toSignificant(5);
 
   const ppud = getDisplayUnitPrice(
     decimals,
@@ -82,10 +91,8 @@ export const TokenTrade = ({
     fill.order?.askPerUnitNominator,
     fill.order?.askPerUnitDenominator,
     true
-  )
-  const ppuDisplay = !!ppud && ppud !== '?'
-    ? `${ppud} MOVR`
-    : action;
+  );
+  const ppuDisplay = !!ppud && ppud !== '?' ? `${ppud} MOVR` : action;
 
   return (
     <Paper className={container}>
@@ -101,7 +108,15 @@ export const TokenTrade = ({
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>
-          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
+          {[
+            '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a',
+            '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
+            '0x1974eeaf317ecf792ff307f25a3521c35eecde86',
+          ].includes(asset.assetAddress)
+            ? meta?.name ?? truncateHexString(asset.assetId)
+            : meta?.name
+            ? `${meta?.name} #${truncateHexString(asset.assetId)}`
+            : `#${truncateHexString(asset.assetId)}`}
         </GlitchText>
         <PriceBox margin={false} size="small" color={actionColor}>
           {ppuDisplay}

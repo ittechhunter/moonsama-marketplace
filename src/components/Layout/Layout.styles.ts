@@ -1,6 +1,6 @@
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = (theme: Theme) => ({
   logo: {
     width: 180,
     height: 'auto',
@@ -48,4 +48,4 @@ export const useStyles = makeStyles((theme) => ({
       top: '8px',
     },
   },
-}));
+});

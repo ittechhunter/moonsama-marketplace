@@ -76,10 +76,10 @@ export const useAssetOrdersCallback = (
     const orders = result?.orders;
 
     if (!orders) {
-      return []
+      return [];
     }
     const res = orders.map((x: any) => parseOrder(x));
-    return res
+    return res;
   }, [assetAddress, assetId, onlyActive, isBuy]);
 
   return fetchAssetOrders;

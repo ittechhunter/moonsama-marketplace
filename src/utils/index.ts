@@ -158,5 +158,3 @@ export const parseTokenUri = (uri?: string, tokenID?: string | number) => {
 
   return uri;
 };
-
-

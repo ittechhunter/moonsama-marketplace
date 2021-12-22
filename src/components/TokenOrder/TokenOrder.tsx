@@ -1,7 +1,7 @@
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
-import { useActiveWeb3React, usePurchaseDialog } from 'hooks';
+import { useActiveWeb3React, useClasses, usePurchaseDialog } from 'hooks';
 import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -18,7 +18,7 @@ import {
   StrategyMap,
   StringAssetType,
 } from 'utils/subgraph';
-import { useStyles } from './TokenOrder.styles';
+import { styles } from './TokenOrder.styles';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 export const TokenOrder = ({
@@ -30,12 +30,12 @@ export const TokenOrder = ({
   staticData: StaticTokenData;
   order: Order;
 }) => {
-  const { image, imageContainer, tokenName, smallText } = useStyles();
+  const { image, imageContainer, tokenName, smallText } = useClasses(styles);
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
   const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
-  const decimalOverrides = useDecimalOverrides()
+  const decimalOverrides = useDecimalOverrides();
 
   const ot = inferOrderTYpe(chainId, order.sellAsset, order.buyAsset);
   const asset = ot == OrderType.BUY ? order.buyAsset : order.sellAsset;
@@ -48,11 +48,17 @@ export const TokenOrder = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
+  const decimals =
+    decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ??
+    staticData?.decimals ??
+    0;
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
+  const sup = Fraction.from(
+    staticData?.totalSupply?.toString() ?? '0',
+    decimals
+  );
   const totalSupplyString = isErc721
     ? 'unique'
     : sup
@@ -67,9 +73,7 @@ export const TokenOrder = ({
     true
   );
 
-  const ppuDisplay = ppuD
-    ? `${ppuD} MOVR`
-    : action;
+  const ppuDisplay = ppuD ? `${ppuD} MOVR` : action;
 
   const expiration = formatExpirationDateString(order?.expiresAt);
   const strategyType = StrategyMap[order.strategyType.toLowerCase()];
@@ -87,7 +91,15 @@ export const TokenOrder = ({
           <Media uri={meta?.image} className={image} />
         </div>
         <Typography className={tokenName}>
-          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
+          {[
+            '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a',
+            '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
+            '0x1974eeaf317ecf792ff307f25a3521c35eecde86',
+          ].includes(asset.assetAddress)
+            ? meta?.name ?? truncateHexString(asset.assetId)
+            : meta?.name
+            ? `${meta?.name} #${truncateHexString(asset.assetId)}`
+            : `#${truncateHexString(asset.assetId)}`}
         </Typography>
       </TableCell>
       <TableCell>

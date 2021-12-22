@@ -1,8 +1,8 @@
 import { Button } from 'ui';
-import { Typography } from '@material-ui/core';
 // import { MonaLisa, ShoppingCart, WalletIcon } from "icons";
 import { GlitchText, NavLink } from 'ui';
-import { useStyles } from './styles';
+import { styles } from './styles';
+import { useClasses } from 'hooks';
 
 const HomePage = () => {
   const {
@@ -14,7 +14,7 @@ const HomePage = () => {
     icon,
     iconContainer,
     iconBlock,
-  } = useStyles();
+  } = useClasses(styles);
   return (
     <div className={homeContainer}>
       <GlitchText fontSize={48}>Discover, collect, and sell NFTs</GlitchText>

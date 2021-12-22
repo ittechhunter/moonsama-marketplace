@@ -1,8 +1,9 @@
+import { useClasses } from 'hooks';
 import { VideoHTMLAttributes } from 'react';
-import { useStyles } from './Video.styles';
+import { styles } from './Video.styles';
 
 export const Video = (props: VideoHTMLAttributes<any>) => {
-  const { video } = useStyles();
+  const { video } = useClasses(styles);
   return (
     <video
       autoPlay

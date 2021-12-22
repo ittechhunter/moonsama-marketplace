@@ -314,20 +314,22 @@ export function sanityCheckStrategy(
   }
 
   if (!isAddress(strategy.onlyTo)) {
-    return false
+    return false;
   }
 
-  const bnStartsAt = BigNumber.from(strategy.startsAt)
-  const bnExpiresAt = BigNumber.from(strategy.expiresAt)
+  const bnStartsAt = BigNumber.from(strategy.startsAt);
+  const bnExpiresAt = BigNumber.from(strategy.expiresAt);
 
-  const expiresZero = bnExpiresAt.eq('0')
-  const startsZero = bnStartsAt.eq('0')
+  const expiresZero = bnExpiresAt.eq('0');
+  const startsZero = bnStartsAt.eq('0');
 
   if (startsZero && !expiresZero) {
-    if(!expiresZero) {
-      const realStartsAt = startsZero ? BigNumber.from(Date.now()).div('1000') : bnStartsAt
+    if (!expiresZero) {
+      const realStartsAt = startsZero
+        ? BigNumber.from(Date.now()).div('1000')
+        : bnStartsAt;
       if (realStartsAt.gt(bnExpiresAt)) {
-        return false
+        return false;
       }
     }
   }

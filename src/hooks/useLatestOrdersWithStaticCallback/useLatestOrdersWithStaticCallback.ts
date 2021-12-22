@@ -1,4 +1,8 @@
-import { ChainId, DEFAULT_ORDERBOOK_PAGINATION, SUBGRAPH_URL } from '../../constants';
+import {
+  ChainId,
+  DEFAULT_ORDERBOOK_PAGINATION,
+  SUBGRAPH_URL,
+} from '../../constants';
 import { request } from 'graphql-request';
 import { inferOrderTYpe, OrderType, parseOrder } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
@@ -13,7 +17,10 @@ import {
   QUERY_LATEST_SELL_ORDERS_FOR_TOKEN,
   QUERY_LATEST_SELL_ORDERS_WITHOUT_TOKEN,
 } from 'subgraph/orderQueries';
-import { StaticTokenData, useTokenStaticDataCallbackArray } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
+import {
+  StaticTokenData,
+  useTokenStaticDataCallbackArray,
+} from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { AddressZero } from '@ethersproject/constants';
 
 export const useLatestOrdersWithStaticCallback = () => {
@@ -25,8 +32,8 @@ export const useLatestOrdersWithStaticCallback = () => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_ORDERS(offset, num);
       const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
     },
     [chainId]
   );
@@ -43,8 +50,8 @@ export const useLatestBuyOrdersWithStaticCallback = () => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_BUY_ORDERS(`${AddressZero}-0`, offset, num);
       const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
     },
     [chainId]
   );
@@ -61,8 +68,8 @@ export const useLatestSellOrdersWithStaticCallback = () => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_SELL_ORDERS(`${AddressZero}-0`, offset, num);
       const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
     },
     [chainId]
   );
@@ -77,10 +84,15 @@ export const useLatestSellOrdersForTokenWithStaticCallback = () => {
   const fetchLatestOrdersWithStatic = useCallback(
     async (tokenAddress: string, num: number, offset: number) => {
       console.log('order query', offset, num);
-      const query = QUERY_LATEST_SELL_ORDERS_FOR_TOKEN(`${AddressZero}-0`, tokenAddress, offset, num);
+      const query = QUERY_LATEST_SELL_ORDERS_FOR_TOKEN(
+        `${AddressZero}-0`,
+        tokenAddress,
+        offset,
+        num
+      );
       const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
     },
     [chainId]
   );
@@ -95,82 +107,104 @@ export const useLatestBuyOrdersForTokenWithStaticCallback = () => {
   const fetchLatestOrdersWithStatic = useCallback(
     async (tokenAddress: string, num: number, offset: number) => {
       console.log('order query', offset, num);
-      const query = QUERY_LATEST_BUY_ORDERS_FOR_TOKEN(`${AddressZero}-0`, tokenAddress, offset, num);
+      const query = QUERY_LATEST_BUY_ORDERS_FOR_TOKEN(
+        `${AddressZero}-0`,
+        tokenAddress,
+        offset,
+        num
+      );
       const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
-    },
-    [chainId]
-  );
-
-  return fetchLatestOrdersWithStatic;
-};
-
-export const useLatestSellOrdersWithoutTokenWithStaticCallback = (tokenAddress: string) => {
-  const { chainId } = useActiveWeb3React();
-  const staticCallback = useTokenStaticDataCallbackArray();
-
-  const fetchLatestOrdersWithStatic = useCallback(
-    async (num: number, offset: number) => {
-      console.log('order query', offset, num);
-      const query = QUERY_LATEST_SELL_ORDERS_WITHOUT_TOKEN(`${AddressZero}-0`, tokenAddress, offset, num);
-      const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
-    },
-    [chainId]
-  );
-
-  return fetchLatestOrdersWithStatic;
-};
-
-export const useLatestBuyOrdersWithoutTokenWithStaticCallback = (tokenAddress: string) => {
-  const { chainId } = useActiveWeb3React();
-  const staticCallback = useTokenStaticDataCallbackArray();
-
-  const fetchLatestOrdersWithStatic = useCallback(
-    async (num: number, offset: number) => {
-      console.log('order query', offset, num);
-      const query = QUERY_LATEST_BUY_ORDERS_WITHOUT_TOKEN(`${AddressZero}-0`, tokenAddress, offset, num);
-      const response = await request(SUBGRAPH_URL, query);
-      const datas = await orderProcessCore(chainId, response, staticCallback)
-      return datas
-    },
-    [chainId]
-  );
-
-  return fetchLatestOrdersWithStatic;
-};
-
-
-const orderProcessCore = async (chainId: ChainId | undefined, response: any, staticCallback: (assets: Asset[]) => Promise<{meta: any; staticData: StaticTokenData;}[]>) => {
-
-      if (!response) {
-        return [];
-      }
-
-      let assets: Asset[] = [];
-      const latestOrders: Order[] = (response.latestOrders ?? [])
-        .map((x: any) => {
-          const po = parseOrder(x);
-          if (po) {
-            const ot =
-              inferOrderTYpe(chainId, po.sellAsset, po.buyAsset) ??
-              OrderType.SELL;
-            assets.push(ot === OrderType.BUY ? po.buyAsset : po.sellAsset);
-          }
-          return po;
-        })
-        .filter((item: Order | undefined) => !!item);
-
-      const staticDatas = await staticCallback(assets);
-
-      const datas = staticDatas.map((sd, i) => {
-        return {
-          meta: sd.meta,
-          staticData: sd.staticData,
-          order: latestOrders[i],
-        };
-      });
+      const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
-}
+    },
+    [chainId]
+  );
+
+  return fetchLatestOrdersWithStatic;
+};
+
+export const useLatestSellOrdersWithoutTokenWithStaticCallback = (
+  tokenAddress: string
+) => {
+  const { chainId } = useActiveWeb3React();
+  const staticCallback = useTokenStaticDataCallbackArray();
+
+  const fetchLatestOrdersWithStatic = useCallback(
+    async (num: number, offset: number) => {
+      console.log('order query', offset, num);
+      const query = QUERY_LATEST_SELL_ORDERS_WITHOUT_TOKEN(
+        `${AddressZero}-0`,
+        tokenAddress,
+        offset,
+        num
+      );
+      const response = await request(SUBGRAPH_URL, query);
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
+    },
+    [chainId]
+  );
+
+  return fetchLatestOrdersWithStatic;
+};
+
+export const useLatestBuyOrdersWithoutTokenWithStaticCallback = (
+  tokenAddress: string
+) => {
+  const { chainId } = useActiveWeb3React();
+  const staticCallback = useTokenStaticDataCallbackArray();
+
+  const fetchLatestOrdersWithStatic = useCallback(
+    async (num: number, offset: number) => {
+      console.log('order query', offset, num);
+      const query = QUERY_LATEST_BUY_ORDERS_WITHOUT_TOKEN(
+        `${AddressZero}-0`,
+        tokenAddress,
+        offset,
+        num
+      );
+      const response = await request(SUBGRAPH_URL, query);
+      const datas = await orderProcessCore(chainId, response, staticCallback);
+      return datas;
+    },
+    [chainId]
+  );
+
+  return fetchLatestOrdersWithStatic;
+};
+
+const orderProcessCore = async (
+  chainId: ChainId | undefined,
+  response: any,
+  staticCallback: (
+    assets: Asset[]
+  ) => Promise<{ meta: any; staticData: StaticTokenData }[]>
+) => {
+  if (!response) {
+    return [];
+  }
+
+  let assets: Asset[] = [];
+  const latestOrders: Order[] = (response.latestOrders ?? [])
+    .map((x: any) => {
+      const po = parseOrder(x);
+      if (po) {
+        const ot =
+          inferOrderTYpe(chainId, po.sellAsset, po.buyAsset) ?? OrderType.SELL;
+        assets.push(ot === OrderType.BUY ? po.buyAsset : po.sellAsset);
+      }
+      return po;
+    })
+    .filter((item: Order | undefined) => !!item);
+
+  const staticDatas = await staticCallback(assets);
+
+  const datas = staticDatas.map((sd, i) => {
+    return {
+      meta: sd.meta,
+      staticData: sd.staticData,
+      order: latestOrders[i],
+    };
+  });
+  return datas;
+};

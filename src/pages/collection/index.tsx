@@ -1,45 +1,44 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { BigNumber } from '@ethersproject/bignumber';
-import Grid from '@material-ui/core/Grid';
-import { useParams } from 'react-router-dom';
-import Stack from '@mui/material/Stack';
-
-import { Token as TokenComponent } from 'components';
-import { Button, GlitchText, Loader, Filters } from 'ui';
-import {
-  getAssetEntityId,
-  OrderType,
-  StringAssetType,
-  stringToStringAssetType,
-} from 'utils/subgraph';
-import { truncateHexString } from 'utils';
-import { Asset } from 'hooks/marketplace/types';
 import { isAddress } from '@ethersproject/address';
+import { BigNumber } from '@ethersproject/bignumber';
+import SearchIcon from '@mui/icons-material/SearchSharp';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import { Token as TokenComponent } from 'components';
+import { useClasses } from 'hooks';
+import { Asset } from 'hooks/marketplace/types';
+import { useFetchSubcollectionMeta } from 'hooks/useFetchCollectionMeta/useFetchCollectionMeta';
+import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
+import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import {
   StaticTokenData,
   useTokenStaticDataCallbackArrayWithFilter,
 } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
-import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
-import { useStyles } from './styles';
-import { IconButton, InputAdornment, TextField } from '@material-ui/core';
-import SearchIcon from '@mui/icons-material/SearchSharp';
 import { useForm } from 'react-hook-form';
-import { useRawcollection, useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
-import { useFetchSubcollectionMeta } from 'hooks/useFetchCollectionMeta/useFetchCollectionMeta';
+import { useParams } from 'react-router-dom';
+import { Filters, GlitchText, Loader } from 'ui';
+import { truncateHexString } from 'utils';
+import {
+  getAssetEntityId,
+  StringAssetType,
+  stringToStringAssetType,
+} from 'utils/subgraph';
+import { styles } from './styles';
 
 const DEFAULT_PAGE_SIZE = 10;
 const SEARCH_PAGE_SIZE = 50;
 
 const CollectionPage = () => {
-
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
       staticData: StaticTokenData;
     }[]
   >([]);
-  const { address, type, subcollectionId } = useParams<{ address: string; type: string; subcollectionId: string }>();
+  const { address, type, subcollectionId } =
+    useParams<{ address: string; type: string; subcollectionId: string }>();
   const assetType = stringToStringAssetType(type);
   const asset: Asset = {
     assetAddress: address?.toLowerCase(),
@@ -47,16 +46,20 @@ const CollectionPage = () => {
     assetId: '0',
     id: getAssetEntityId(address?.toLowerCase(), '0'),
   };
-  const recognizedCollection = useRawcollection(asset.assetAddress)
-  const maxId = recognizedCollection?.maxId ?? 1000
-  const searchBarOn = recognizedCollection?.idSearchOn ?? true
-  const subcollection = recognizedCollection?.subcollections?.find(x => x.id === subcollectionId)
-  const submeta = useFetchSubcollectionMeta(subcollection ? [subcollection]: undefined);
-  
-  //console.log('SUBMETA', submeta)
-  const isSubcollection = subcollectionId !== '0'
+  const recognizedCollection = useRawcollection(asset.assetAddress);
+  const maxId = recognizedCollection?.maxId ?? 1000;
+  const searchBarOn = recognizedCollection?.idSearchOn ?? true;
+  const subcollection = recognizedCollection?.subcollections?.find(
+    (x) => x.id === subcollectionId
+  );
+  const submeta = useFetchSubcollectionMeta(
+    subcollection ? [subcollection] : undefined
+  );
 
-  const minId = isSubcollection ? 0: recognizedCollection?.minId ?? 1
+  //console.log('SUBMETA', submeta)
+  const isSubcollection = subcollectionId !== '0';
+
+  const minId = isSubcollection ? 0 : recognizedCollection?.minId ?? 1;
 
   const [take, setTake] = useState<number>(minId);
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
@@ -71,17 +74,16 @@ const CollectionPage = () => {
     select,
     selectLabel,
     dropDown,
-  } = useStyles();
+  } = useClasses(styles);
   const { register, handleSubmit } = useForm();
 
-  
-
-  const displayFilters = assetType === StringAssetType.ERC721
+  const displayFilters = assetType === StringAssetType.ERC721;
 
   // TODO: wire it to search result
 
-  
-  const collectionName = recognizedCollection ? recognizedCollection.display_name : `Collection ${truncateHexString(address)}`
+  const collectionName = recognizedCollection
+    ? recognizedCollection.display_name
+    : `Collection ${truncateHexString(address)}`;
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
     asset,
@@ -105,7 +107,10 @@ const CollectionPage = () => {
   console.log('MSATTR', m)
   */
 
-  const searchSize = filters?.selectedOrderType == undefined ? DEFAULT_PAGE_SIZE: SEARCH_PAGE_SIZE
+  const searchSize =
+    filters?.selectedOrderType == undefined
+      ? DEFAULT_PAGE_SIZE
+      : SEARCH_PAGE_SIZE;
 
   const handleScrollToBottom = useCallback(() => {
     console.log('SCROLLBOTTOM');
@@ -113,21 +118,32 @@ const CollectionPage = () => {
     setSearchCounter((state) => (state += 1));
   }, [searchSize]);
 
-  const handleTokenSearch = useCallback(async ({ tokenID }) => {
-    if (!!tokenID) {
-      setPaginationEnded(true);
-      setPageLoading(true);
-      const data = await getItemsWithFilter(1, BigNumber.from(tokenID), setTake);
-      setPageLoading(false);
-      setCollection(data);
-    } else {
-      setPaginationEnded(false);
-      setPageLoading(true);
-      const data = await getItemsWithFilter(searchSize, BigNumber.from(take), setTake);
-      setPageLoading(false);
-      setCollection(data);
-    }
-  }, [searchSize]);
+  const handleTokenSearch = useCallback(
+    async ({ tokenID }) => {
+      if (!!tokenID) {
+        setPaginationEnded(true);
+        setPageLoading(true);
+        const data = await getItemsWithFilter(
+          1,
+          BigNumber.from(tokenID),
+          setTake
+        );
+        setPageLoading(false);
+        setCollection(data);
+      } else {
+        setPaginationEnded(false);
+        setPageLoading(true);
+        const data = await getItemsWithFilter(
+          searchSize,
+          BigNumber.from(take),
+          setTake
+        );
+        setPageLoading(false);
+        setCollection(data);
+      }
+    },
+    [searchSize]
+  );
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
 
@@ -136,8 +152,12 @@ const CollectionPage = () => {
     const getCollectionById = async () => {
       setPageLoading(true);
       console.log('FETCH', { searchSize, address, take, paginationEnded });
-      const data = await getItemsWithFilter(searchSize, BigNumber.from(take), setTake);
-      const isEnd = !data || data.length == 0
+      const data = await getItemsWithFilter(
+        searchSize,
+        BigNumber.from(take),
+        setTake
+      );
+      const isEnd = !data || data.length == 0;
       const pieces = data.filter(({ meta }) => !!meta);
       setPageLoading(false);
 
@@ -154,7 +174,13 @@ const CollectionPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, searchCounter, paginationEnded, searchSize, JSON.stringify(filters?.traits)]);
+  }, [
+    address,
+    searchCounter,
+    paginationEnded,
+    searchSize,
+    JSON.stringify(filters?.traits),
+  ]);
 
   if (assetType.valueOf() === StringAssetType.UNKNOWN) {
     throw Error('Asset type was not recognized');
@@ -173,17 +199,13 @@ const CollectionPage = () => {
     setSearchCounter((state) => (state += 1));
   }, []);
 
-  
-
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>
-          {collectionName}
-        </GlitchText>
-        {isSubcollection && !!submeta?.[0]?.name && <GlitchText fontSize={24}>
-          {submeta?.[0].name}
-        </GlitchText>}
+        <GlitchText fontSize={48}>{collectionName}</GlitchText>
+        {isSubcollection && !!submeta?.[0]?.name && (
+          <GlitchText fontSize={24}>{submeta?.[0].name}</GlitchText>
+        )}
         {/*<Grid className={collectionStats} container spacing={1}>
             <Grid xl={3}>
               <div className={statItem}>1k <span>Items</span></div>
@@ -209,25 +231,27 @@ const CollectionPage = () => {
           justifyContent="flex-end"
           alignItems="center"
         >
-          {searchBarOn && <div>
-            <TextField
-              placeholder="Search by token ID"
-              variant="outlined"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton
-                      onClick={handleSubmit(handleTokenSearch)}
-                      onMouseDown={handleSubmit(handleTokenSearch)}
-                    >
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              {...register('tokenID')}
-            />
-          </div>}
+          {searchBarOn && (
+            <div>
+              <TextField
+                placeholder="Search by token ID"
+                variant="outlined"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton
+                        onClick={handleSubmit(handleTokenSearch)}
+                        onMouseDown={handleSubmit(handleTokenSearch)}
+                      >
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                {...register('tokenID')}
+              />
+            </div>
+          )}
           {/*<div>*/}
           {/*  <FormControl sx={{ m: 1, minWidth: 80 }}>*/}
           {/*    <InputLabel id="simple-select-autowidth-label" className={selectLabel}>Sort by</InputLabel>*/}
@@ -249,15 +273,20 @@ const CollectionPage = () => {
           {/*    </Select>*/}
           {/*  </FormControl>*/}
           {/*</div>*/}
-          
-          {displayFilters && <div>
-            <Filters onFiltersUpdate={handleFiltersUpdate} assetAddress={asset.assetAddress} />
-          </div>}
+
+          {displayFilters && (
+            <div>
+              <Filters
+                onFiltersUpdate={handleFiltersUpdate}
+                assetAddress={asset.assetAddress}
+              />
+            </div>
+          )}
         </Stack>
       </div>
       <Grid container spacing={1}>
         {collection.map(
-          (token, i) => 
+          (token, i) =>
             token && (
               <Grid
                 item

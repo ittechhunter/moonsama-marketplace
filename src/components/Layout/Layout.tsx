@@ -1,23 +1,21 @@
-import { useCallback, useState } from 'react';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { useMediaQuery } from 'beautiful-react-hooks';
 import MenuIcon from '@mui/icons-material/Menu';
-import IconButton from '@material-ui/core/IconButton';
-
-import { Header, NavLink, Drawer, Footer } from 'ui';
-
-import { LayoutProps } from './Layout.types';
-import { useStyles } from './Layout.styles';
-
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import WhiteLogo from 'assets/images/logo-white.svg';
+import { useMediaQuery } from 'beautiful-react-hooks';
 import { Account } from 'components';
-
+import { useClasses } from 'hooks';
+import { useState } from 'react';
+import { Drawer, Footer, Header, NavLink } from 'ui';
 import { MAX_WIDTH_TO_SHOW_NAVIGATION } from '../../constants';
+import { styles } from './Layout.styles';
+import { LayoutProps } from './Layout.types';
 
 export const Layout = ({ children }: LayoutProps) => {
-  const { logo, nav, navItem, buttonContainer, navItemDrawer } = useStyles();
+  const { logo, nav, navItem, buttonContainer, navItemDrawer } =
+    useClasses(styles);
   const showRegularMenu = useMediaQuery(
     `(max-width: ${MAX_WIDTH_TO_SHOW_NAVIGATION}px)`
   );
@@ -42,7 +40,10 @@ export const Layout = ({ children }: LayoutProps) => {
             </Grid>
             <Grid item className={buttonContainer}>
               {!showRegularMenu ? (
-                <Box style={{ display: 'flex ' }} onClick={() => setIsDrawerOpened(false)}>
+                <Box
+                  style={{ display: 'flex ' }}
+                  onClick={() => setIsDrawerOpened(false)}
+                >
                   {/*<NavLink href="/" className={navItem}>*/}
                   {/*  Welcome*/}
                   {/*</NavLink>*/}

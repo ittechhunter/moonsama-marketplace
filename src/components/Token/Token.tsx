@@ -1,18 +1,24 @@
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Media } from 'components';
 import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
 import { truncateHexString } from 'utils';
 import { Fraction } from 'utils/Fraction';
-import { getDisplayUnitPrice, OrderType, StringAssetType, stringToOrderType } from 'utils/subgraph';
-import { useStyles } from './Token.styles';
+import {
+  getDisplayUnitPrice,
+  OrderType,
+  StringAssetType,
+  stringToOrderType,
+} from 'utils/subgraph';
+import { styles } from './Token.styles';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { Order } from 'hooks/marketplace/types';
 import { useEffect, useState } from 'react';
 import { useAssetOrdersCallback } from 'hooks/marketplace/useAssetOrders';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import { useClasses } from 'hooks';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -30,10 +36,10 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
     tokenName,
     mr,
     lastPriceContainer,
-  } = useStyles();
+  } = useClasses(styles);
   const { push } = useHistory();
-  const [fetchedOrder, setFetchedOrer] = useState<Order | undefined>(undefined)
-  const decimalOverrides = useDecimalOverrides()
+  const [fetchedOrder, setFetchedOrer] = useState<Order | undefined>(undefined);
+  const decimalOverrides = useDecimalOverrides();
 
   const asset = staticData.asset;
 
@@ -48,35 +54,43 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   });
   */
 
-  const getOrderCB = useAssetOrdersCallback(asset.assetAddress, asset.assetId, false, true)
+  const getOrderCB = useAssetOrdersCallback(
+    asset.assetAddress,
+    asset.assetId,
+    false,
+    true
+  );
 
   useEffect(() => {
-    console.log('useEffect run!')
+    console.log('useEffect run!');
     const fetch = async () => {
-      const os: Order[] = await getOrderCB()
-      const o: Order | undefined = os.reduce((prev: Order | undefined, current: Order | undefined) => {
-        if (prev && current) {
-          if (prev.pricePerUnit.lt(current.pricePerUnit)) {
-            return prev
-          } else {
-            return current
+      const os: Order[] = await getOrderCB();
+      const o: Order | undefined = os.reduce(
+        (prev: Order | undefined, current: Order | undefined) => {
+          if (prev && current) {
+            if (prev.pricePerUnit.lt(current.pricePerUnit)) {
+              return prev;
+            } else {
+              return current;
+            }
           }
-        }
-        return current
-      }, undefined)
-      console.log('useEffect run fetch', { os, o })
+          return current;
+        },
+        undefined
+      );
+      console.log('useEffect run fetch', { os, o });
       if (o) {
-        setFetchedOrer(o)
+        setFetchedOrer(o);
       }
-    }
+    };
     if (!order) {
-      fetch()
+      fetch();
     }
-  }, [])
+  }, []);
 
-  const finalOrder = order ?? fetchedOrder
+  const finalOrder = order ?? fetchedOrder;
 
-  const orderType = stringToOrderType(finalOrder?.orderType)
+  const orderType = stringToOrderType(finalOrder?.orderType);
 
   /*
   const color =
@@ -87,22 +101,33 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   //console.log('STATIC',{staticData})
 
   //console.log('ORDERTYPE', { orderType, original: finalOrder?.orderType })
-  const color =
-    orderType === OrderType.BUY
-      ? 'green'
-      : '#b90e0e';
+  const color = orderType === OrderType.BUY ? 'green' : '#b90e0e';
 
-  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
+  const decimals =
+    decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ??
+    staticData?.decimals ??
+    0;
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
-  
-  const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals)?.toFixed(0);
 
-  const displayPPU = getDisplayUnitPrice(decimals, 5, orderType, finalOrder?.askPerUnitNominator, finalOrder?.askPerUnitDenominator, true)
+  const sup = Fraction.from(
+    staticData?.totalSupply?.toString() ?? '0',
+    decimals
+  )?.toFixed(0);
 
-  const totalSupplyString = isErc721 || sup?.toString() === '1'
-    ? 'unique'
-    : sup
+  const displayPPU = getDisplayUnitPrice(
+    decimals,
+    5,
+    orderType,
+    finalOrder?.askPerUnitNominator,
+    finalOrder?.askPerUnitDenominator,
+    true
+  );
+
+  const totalSupplyString =
+    isErc721 || sup?.toString() === '1'
+      ? 'unique'
+      : sup
       ? `${sup} pieces`
       : undefined;
 
@@ -111,19 +136,23 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
       <div
         onClick={handleImageClick}
         onKeyPress={handleImageClick}
-        style={{cursor: 'pointer'}}
+        style={{ cursor: 'pointer' }}
       >
-        <div
-          role="button"
-          className={imageContainer}
-          tabIndex={0}
-        >
+        <div role="button" className={imageContainer} tabIndex={0}>
           <Media uri={meta?.image} className={image} />
           {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
         </div>
         <div className={nameContainer}>
-          <GlitchText className={tokenName}>{/** FIXME BLACKLIST */}
-            {meta?.name ? `${meta?.name}${asset.assetAddress.toLowerCase() === '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf'.toLowerCase() ? ` #${truncateHexString(asset.assetId)}` : ''}` : truncateHexString(asset.assetId)}
+          <GlitchText className={tokenName}>
+            {/** FIXME BLACKLIST */}
+            {meta?.name
+              ? `${meta?.name}${
+                  asset.assetAddress.toLowerCase() ===
+                  '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf'.toLowerCase()
+                    ? ` #${truncateHexString(asset.assetId)}`
+                    : ''
+                }`
+              : truncateHexString(asset.assetId)}
           </GlitchText>
           {displayPPU && displayPPU !== '?' && (
             <PriceBox margin={false} size="small" color={color}>

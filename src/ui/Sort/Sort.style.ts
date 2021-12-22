@@ -1,6 +1,6 @@
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = (theme: Theme) => ({
   filtersTitle: {
     fontFamily: 'Space Mono, monospace !important',
   },
@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
     border: 1,
     borderStyle: 'solid',
     borderColor: theme.palette.grey[900],
-    maxHeight: 'auto'
+    maxHeight: 'auto',
   },
   filterAccordion: {
     fontFamily: 'Space Mono, monospace !important',
@@ -60,7 +60,7 @@ export const useStyles = makeStyles((theme) => ({
     width: '40% !important',
 
     '& .MuiOutlinedInput-root': {
-      width: '100% !important'
-    }
-  }
-}));
+      width: '100% !important',
+    },
+  },
+});

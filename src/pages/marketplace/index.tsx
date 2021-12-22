@@ -1,5 +1,5 @@
 import { GlitchText } from 'ui';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { styled } from '@mui/material';
 import { useERC20Contract } from 'hooks/useContracts/useContracts';
 import { useActiveWeb3React } from 'hooks';
 import { useMarketplaceBalances } from 'hooks/marketplace/useMarketplaceBalances';
@@ -18,14 +18,11 @@ import {
 import { compareDesc } from 'date-fns';
 import { assetTypeToStringAssetType } from 'utils/subgraph';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    textAlign: 'center',
-  },
-}));
+const StyledContainer = styled('div')`
+  tex-align: center;
+`;
 
 const MarketplacePage = () => {
-  const { container } = useStyles();
   /*
   const { account } = useActiveWeb3React();
 
@@ -97,9 +94,9 @@ const MarketplacePage = () => {
   */
 
   return (
-    <div className={container}>
+    <StyledContainer>
       <GlitchText>Marketplace is coming soon, biatch!</GlitchText>
-    </div>
+    </StyledContainer>
   );
 };
 
