@@ -105,11 +105,15 @@ export const collections = {
       idSearchOn: true,
       symbol: 'MMA',
       type: 'ERC1155',
+      auction: {
+        ids: ['1', '4', '7', '10', '13', '16', '19', '22', '25'],
+        deadline: '1641056400' // 1.1.2022 17 utc
+      },
       subcollections: [
-        /*
+        
         {
             id: "1", // subcollection ID yumi
-            uri: "ipfs://Qma8t7WqhjqexekvUiMqEFec5AJo8iAP1JQ9YX4quzBrc6",
+            uri: "ipfs://QmTChNyLJqqrJGeafZZpg7ShfMjPEPcNkgrqHqVCyVFrtt",
             tokens: [1,2,3]
         },
         {
@@ -152,7 +156,7 @@ export const collections = {
             uri: "ipfs://QmSMo4rR7JMGmRMZQzho1aMnxF3Jai6R2YVgSH2TeYhZNb",
             tokens: [25,26,27]
         }
-        */
+        /*
        {
             id: "1", // subcollection ID yumi
             uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
@@ -198,6 +202,7 @@ export const collections = {
             uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
             tokens: [25,26,27]
         }
+        */
       ],
       contractURI: 'ipfs://QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz',
     },

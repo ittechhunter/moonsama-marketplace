@@ -57,6 +57,7 @@ import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitel
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import uriToHttp from 'utils/uriToHttp';
 import { getMinecraftSkinUrl } from 'utils/meta';
+import { useAuction } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 const geTableHeader = () => {
   return (
@@ -167,7 +168,19 @@ const TokenPage = () => {
 
   //console.error('ERRRORORS', {asset, assets, staticData, balanceData, metas, chainId, account})
 
-  const currencyLogo = useCurrencyLogo(asset.assetAddress);
+  //const currencyLogo = useCurrencyLogo(asset.assetAddress);
+  //const auctiondetails = useAuction(asset.assetAddress, asset.assetId)
+  // check deadline
+  // if deadline is passed, check if there was a sell order after deadline
+  // 1. now is before deadline -> business as usual
+  // 2. now is after deadline: auction mode ON -> BIDDING IS OFF
+  // - check current highest bid
+  // - fetch the bids between deadline and next 5 minutes, get the highest one.
+  // - if there isn't a highest one in the next 5 minutes,
+  //        - if now > those extra 5 minutes, auction ends, and the winner is the highest one => bidding over
+  //        - if now <= those extra five minutes -> Bidding is ON -> Minimum increment requirement is needed
+  // - if there is a highest one, keep note of it and repeat loop
+
 
   const isErc20 = asset.assetType.valueOf() === StringAssetType.ERC20.valueOf();
   const isErc721 =

@@ -17,6 +17,11 @@ export type RawSubcollection = {
   tokens: number[]
 }
 
+export type AuctionParams = {
+  ids: string[],
+  deadline: string
+}
+
 export type RawCollection = {
   chainId: number;
   address: string;
@@ -32,7 +37,8 @@ export type RawCollection = {
   maxId?: number;
   minId: number;
   idSearchOn: boolean,
-  subcollections?: RawSubcollection[]
+  subcollections?: RawSubcollection[],
+  auction?: AuctionParams
 };
 
 export type RawCollectionList = {
@@ -74,7 +80,11 @@ const collectionListSchema = yup.object<RawCollectionList>({
           minId: yup.number().required(),
           maxId: yup.number().optional(),
           subcollections: yup.array(),
-          idSearchOn: yup.boolean().required()
+          idSearchOn: yup.boolean().required(),
+          auction: yup.object<AuctionParams>({
+            deadline: yup.string(),
+            ids: yup.array().of(yup.string().required()).required()
+          }).optional()
         })
         .required()
     )
@@ -104,4 +114,16 @@ export function useRawcollection(address: string) {
   }, [chainId, address]);
 
   return collection;
+}
+
+export function useAuction(address: string, tokenId: string) {
+  const x = useRawcollection(address.toLowerCase())
+
+  if (!x?.auction) {
+    return undefined
+  }
+
+  const found = (x.auction.ids ?? []).find(id => id === tokenId)
+
+  return found ? x.auction : undefined
 }
