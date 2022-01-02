@@ -1,7 +1,7 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { useClasses } from 'hooks';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { styles } from './Header.styles';
 import Marquee from 'react-fast-marquee';
 import { Link } from 'react-router-dom';

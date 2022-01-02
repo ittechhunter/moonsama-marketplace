@@ -6,7 +6,6 @@ export const styles = (theme: Theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
     margin: `${theme.spacing(5)}px 0`,
-
     [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
     },

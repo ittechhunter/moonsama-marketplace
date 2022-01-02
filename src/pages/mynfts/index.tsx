@@ -40,7 +40,7 @@ const MyNFTsPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>My NFTs</GlitchText>
+        <GlitchText variant="h1">My NFTs</GlitchText>
       </div>
       <div
         style={{
@@ -57,7 +57,7 @@ const MyNFTsPage = () => {
         return (
           <>
             <div className={container}>
-              <GlitchText fontSize={24}>{key}</GlitchText>
+              <GlitchText variant="h1">{key}</GlitchText>
             </div>
             <Grid container spacing={1} style={{ marginTop: 12 }}>
               {iterables

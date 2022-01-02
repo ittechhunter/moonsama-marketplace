@@ -35,7 +35,7 @@ export const CollectionListPage = () => {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <GlitchText fontSize={48}>Featured collections</GlitchText>
+        <GlitchText variant="h1">Featured collections</GlitchText>
       </div>
 
       <Grid container spacing={2} style={{ marginTop: 12 }}>

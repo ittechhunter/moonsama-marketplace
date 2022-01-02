@@ -17,10 +17,10 @@ const HomePage = () => {
   } = useClasses(styles);
   return (
     <div className={homeContainer}>
-      <GlitchText fontSize={48} align="center">
+      <GlitchText variant="h1" gutterBottom fontSize={48}>
         Discover, collect, and sell NFTs
       </GlitchText>
-      <GlitchText fontSize={24}>
+      <GlitchText variant="h2">
         Moonsama, Moonriver's first NFT marketplace
       </GlitchText>
 

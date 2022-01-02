@@ -5,6 +5,7 @@ export const styles = (theme: Theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   marquee: {
+    fontSize: '14px',
     width: '100%',
     color: 'white',
     background: '#d2023e',

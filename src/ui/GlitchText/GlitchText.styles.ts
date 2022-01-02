@@ -1,10 +1,14 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import styled from '@emotion/styled';
+import { theme } from 'theme/Theme';
+import { Variant } from '@mui/material/styles/createTypography';
 
 export const StyledGlitch = styled(Typography)`
   font-weight: 700;
-  text-transform: uppercase;
+  margin: 30px 0;
   position: relative;
+  text-align: center;
+  text-transform: uppercase;
   text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
     -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
     0.025em 0.05em 0 rgba(0, 0, 255, 0.75);

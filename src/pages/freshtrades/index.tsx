@@ -149,7 +149,7 @@ const FreshTradesPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>Latest trades</GlitchText>
+        <GlitchText variant="h1">Latest trades</GlitchText>
       </div>
       <div
         style={{

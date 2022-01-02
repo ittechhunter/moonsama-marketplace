@@ -194,7 +194,7 @@ const FreshOrdersPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>Latest offers</GlitchText>
+        <GlitchText variant="h1">Latest offers</GlitchText>
       </div>
 
       <Drawer

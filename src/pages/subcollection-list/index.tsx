@@ -38,11 +38,11 @@ export const SubcollectionListPage = () => {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <GlitchText fontSize={48}>{collection?.display_name}</GlitchText>
+        <GlitchText variant="h1">{collection?.display_name}</GlitchText>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <GlitchText fontSize={24}>Subcollections</GlitchText>
+        <GlitchText variant="h2">Subcollections</GlitchText>
       </div>
 
       <Grid container spacing={2} style={{ marginTop: 12 }}>

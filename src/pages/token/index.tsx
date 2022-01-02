@@ -437,13 +437,13 @@ const TokenPage = () => {
         {/*<img src={LootBox} className={image}/>*/}
       </Grid>
       <Grid item md={4} xs={12}>
-        <GlitchText fontSize={36} className={name}>
+        <GlitchText variant="h1" className={name}>
           {assetMeta?.name ??
             assetMeta?.title ??
             truncateHexString(asset?.assetAddress)}
         </GlitchText>
         {!isErc20 && (
-          <GlitchText fontSize={24} className={name}>
+          <GlitchText variant="h2" className={name}>
             #{truncateHexString(asset?.assetId)}
           </GlitchText>
         )}

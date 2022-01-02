@@ -4,9 +4,9 @@ import {
   StyledEngineProvider,
   createTheme,
   ThemeOptions,
-  ThemeProvider,
+  useTheme,
 } from '@mui/material/styles';
-import {} from '@emotion/react';
+import { ThemeProvider } from '@emotion/react';
 import { useThemeOptions } from 'hooks';
 import { typography } from './typography';
 import { lightPalette, palette } from './palette';
@@ -16,6 +16,15 @@ const defaultTheme = createTheme();
 
 const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
   typography,
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 576,
+      md: 768,
+      lg: 992,
+      xl: 1440,
+    },
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -30,6 +39,22 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
           '*::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(210, 2, 62, 0.6)',
             outline: '0',
+          },
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          fontSize: 36,
+          [defaultTheme.breakpoints.down('lg')]: {
+            fontSize: 24,
+          },
+        },
+        h2: {
+          fontSize: 24,
+          [defaultTheme.breakpoints.down('lg')]: {
+            fontSize: 14,
           },
         },
       },
@@ -206,10 +231,10 @@ const lightTheme = createTheme({
 
 const Theme = ({ children }: { children: ReactNode }) => {
   const { isDarkTheme } = useThemeOptions();
-
+  const handleTheme = () => (isDarkTheme ? theme : lightTheme);
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={isDarkTheme ? theme : lightTheme}>
+      <ThemeProvider theme={handleTheme}>
         <CssBaseline />
         {children}
       </ThemeProvider>

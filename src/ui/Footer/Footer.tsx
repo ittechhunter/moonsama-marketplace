@@ -23,7 +23,12 @@ export const Footer = () => {
           {/*<a href="#" target="_blank"><Discord className={icon} /></a>*/}
         </div>
 
-        <Typography align="center" className={copyrightText}>
+        <Typography
+          align="center"
+          className={copyrightText}
+          gutterBottom
+          variant="inherit"
+        >
           &copy; 2021 Moonsama
         </Typography>
       </div>

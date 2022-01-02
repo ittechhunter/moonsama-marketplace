@@ -202,9 +202,9 @@ const CollectionPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText fontSize={48}>{collectionName}</GlitchText>
+        <GlitchText variant="h1">{collectionName}</GlitchText>
         {isSubcollection && !!submeta?.[0]?.name && (
-          <GlitchText fontSize={24}>{submeta?.[0].name}</GlitchText>
+          <GlitchText variant="h2">{submeta?.[0].name}</GlitchText>
         )}
         {/*<Grid className={collectionStats} container spacing={1}>
             <Grid xl={3}>
