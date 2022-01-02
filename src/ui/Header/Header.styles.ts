@@ -7,12 +7,12 @@ export const styles = (theme: Theme) => ({
   marquee: {
     width: '100%',
     color: 'white',
-    background: '#d2023e'
+    background: '#d2023e',
   },
   marqueeLink: {
-      paddingLeft: '4px',
-      paddingRight: '4px',
-      color: '#3dd202'
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    color: '#3dd202',
   },
   marqueeClose: {
     position: 'absolute',
@@ -23,7 +23,7 @@ export const styles = (theme: Theme) => ({
     height: '20px',
     backgroundColor: '#d2023e',
     '&:hover': {
-      cursor: 'pointer'
-    }
-  }
+      cursor: 'pointer',
+    },
+  },
 });

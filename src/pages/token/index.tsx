@@ -180,7 +180,6 @@ const TokenPage = () => {
   //        - if now <= those extra five minutes -> Bidding is ON -> Minimum increment requirement is needed
   // - if there is a highest one, keep note of it and repeat loop
 
-
   const isErc20 = asset.assetType.valueOf() === StringAssetType.ERC20.valueOf();
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();

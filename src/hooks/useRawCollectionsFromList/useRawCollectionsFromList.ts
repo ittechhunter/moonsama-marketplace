@@ -18,9 +18,9 @@ export type RawSubcollection = {
 };
 
 export type AuctionParams = {
-  ids: string[],
-  deadline: string
-}
+  ids: string[];
+  deadline: string;
+};
 
 export type RawCollection = {
   chainId: number;
@@ -81,10 +81,12 @@ const collectionListSchema = yup.object<RawCollectionList>({
           maxId: yup.number().optional(),
           subcollections: yup.array(),
           idSearchOn: yup.boolean().required(),
-          auction: yup.object<AuctionParams>({
-            deadline: yup.string(),
-            ids: yup.array().of(yup.string().required()).required()
-          }).optional()
+          auction: yup
+            .object<AuctionParams>({
+              deadline: yup.string(),
+              ids: yup.array().of(yup.string().required()).required(),
+            })
+            .optional(),
         })
         .required()
     )
@@ -109,21 +111,24 @@ export function useRawcollection(address: string) {
   const { chainId } = useActiveWeb3React();
   const collections = useRawCollectionsFromList();
   const collection = useMemo(() => {
-    const collection = collections.find(collection => collection.address.toLowerCase() === address?.toLowerCase())
-    return collection
+    const collection = collections.find(
+      (collection) =>
+        collection.address.toLowerCase() === address?.toLowerCase()
+    );
+    return collection;
   }, [chainId, address]);
 
   return collection;
 }
 
 export function useAuction(address: string, tokenId: string) {
-  const x = useRawcollection(address.toLowerCase())
+  const x = useRawcollection(address.toLowerCase());
 
   if (!x?.auction) {
-    return undefined
+    return undefined;
   }
 
-  const found = (x.auction.ids ?? []).find(id => id === tokenId)
+  const found = (x.auction.ids ?? []).find((id) => id === tokenId);
 
-  return found ? x.auction : undefined
+  return found ? x.auction : undefined;
 }
