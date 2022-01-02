@@ -69,8 +69,7 @@ export const collections = {
       symbol: 'MSAMA',
       type: 'ERC721',
       contractURI: 'ipfs://QmPhFz5mKCtndGLLZBwGockGAWz7o7nef4Kgf37gYsTid5',
-      subgraph:
-        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft'
     },
     {
       chainId: 1285,
@@ -83,8 +82,7 @@ export const collections = {
       symbol: '???',
       type: 'ERC1155',
       contractURI: 'ipfs://QmWox8YqUaYVxSSB7GRhPAuczv6auL8QrkDrkMTcqGEGKA',
-      subgraph:
-        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-mx',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-mx'
     },
     {
       chainId: 1285,
@@ -96,8 +94,7 @@ export const collections = {
       idSearchOn: true,
       type: 'ERC1155',
       contractURI: 'ipfs://Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm',
-      subgraph:
-        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-factory',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-factory'
     },
     {
       chainId: 1285,
@@ -108,11 +105,15 @@ export const collections = {
       idSearchOn: true,
       symbol: 'MMA',
       type: 'ERC1155',
+      auction: {
+        ids: ['1', '4', '7', '10', '13', '16', '19', '22', '25'],
+        deadline: '1641056400' // 1.1.2022 17 utc
+      },
       subcollections: [
-        /*
+        
         {
             id: "1", // subcollection ID yumi
-            uri: "ipfs://Qma8t7WqhjqexekvUiMqEFec5AJo8iAP1JQ9YX4quzBrc6",
+            uri: "ipfs://QmTChNyLJqqrJGeafZZpg7ShfMjPEPcNkgrqHqVCyVFrtt",
             tokens: [1,2,3]
         },
         {
@@ -155,52 +156,53 @@ export const collections = {
             uri: "ipfs://QmSMo4rR7JMGmRMZQzho1aMnxF3Jai6R2YVgSH2TeYhZNb",
             tokens: [25,26,27]
         }
+        /*
+       {
+            id: "1", // subcollection ID yumi
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [1,2,3]
+        },
+        {
+            id: "2", // subcollection ID tiff
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [4,5,6]
+        },
+        {
+            id: "3", // subcollection ID marlua
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [7,8,9]
+        },
+        {
+            id: "4", // subcollection ID bmc
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [10,11,12]
+        },
+        {
+            id: "5", // subcollection ID Majan
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [13,14,15]
+        },
+        {
+            id: "6", // subcollection ID ksmk
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [16,17,18]
+        },
+        {
+            id: "7", // subcollection ID - wangdoodle
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [19,20,21]
+        },
+        {
+            id: "8", // subcollection ID - tako
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [22,23,24]
+        },
+        {
+            id: "9", // subcollection ID - ruben
+            uri: "ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L",
+            tokens: [25,26,27]
+        }
         */
-        {
-          id: '1', // subcollection ID yumi
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [1, 2, 3],
-        },
-        {
-          id: '2', // subcollection ID tiff
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [4, 5, 6],
-        },
-        {
-          id: '3', // subcollection ID marlua
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [7, 8, 9],
-        },
-        {
-          id: '4', // subcollection ID bmc
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [10, 11, 12],
-        },
-        {
-          id: '5', // subcollection ID Majan
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [13, 14, 15],
-        },
-        {
-          id: '6', // subcollection ID ksmk
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [16, 17, 18],
-        },
-        {
-          id: '7', // subcollection ID - wangdoodle
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [19, 20, 21],
-        },
-        {
-          id: '8', // subcollection ID - tako
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [22, 23, 24],
-        },
-        {
-          id: '9', // subcollection ID - ruben
-          uri: 'ipfs://QmV3fabvS878WXdAS9LpZu7mAsBqjmvM2rNsqHKt3vpR6L',
-          tokens: [25, 26, 27],
-        },
       ],
       contractURI: 'ipfs://QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz',
     },
@@ -214,9 +216,8 @@ export const collections = {
       symbol: 'BMANFT',
       type: 'ERC721',
       contractURI: 'ipfs://QmVQPRFZq7XZNk79C75ynqPRPdpPaX8bmH4Cb9KhrN1PfH',
-      subgraph:
-        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-blvck',
-    },
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-blvck'
+    }
   ],
 };
 
