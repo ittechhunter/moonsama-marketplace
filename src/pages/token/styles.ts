@@ -11,10 +11,10 @@ export const styles = (theme: Theme) => ({
     justifyContent: 'flex-start',
     maxWidth: '60%',
     maxHeight: '80%',
+    marginBottom: '20px',
     padding: 0,
     [theme.breakpoints.down('md')]: {
       maxWidth: 'unset',
-      padding: theme.spacing(1),
     },
   },
   image: {
@@ -57,7 +57,6 @@ export const styles = (theme: Theme) => ({
     width: theme.spacing(6),
   },
   tabsContainer: {
-    marginTop: theme.spacing(12),
     width: '100%',
   },
   tabs: {

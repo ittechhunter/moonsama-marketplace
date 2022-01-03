@@ -284,17 +284,16 @@ const CollectionPage = () => {
           )}
         </Stack>
       </div>
-      <Grid container spacing={1}>
+      <Grid container>
         {collection.map(
           (token, i) =>
             token && (
               <Grid
                 item
                 key={`${token.staticData.asset.id}-${i}`}
-                xl={3}
-                md={3}
-                sm={6}
                 xs={12}
+                md={6}
+                lg={3}
               >
                 <TokenComponent {...token} />
               </Grid>

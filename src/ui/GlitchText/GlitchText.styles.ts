@@ -1,7 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import styled from '@emotion/styled';
-import { theme } from 'theme/Theme';
-import { Variant } from '@mui/material/styles/createTypography';
 
 export const StyledGlitch = styled(Typography)`
   font-weight: 700;

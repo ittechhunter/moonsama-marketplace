@@ -4,7 +4,6 @@ import {
   StyledEngineProvider,
   createTheme,
   ThemeOptions,
-  useTheme,
 } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 import { useThemeOptions } from 'hooks';
@@ -28,18 +27,16 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        '@global': {
-          '*::-webkit-scrollbar': {
-            width: '0.5em',
-            cursor: 'pointer',
-          },
-          '*::-webkit-scrollbar-track': {
-            WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-          },
-          '*::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(210, 2, 62, 0.6)',
-            outline: '0',
-          },
+        '*::-webkit-scrollbar': {
+          width: '0.5em',
+          cursor: 'pointer',
+        },
+        '*::-webkit-scrollbar-track': {
+          '-webkit-box-shadow': 'inset 0 0 6px rgba(0, 0, 0, 0)',
+        },
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(210, 2, 62, 1)',
+          outline: '0',
         },
       },
     },
@@ -235,7 +232,7 @@ const Theme = ({ children }: { children: ReactNode }) => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={handleTheme}>
-        <CssBaseline />
+        <CssBaseline enableColorScheme />
         {children}
       </ThemeProvider>
     </StyledEngineProvider>

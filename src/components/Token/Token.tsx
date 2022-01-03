@@ -143,7 +143,11 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
         </div>
         <div className={nameContainer}>
-          <GlitchText className={tokenName}>
+          <GlitchText
+            className={tokenName}
+            variant="h1"
+            style={{ margin: '12px 0' }}
+          >
             {/** FIXME BLACKLIST */}
             {meta?.name
               ? `${meta?.name}${

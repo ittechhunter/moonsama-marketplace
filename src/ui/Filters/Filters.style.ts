@@ -11,7 +11,7 @@ export const styles = () => ({
   },
   applyFiltersButton: {
     width: '100%',
-    margin: '25px 0',
+    margin: '25px 0 0',
   },
   filterAccordion: {
     fontFamily: 'Space Mono, monospace !important',

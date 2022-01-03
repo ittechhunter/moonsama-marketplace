@@ -112,10 +112,10 @@ export const Filters = ({ onFiltersUpdate, assetAddress }: Props) => {
       </Button>
       <Drawer
         anchor="left"
-        hideBackdrop
         open={isDrawerOpened}
         onClose={() => setIsDrawerOpened(false)}
         onOpen={() => setIsDrawerOpened(true)}
+        onBackdropClick={() => setIsDrawerOpened(false)}
       >
         <Typography variant="h6" className={filtersTitle}>
           Filters
@@ -255,6 +255,13 @@ export const Filters = ({ onFiltersUpdate, assetAddress }: Props) => {
               color="primary"
             >
               Apply Filters
+            </Button>
+            <Button
+              onClick={() => setIsDrawerOpened(false)}
+              className={applyFiltersButton}
+              variant="outlined"
+            >
+              Cancel
             </Button>
           </div>
         </div>

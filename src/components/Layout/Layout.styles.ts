@@ -2,7 +2,7 @@ import { Theme } from '@mui/material';
 
 export const styles = (theme: Theme) => ({
   logo: {
-    width: 180,
+    width: 140,
     height: 'auto',
     '& > img': {
       maxWidth: '100%',
@@ -18,13 +18,11 @@ export const styles = (theme: Theme) => ({
     justifyContent: 'space-between',
   },
   navItem: {
-    margin: '0 20px',
-
-    a: {
-      textDecoration: 'none !important',
-    },
+    margin: '0 15px',
+    textDecoration: 'none !important',
   },
   navItemDrawer: {
+    display: 'block',
     margin: '20px',
     textDecoration: 'none !important',
     '> a': {

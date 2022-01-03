@@ -26,7 +26,7 @@ const MarketplacePage = () => {
   /*
   const { account } = useActiveWeb3React();
 
-  
+  f
   console.log(account);
 
   const s = useERC20Contract('0xDC5b69374207a18e75F7cdCf5176CA63911e690d');
