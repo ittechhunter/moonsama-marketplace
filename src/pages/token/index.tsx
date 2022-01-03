@@ -435,7 +435,7 @@ const TokenPage = () => {
       container
       className={pageContainer}
       maxWidth="lg"
-      style={{ margin: '0' }}
+      style={{ margin: '0 auto' }}
     >
       <Grid
         item
@@ -530,7 +530,6 @@ const TokenPage = () => {
                       container
                       justifyContent="center"
                       alignItems="center"
-                      lg={6}
                     >
                       <Grid item>
                         <AccountCircleIcon style={{ fontSize: 60 }} />

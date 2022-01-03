@@ -151,16 +151,10 @@ const FreshTradesPage = () => {
       <div className={container}>
         <GlitchText variant="h1">Latest trades</GlitchText>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
+      <Grid container display="flex" justifyContent="center">
         <Stack
           direction={{ xs: 'row' }}
           flexWrap={{ xs: 'wrap' }}
-          //spacing={{ xs: 1 }}
           justifyContent="center"
           alignItems="center"
         >
@@ -187,8 +181,8 @@ const FreshTradesPage = () => {
             );
           })}
         </Stack>
-      </div>
-      <Grid container spacing={1} style={{ marginTop: 12 }}>
+      </Grid>
+      <Grid container spacing={1}>
         {collection
           .map(
             (token, i) =>
@@ -196,10 +190,9 @@ const FreshTradesPage = () => {
                 <Grid
                   item
                   key={`${token.staticData.asset.id}-${i}`}
-                  lg={3}
-                  md={4}
-                  sm={6}
                   xs={12}
+                  md={6}
+                  lg={3}
                 >
                   <TokenTrade {...token} />
                 </Grid>

@@ -210,7 +210,6 @@ const FreshOrdersPage = () => {
         <Stack
           direction={{ xs: 'row' }}
           flexWrap={{ xs: 'wrap' }}
-          //spacing={{ xs: 1 }}
           justifyContent="center"
           alignItems="center"
         >

@@ -284,7 +284,7 @@ const CollectionPage = () => {
           )}
         </Stack>
       </div>
-      <Grid container>
+      <Grid container alignContent="center">
         {collection.map(
           (token, i) =>
             token && (

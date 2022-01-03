@@ -107,7 +107,7 @@ export const TokenTrade = ({
         {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
-        <GlitchText className={tokenName}>
+        <GlitchText className={tokenName} style={{ margin: '7px 0 0' }}>
           {[
             '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a',
             '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',

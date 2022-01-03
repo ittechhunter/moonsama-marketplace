@@ -2,7 +2,6 @@ import { Theme } from '@mui/material';
 
 export const styles = (theme: Theme) => ({
   pageContainer: {
-    paddingTop: theme.spacing(1),
     marginBottom: theme.spacing(5),
   },
   placeholderContainer: {
