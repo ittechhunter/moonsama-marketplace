@@ -17,6 +17,8 @@ export type TokenMeta = {
   decimals?: string;
   attributes?: MetaAttributes[];
   properties?: any;
+  plot?: any,
+  marketplace?: any
 };
 
 export type TokenData = {

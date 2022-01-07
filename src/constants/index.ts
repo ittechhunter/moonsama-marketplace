@@ -49,7 +49,7 @@ export enum SUPPORTED_CONTRACTS {
 
 export const MARKETPLACE_V1_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.VOLTA]: '0xE1681925E9d1fa2c735184835b348a98c34017C7',
-  [ChainId.MOONRIVER]: '0x56f33FaAc598f6761bE886506bD41eC2304D74af',
+  [ChainId.MOONRIVER]: '0x7292b493c3b6E02d025fC0340846a2fCA8b424e7'//'0x56f33FaAc598f6761bE886506bD41eC2304D74af',
 };
 
 export const WAREHOUSE_ADDRESS: { [chainId in ChainId]?: string } = {

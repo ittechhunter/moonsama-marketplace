@@ -57,6 +57,7 @@ import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrid
 import uriToHttp from 'utils/uriToHttp';
 import { getMinecraftSkinUrl } from 'utils/meta';
 import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
+import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
 const geTableHeader = () => {
   return (
@@ -89,7 +90,7 @@ const TokenPage = () => {
   if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
 
   if (!whitelist.includes(address.toLowerCase())) {
-    console.log({whitelist, address})
+    console.log({ whitelist, address })
     // REMOVEME later
     throw Error('Unsupported token');
   }
@@ -158,6 +159,8 @@ const TokenPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
+  const rawCollection = useRawcollection(asset.assetAddress)
+
 
   const approvedPaymentCurrency = useApprovedPaymentCurrency(asset)
 
@@ -200,27 +203,27 @@ const TokenPage = () => {
 
   let userBalanceString = isFungible
     ? Fraction.from(
-        balanceData?.[0]?.userBalance?.toString() ?? '0',
-        decimals
-      )?.toFixed(2) ?? '0'
+      balanceData?.[0]?.userBalance?.toString() ?? '0',
+      decimals
+    )?.toFixed(2) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0'
 
-  userBalanceString = account ? userBalanceString: '0'
+  userBalanceString = account ? userBalanceString : '0'
 
   const isOwner = userBalanceString !== '0' && userBalanceString !== '0.0';
 
-  console.log('yoyoyo', {...balanceData?.[0]})
+  console.log('yoyoyo', { ...balanceData?.[0] })
   let totalSupplyString =
     balanceData?.[0]?.totalSupply
-    ? (
-      isFungible
-        ? Fraction.from(
+      ? (
+        isFungible
+          ? Fraction.from(
             balanceData?.[0]?.totalSupply?.toString() ?? '0',
             decimals
           )?.toFixed(2) ?? '0'
-        : balanceData?.[0]?.totalSupply?.toString()
-    )
-    : (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
+          : balanceData?.[0]?.totalSupply?.toString()
+      )
+      : (asset.assetType.valueOf() === StringAssetType.ERC721 ? '1' : undefined);
 
   //console.log('data', { balanceData, staticData, assetMeta });
 
@@ -239,7 +242,7 @@ const TokenPage = () => {
         rarity,
       };
     });
-  
+
   const displayRarity = asset.assetAddress == '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase()
   const minecraftskin = getMinecraftSkinUrl(assetMeta?.attributes)
 
@@ -305,19 +308,19 @@ const TokenPage = () => {
 
                       <Grid container spacing={2}>
                         <Grid item xs={12}>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid container spacing={2} style={{ justifyContent: "start" }}>
                             <Grid item className={subItemTitleCell}>
                               Order ID
                             </Grid>
                             <Grid item>{id}</Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid container spacing={2} style={{ justifyContent: "start" }}>
                             <Grid item className={subItemTitleCell}>
                               Maker
                             </Grid>
                             <Grid item>{seller}</Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid container spacing={2} style={{ justifyContent: "start" }}>
                             <Grid item className={subItemTitleCell}>
                               Created at
                             </Grid>
@@ -325,7 +328,7 @@ const TokenPage = () => {
                               {formatExpirationDateString(createdAt)}
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid container spacing={2} style={{ justifyContent: "start" }}>
                             <Grid item className={subItemTitleCell}>
                               Available to
                             </Grid>
@@ -333,7 +336,7 @@ const TokenPage = () => {
                               {freeForAll ? 'everyone' : onlyTo}
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2} style={{justifyContent: "start"}}>
+                          <Grid container spacing={2} style={{ justifyContent: "start" }}>
                             <Grid item className={subItemTitleCell}>
                               Partial fills allowed
                             </Grid>
@@ -381,11 +384,11 @@ const TokenPage = () => {
                     </Button>
                   ) : (
                     <Button
-                      style={isExlusiveRecipient ? {background: "blue"}: {}}
+                      style={isExlusiveRecipient ? { background: "blue" } : {}}
                       disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName, approvedPaymentCurrency});
+                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName, approvedPaymentCurrency });
                       }}
                       variant="contained"
                       color={"primary"}
@@ -451,21 +454,28 @@ const TokenPage = () => {
             )
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
-              {`OWNED ${userBalanceString}${
-                totalSupplyString ? ` OF ${totalSupplyString}` : ''
-              }`}
+              {`OWNED ${userBalanceString}${totalSupplyString ? ` OF ${totalSupplyString}` : ''
+                }`}
             </Typography>
           )}
         </Box>
 
         {/*TODO: Make traits calculation collection specific*/}
-        {displayRarity ? <Typography color="textSecondary" className={smallText}>
+        {displayRarity && <Typography color="textSecondary" className={smallText}>
           {transformedMetaData?.map((trait) => (
             <Tooltip title={`${trait.rarity}% have this trait`}>
               <Chip label={trait.label} className={traitChip} />
             </Tooltip>
           ))}
-        </Typography> : <Typography>{assetMeta?.description}</Typography>}
+        </Typography>}
+
+        {rawCollection?.plot && <Typography color="textSecondary" className={smallText}>
+          {Object.keys(assetMeta?.plot ?? {}).map((key) => (
+            <Chip label={`${key}: ${assetMeta?.plot[key]}`} className={traitChip} />
+          ))}
+        </Typography>}
+
+        {!displayRarity && !rawCollection?.plot && <Typography>{assetMeta?.description}</Typography>}
 
         <Paper className={card}>
           {ltp && (
@@ -534,7 +544,7 @@ const TokenPage = () => {
           >
             {!!ordersMap?.sellOrders && ordersMap?.sellOrders.length > 0 && (ordersMap.sellOrders[0].onlyTo === AddressZero || ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
               <Button
-                style={{background: "green"}}
+                style={{ background: "green" }}
                 onClick={() => {
                   setPurchaseDialogOpen(true);
                   setPurchaseData({
@@ -557,7 +567,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency});
+                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
@@ -596,6 +606,11 @@ const TokenPage = () => {
             )}
           </Box>
           <Box className={externals}>
+            {rawCollection?.plotMap && (
+              <ExternalLink href={rawCollection?.plotMap}>
+                <Button>Plot map↗</Button>
+              </ExternalLink>
+            )}
             {minecraftskin && (
               <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
                 <Button>Minecraft skin↗</Button>

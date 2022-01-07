@@ -38,7 +38,9 @@ export type RawCollection = {
   minId: number;
   idSearchOn: boolean,
   subcollections?: RawSubcollection[],
-  auction?: AuctionParams
+  auction?: AuctionParams,
+  plot?: boolean,
+  plotMap?: string
 };
 
 export type RawCollectionList = {
@@ -81,6 +83,7 @@ const collectionListSchema = yup.object<RawCollectionList>({
           maxId: yup.number().optional(),
           subcollections: yup.array(),
           idSearchOn: yup.boolean().required(),
+          plot: yup.boolean().optional(),
           auction: yup.object<AuctionParams>({
             deadline: yup.string(),
             ids: yup.array().of(yup.string().required()).required()
