@@ -50,14 +50,13 @@ import {
 import { useStyles } from './styles';
 import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
 import { Fraction } from 'utils/Fraction';
-import { useCurrencyLogo } from 'hooks/useCurrencyLogo/useCurrencyLogo';
 import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
 
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import uriToHttp from 'utils/uriToHttp';
 import { getMinecraftSkinUrl } from 'utils/meta';
-import { useAuction } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 
 const geTableHeader = () => {
   return (
@@ -66,9 +65,9 @@ const geTableHeader = () => {
         <TableCell>ID</TableCell>
         <TableCell>Unit Price</TableCell>
         <TableCell>Quantity</TableCell>
+        <TableCell>Currency</TableCell>
         <TableCell>Expiration</TableCell>
         <TableCell>Maker</TableCell>
-        <TableCell>Strategy</TableCell>
         <TableCell></TableCell>
       </TableRow>
     </TableHeader>
@@ -158,6 +157,9 @@ const TokenPage = () => {
     return [asset];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
+
+
+  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset)
 
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
@@ -352,6 +354,7 @@ const TokenPage = () => {
                 <TableCell title={id}> {truncateHexString(id)}</TableCell>
                 <TableCell>{displayUnitPrice?.toString()}</TableCell>
                 <TableCell>{qty?.toString()}</TableCell>
+                <TableCell>{approvedPaymentCurrency.symbol}</TableCell>
                 <TableCell>{expiration}</TableCell>
                 <TableCell title={seller}>
                   <ExternalLink
@@ -364,8 +367,6 @@ const TokenPage = () => {
                     {truncateHexString(sellerShort)}
                   </ExternalLink>
                 </TableCell>
-
-                <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
                 <TableCell>
                   {seller.toLowerCase() === account?.toLowerCase() ? (
                     <Button
@@ -384,7 +385,7 @@ const TokenPage = () => {
                       disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName});
+                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName, approvedPaymentCurrency});
                       }}
                       variant="contained"
                       color={"primary"}
@@ -514,7 +515,7 @@ const TokenPage = () => {
                     }}
                   >
                     <span className={assetActionsBidTokenAmount}>
-                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} MOVR
+                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} {approvedPaymentCurrency.symbol}
                     </span>
                     {/** TODO USD PRICE 
                   <span className={assetActionsBidCurrency}>
@@ -541,7 +542,8 @@ const TokenPage = () => {
                     orderType: OrderType.SELL,
                     decimals,
                     symbol: tokenSymbol,
-                    name: tokenName
+                    name: tokenName,
+                    approvedPaymentCurrency
                   });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
@@ -555,7 +557,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol});
+                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency});
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
@@ -568,7 +570,7 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol });
+                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
                 }}
                 startIcon={<MoneyIcon />}
                 variant="outlined"

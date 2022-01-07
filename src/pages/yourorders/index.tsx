@@ -33,6 +33,7 @@ import { useStyles } from './styles';
 import { useUserOrders } from 'hooks/marketplace/useUserOrders';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import { useApprovedPaymentCurrency, useApprovedPaymentCurrencyCallback } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 
 const geTableHeader = () => {
   return (
@@ -43,8 +44,8 @@ const geTableHeader = () => {
         <TableCell>Action</TableCell>
         <TableCell>Unit Price</TableCell>
         <TableCell>Quantity</TableCell>
+        <TableCell>Currency</TableCell>
         <TableCell>Expiration</TableCell>
-        <TableCell>Strategy</TableCell>
         <TableCell></TableCell>
       </TableRow>
     </TableHeader>
@@ -91,6 +92,8 @@ export const MyOrdersPage = () => {
   const staticDatas = useTokenStaticData((ordersMap?.userOrders ?? []).map(x => {
     return stringToOrderType(x.orderType) === OrderType.BUY ? x?.buyAsset: x.sellAsset
   }))
+
+  const approvedPaymentCurrencyCallback = useApprovedPaymentCurrencyCallback()
   
 
   const getTableBody = (
@@ -123,6 +126,8 @@ export const MyOrdersPage = () => {
             const ot = stringToOrderType(orderType);
             console.log(ot)
             const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
+
+            const currency = approvedPaymentCurrencyCallback(orderAsset)
 
             
             const decimals = decimalOverrides[orderAsset.assetAddress.toLowerCase()] ?? staticDatas?.[i]?.decimals ?? 0 
@@ -238,9 +243,8 @@ export const MyOrdersPage = () => {
                 </TableCell>
                 <TableCell>{displayUnitPrice?.toString()}</TableCell>
                 <TableCell>{qty?.toString()}</TableCell>
+                <TableCell>{currency.symbol}</TableCell>
                 <TableCell>{expiration}</TableCell>
-
-                <TableCell>{StrategyMap[strategyType.toLowerCase()]}</TableCell>
                 <TableCell>
                   {seller.toLowerCase() === account?.toLowerCase() ? (
                     <Button
@@ -257,7 +261,7 @@ export const MyOrdersPage = () => {
                     <Button
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot });
+                        setPurchaseData({ order, orderType: ot, approvedPaymentCurrency: currency });
                       }}
                       variant="contained"
                       color="primary"

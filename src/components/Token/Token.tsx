@@ -13,6 +13,7 @@ import { Order } from 'hooks/marketplace/types';
 import { useEffect, useState } from 'react';
 import { useAssetOrdersCallback } from 'hooks/marketplace/useAssetOrders';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -49,6 +50,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   */
 
   const getOrderCB = useAssetOrdersCallback(asset.assetAddress, asset.assetId, false, true)
+  const currency = useApprovedPaymentCurrency(asset)
 
   useEffect(() => {
     console.log('useEffect run!')
@@ -127,7 +129,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           </GlitchText>
           {displayPPU && displayPPU !== '?' && (
             <PriceBox margin={false} size="small" color={color}>
-              {displayPPU} MOVR
+              {displayPPU} {currency.symbol}
             </PriceBox>
           )}
         </div>
@@ -135,7 +137,6 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           {staticData?.symbol && (
             <Typography color="textSecondary">{`${staticData.symbol} #${asset.assetId}`}</Typography>
           )}
-
           {totalSupplyString && (
             <Typography color="textSecondary">{totalSupplyString}</Typography>
           )}
@@ -145,7 +146,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
           Last trade
         </Typography>
         <PriceBox margin={true} size="small" color='white'>
-          {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} MOVR
+          {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} {currency.symbol}
         </PriceBox>
       </div>}*/}
       </div>

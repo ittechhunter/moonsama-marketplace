@@ -1,4 +1,5 @@
 import { Asset } from 'hooks/marketplace/types';
+import { ApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 import { OrderType } from '../../../utils/subgraph';
 
 export type BidData = {
@@ -7,6 +8,7 @@ export type BidData = {
   decimals?: number;
   name?: string;
   symbol?: string;
+  approvedPaymentCurrency: ApprovedPaymentCurrency
 } | undefined;
 
 export type BidDialogContextType = {

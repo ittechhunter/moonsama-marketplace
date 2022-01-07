@@ -4,6 +4,7 @@ import { Media } from 'components';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { useActiveWeb3React } from 'hooks';
 import { FillWithOrder, Order } from 'hooks/marketplace/types';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -75,6 +76,8 @@ export const TokenTrade = ({
   
   const unit = Fraction.from(rawunit?.toString() ?? '0', decimals)?.toSignificant(5)
 
+  const currency = useApprovedPaymentCurrency(asset)
+
   const ppud = getDisplayUnitPrice(
     decimals,
     5,
@@ -84,7 +87,7 @@ export const TokenTrade = ({
     true
   )
   const ppuDisplay = !!ppud && ppud !== '?'
-    ? `${ppud} MOVR`
+    ? `${ppud} ${currency.symbol}`
     : action;
 
   return (

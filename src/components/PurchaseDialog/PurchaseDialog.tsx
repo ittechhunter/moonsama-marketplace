@@ -1,4 +1,3 @@
-import { parseEther, parseUnits } from '@ethersproject/units';
 import { appStyles } from '../../app.styles';
 
 import { useEffect, useState } from 'react';
@@ -37,7 +36,6 @@ import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import { Fraction } from 'utils/Fraction';
 import { AddressZero } from '@ethersproject/constants';
 import { Fee, useFees } from 'hooks/useFees/useFees';
-import { Asset } from 'hooks/marketplace/types';
 import { sellNative } from './sellNative.logic';
 import { sellElse } from './sellElse';
 import { buyNative } from './buyNative';
@@ -101,6 +99,7 @@ export const PurchaseDialog = () => {
 
   const decimals = purchaseData?.decimals ?? 0
   const isAssetFungible = decimals > 0;
+  const approvedPaymentCurrency = purchaseData?.approvedPaymentCurrency
 
   const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
@@ -117,20 +116,21 @@ export const PurchaseDialog = () => {
   const userAsset = order?.buyAsset;
   const getAsset = order?.sellAsset;
 
-  const isGetAssetNative =
-    getAsset?.assetType?.valueOf() === StringAssetType.NATIVE.valueOf();
+  const isGetAssetPayment =
+    getAsset?.assetType?.valueOf() === approvedPaymentCurrency?.assetType.valueOf()
+    && getAsset?.assetAddress === approvedPaymentCurrency?.assetAddress
 
-  const isGiveAssetNative = !isGetAssetNative
+  const isGiveAssetPayment = !isGetAssetPayment
 
   let giveAssetDecimals = 0
   let getAssetDecimals = 0
   
-  if(isGetAssetNative) {
+  if(isGetAssetPayment) {
     getAssetDecimals = 18
     giveAssetDecimals = decimals
   } else {
-    getAssetDecimals = decimals
     giveAssetDecimals = 18
+    getAssetDecimals = decimals
   }
 
   const total = getQuantity(
@@ -164,7 +164,7 @@ export const PurchaseDialog = () => {
     assetType = userAsset?.assetType;
 
     // we sell our erc20 into a buy order
-    if (isGiveAssetNative) {
+    if (isGiveAssetPayment) {
       meat = sellNative(
         ppu,
         total,
@@ -192,7 +192,7 @@ export const PurchaseDialog = () => {
     assetType = getAsset?.assetType;
 
     // we buy into a sell order, which is the native token
-    if (isGetAssetNative) {
+    if (isGetAssetPayment) {
       meat = buyNative(
         ppu,
         total,
@@ -265,9 +265,9 @@ export const PurchaseDialog = () => {
     showFee,
     royaltyFee,
     protocolFee,
-    isGiveAssetNative,
+    isGiveAssetPayment,
     giveAssetDecimals,
-    isGetAssetNative,
+    isGetAssetPayment,
     getAssetDecimals
   });
 
@@ -315,8 +315,8 @@ export const PurchaseDialog = () => {
     ppu: ppu?.toString(),
     askPerUnitDenominator: askPerUnitDenominator?.toString(),
     askPerUnitNominator: askPerUnitNominator?.toString(),
-    isGetAssetNative,
-    isGiveAssetNative,
+    isGetAssetPayment,
+    isGiveAssetPayment,
     getAssetDecimals,
     giveAssetDecimals,
     showApproveFlow,
@@ -460,7 +460,7 @@ export const PurchaseDialog = () => {
                     justifyContent: 'flex-end',
                   }}
                 >
-                  {displayppu} MOVR
+                  {displayppu} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                 </div>
               </div>
               <div className={col}>
@@ -526,7 +526,7 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>You get brutto</Typography>
                   <Typography className={formValueGet}>
-                    {userGetDisplay} MOVR
+                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                   </Typography>
                 </div>
 
@@ -535,7 +535,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Protocol fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                      MOVR
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 )}
@@ -545,7 +545,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Royalty fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                      MOVR
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 )}
@@ -554,7 +554,7 @@ export const PurchaseDialog = () => {
                   <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} MOVR
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 )}
@@ -600,14 +600,14 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
-                    {displayBalance ?? '?'} MOVR
+                    {displayBalance ?? '?'} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                   </Typography>
                 </div>
 
                 <div className={infoContainer}>
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
-                    {userGiveDisplay} MOVR
+                    {userGiveDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                   </Typography>
                 </div>
               </>

@@ -20,6 +20,7 @@ import {
 } from 'utils/subgraph';
 import { useStyles } from './TokenOrder.styles';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 
 export const TokenOrder = ({
   order,
@@ -50,6 +51,8 @@ export const TokenOrder = ({
 
   const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0 
 
+  const currency = useApprovedPaymentCurrency(asset)
+
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
   const sup = Fraction.from(staticData?.totalSupply?.toString() ?? '0', decimals);
@@ -68,7 +71,7 @@ export const TokenOrder = ({
   );
 
   const ppuDisplay = ppuD
-    ? `${ppuD} MOVR`
+    ? `${ppuD} ${currency.symbol}`
     : action;
 
   const expiration = formatExpirationDateString(order?.expiresAt);
@@ -110,7 +113,7 @@ export const TokenOrder = ({
         <Button
           onClick={() => {
             setPurchaseDialogOpen(true);
-            setPurchaseData({ order, orderType: ot });
+            setPurchaseData({ order, orderType: ot, approvedPaymentCurrency: currency });
           }}
           variant="contained"
           color="primary"
