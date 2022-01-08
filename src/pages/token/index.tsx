@@ -158,10 +158,9 @@ const TokenPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
-  const rawCollection = useRawcollection(asset.assetAddress)
+  const rawCollection = useRawcollection(asset.assetAddress);
 
-
-  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset)
+  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset);
 
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
@@ -401,11 +400,18 @@ const TokenPage = () => {
                     </Button>
                   ) : (
                     <Button
-                      style={isExlusiveRecipient ? { background: "blue" } : {}}
+                      style={isExlusiveRecipient ? { background: 'blue' } : {}}
                       disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName, approvedPaymentCurrency });
+                        setPurchaseData({
+                          order,
+                          orderType: ot,
+                          decimals,
+                          symbol: tokenSymbol,
+                          name: tokenName,
+                          approvedPaymentCurrency,
+                        });
                       }}
                       variant="contained"
                       color={'primary'}
@@ -501,12 +507,25 @@ const TokenPage = () => {
                 {`OWNED ${userBalanceString}${
                   totalSupplyString ? ` OF ${totalSupplyString}` : ''
                 }`}
-            </Typography>
+              </Typography>
+            )}
+
+            {/*TODO: Make traits calculation collection specific*/}
+            {displayRarity ? (
+              <Typography color="textSecondary" className={smallText}>
+                {transformedMetaData?.map((trait) => (
+                  <Tooltip title={`${trait.rarity}% have this trait`}>
+                    <Chip label={trait.label} className={traitChip} />
+                  </Tooltip>
+                ))}
+              </Typography>
+            ) : (
+              <Typography>{assetMeta?.description}</Typography>
             )}
           </Box>
 
           {/*TODO: Make traits calculation collection specific*/}
-          {displayRarity ? (
+          {displayRarity && (
             <Typography color="textSecondary" className={smallText}>
               {transformedMetaData?.map((trait) => (
                 <Tooltip title={`${trait.rarity}% have this trait`}>
@@ -514,31 +533,41 @@ const TokenPage = () => {
                 </Tooltip>
               ))}
             </Typography>
-          ) : (
+          )}
+
+          {rawCollection?.plot && (
+            <Typography color="textSecondary" className={smallText}>
+              {Object.keys(assetMeta?.plot ?? {}).map((key) => (
+                <Chip
+                  label={`${key}: ${assetMeta?.plot[key]}`}
+                  className={traitChip}
+                />
+              ))}
+            </Typography>
+          )}
+
+          {!displayRarity && !rawCollection?.plot && (
             <Typography>{assetMeta?.description}</Typography>
           )}
-          )}
-        </Box>
 
-        {/*TODO: Make traits calculation collection specific*/}
-        {displayRarity && <Typography color="textSecondary" className={smallText}>
-          {transformedMetaData?.map((trait) => (
-            <Tooltip title={`${trait.rarity}% have this trait`}>
-              <Chip label={trait.label} className={traitChip} />
-            </Tooltip>
-          ))}
-        </Typography>}
-
-        {rawCollection?.plot && <Typography color="textSecondary" className={smallText}>
-          {Object.keys(assetMeta?.plot ?? {}).map((key) => (
-            <Chip label={`${key}: ${assetMeta?.plot[key]}`} className={traitChip} />
-          ))}
-        </Typography>}
-
-        {!displayRarity && !rawCollection?.plot && <Typography>{assetMeta?.description}</Typography>}
-
-        <Paper className={card}>
-          {ltp && (
+          <Paper className={card}>
+            {ltp && (
+              <Box className={formBox} style={{ marginBottom: 32 }}>
+                <div className={tradeContainer}>
+                  <div className={tradeRow}>
+                    <Grid container alignItems="center">
+                      <Grid item style={{ marginRight: '0.3rem' }}>
+                        <AccountCircleIcon style={{ fontSize: 60 }} />
+                      </Grid>
+                      <Grid item>
+                        Last trade by:
+                        <AddressDisplayComponent
+                          className={`${formValue} ${formValueTokenDetails}`}
+                          charsShown={5}
+                        >
+                          {ltp?.user}
+                        </AddressDisplayComponent>
+                      </Grid>
                     </Grid>
                   </div>
                   <div className={tradeRow}>
@@ -550,189 +579,192 @@ const TokenPage = () => {
                       {`${assetType}`}
                     </div>
                   </div>
-                        className={`${formValue} ${formValueTokenDetails}`}
-                        charsShown={5}
-                      >
-                        {ltp?.user}
-                      </AddressDisplayComponent>
-                    </Grid>
-                  </Grid>
-                </div>
-                <div className={tradeRow}>
-                  <div className={formLabel}>Token Type: </div>
-                  <div
-                    className={`${formValue} ${formValueTokenDetails}`}
-                    style={{ marginLeft: 8 }}
-                  >
-                    {`${assetType}`}
+                  <div className={tradeRow}>
+                    <div className={formLabel}>Offer Type:</div>
+                    <div
+                      className={`${formValue} ${formValueTokenDetails}`}
+                      style={{ marginLeft: 8 }}
+                    >
+                      {`${ltp?.orderType ?? ''}`}
+                    </div>
                   </div>
-                </div>
-                <div className={tradeRow}>
-                  <div className={formLabel}>Offer Type:</div>
-                  <div
-                    className={`${formValue} ${formValueTokenDetails}`}
-                    style={{ marginLeft: 8 }}
-                  >
-                    {`${ltp?.orderType ?? ''}`}
-                  </div>
-                </div>
-                <div className={tradeRow}>
-                  <div className={formLabel}>Value:</div>
-                  <div
-                    className={`${formValue} ${formValueTokenDetails}`}
-                    style={{
-                      justifyContent: 'flex-end',
-                      marginLeft: 8,
-                    }}
-                  >
-                    <span className={assetActionsBidTokenAmount}>
-                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} {approvedPaymentCurrency.symbol}
-                    </span>
-                    {/** TODO USD PRICE 
+                  <div className={tradeRow}>
+                    <div className={formLabel}>Value:</div>
+                    <div
+                      className={`${formValue} ${formValueTokenDetails}`}
+                      style={{
+                        justifyContent: 'flex-end',
+                        marginLeft: 8,
+                      }}
+                    >
+                      <span className={assetActionsBidTokenAmount}>
+                        {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)}{' '}
+                        {approvedPaymentCurrency.symbol}
+                      </span>
+                      {/** TODO USD PRICE 
                   <span className={assetActionsBidCurrency}>
                     {12 * 0.12} USD
                   </span>
                   */}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Box>
-          )}
+              </Box>
+            )}
 
-          <Box
-            className={buttonsContainer}
-            style={{ justifyContent: 'space-around' }}
-          >
-            {!!ordersMap?.sellOrders && ordersMap?.sellOrders.length > 0 && (ordersMap.sellOrders[0].onlyTo === AddressZero || ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
-              <Button
-                style={{ background: "green" }}
-                onClick={() => {
-                  setPurchaseDialogOpen(true);
-                  setPurchaseData({
-                    order: ordersMap.sellOrders?.[0] as Order,
-                    orderType: OrderType.SELL,
-                    decimals,
-                    symbol: tokenSymbol,
-                    name: tokenName,
-                    approvedPaymentCurrency
-                  });
-                }}
-                startIcon={<AccountBalanceWalletIcon />}
-                variant="contained"
-                color="primary"
-              >
-                Buy now
-              </Button>
-            )}
-            {((!isOwner && isErc721) || !isErc721) && (
-              <Button
-                onClick={() => {
-                  setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
-                }}
-                startIcon={<AccountBalanceWalletIcon />}
-                variant="contained"
-                color="primary"
-              >
-                Make an offer
-              </Button>
-            )}
-            {isOwner && (
-              <Button
-                onClick={() => {
-                  setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
-                }}
-                startIcon={<MoneyIcon />}
-                variant="outlined"
-                color="primary"
-                className={newSellButton}
-              >
-                New sell offer
-              </Button>
-            )}
-            {isOwner && (
-              <Button
-                onClick={() => {
-                  setTransferDialogOpen(true);
-                  setTransferData({ asset, decimals });
-                }}
-                startIcon={<SyncAltIcon />}
-                variant="outlined"
-                color="primary"
-                className={transferButton}
-              >
-                Transfer
-              </Button>
-            )}
-          </Box>
-          <Box className={externals}>
-            {rawCollection?.plotMap && (
-              <ExternalLink href={rawCollection?.plotMap}>
-                <Button>Plot map↗</Button>
-              </ExternalLink>
-            )}
-            {minecraftskin && (
-              <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
-                <Button>Minecraft skin↗</Button>
-              </ExternalLink>
-            )}
-            {assetMeta?.external_url && (
-              <ExternalLink href={assetMeta?.external_url}>
-                <Button>External site↗</Button>
-              </ExternalLink>
-            )}
-            {staticData?.[0]?.tokenURI && (
-              <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
-                <Button>Full metadata↗</Button>
-              </ExternalLink>
-            )}
-            <ExternalLink
-              href={getExplorerLink(
-                chainId ?? ChainId.MOONRIVER,
-                asset?.assetAddress,
-                'address'
-              )}
+            <Box
+              className={buttonsContainer}
+              style={{ justifyContent: 'space-around' }}
             >
-              <Button>Check the contract↗</Button>
-            </ExternalLink>
-          </Box>
-        </Paper>
+              {!!ordersMap?.sellOrders &&
+                ordersMap?.sellOrders.length > 0 &&
+                (ordersMap.sellOrders[0].onlyTo === AddressZero ||
+                  ordersMap.sellOrders[0].onlyTo ===
+                    account?.toLowerCase()) && (
+                  <Button
+                    style={{ background: 'green' }}
+                    onClick={() => {
+                      setPurchaseDialogOpen(true);
+                      setPurchaseData({
+                        order: ordersMap.sellOrders?.[0] as Order,
+                        orderType: OrderType.SELL,
+                        decimals,
+                        symbol: tokenSymbol,
+                        name: tokenName,
+                        approvedPaymentCurrency,
+                      });
+                    }}
+                    startIcon={<AccountBalanceWalletIcon />}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Buy now
+                  </Button>
+                )}
+              {((!isOwner && isErc721) || !isErc721) && (
+                <Button
+                  onClick={() => {
+                    setBidDialogOpen(true);
+                    setBidData({
+                      orderType: OrderType.BUY,
+                      asset,
+                      decimals,
+                      name: tokenName,
+                      symbol: tokenSymbol,
+                      approvedPaymentCurrency,
+                    });
+                  }}
+                  startIcon={<AccountBalanceWalletIcon />}
+                  variant="contained"
+                  color="primary"
+                >
+                  Make an offer
+                </Button>
+              )}
+              {isOwner && (
+                <Button
+                  onClick={() => {
+                    setBidDialogOpen(true);
+                    setBidData({
+                      orderType: OrderType.SELL,
+                      asset,
+                      decimals,
+                      name: tokenName,
+                      symbol: tokenSymbol,
+                      approvedPaymentCurrency,
+                    });
+                  }}
+                  startIcon={<MoneyIcon />}
+                  variant="outlined"
+                  color="primary"
+                  className={newSellButton}
+                >
+                  New sell offer
+                </Button>
+              )}
+              {isOwner && (
+                <Button
+                  onClick={() => {
+                    setTransferDialogOpen(true);
+                    setTransferData({ asset, decimals });
+                  }}
+                  startIcon={<SyncAltIcon />}
+                  variant="outlined"
+                  color="primary"
+                  className={transferButton}
+                >
+                  Transfer
+                </Button>
+              )}
+            </Box>
+            <Box className={externals}>
+              {rawCollection?.plotMap && (
+                <ExternalLink href={rawCollection?.plotMap}>
+                  <Button>Plot map↗</Button>
+                </ExternalLink>
+              )}
+              {minecraftskin && (
+                <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
+                  <Button>Minecraft skin↗</Button>
+                </ExternalLink>
+              )}
+              {assetMeta?.external_url && (
+                <ExternalLink href={assetMeta?.external_url}>
+                  <Button>External site↗</Button>
+                </ExternalLink>
+              )}
+              {staticData?.[0]?.tokenURI && (
+                <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
+                  <Button>Full metadata↗</Button>
+                </ExternalLink>
+              )}
+              <ExternalLink
+                href={getExplorerLink(
+                  chainId ?? ChainId.MOONRIVER,
+                  asset?.assetAddress,
+                  'address'
+                )}
+              >
+                <Button>Check the contract↗</Button>
+              </ExternalLink>
+            </Box>
+          </Paper>
+        </Grid>
+        <Tabs
+          containerClassName={tabsContainer}
+          tabsClassName={tabs}
+          tabs={[
+            {
+              label: 'Buy Offers',
+              view: (
+                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                  {geTableHeader()}
+                  {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
+                </Table>
+              ),
+            },
+            {
+              label: 'Sell Offers',
+              view: (
+                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                  {geTableHeader()}
+                  {getTableBody(ordersMap?.sellOrders, OrderType.SELL)}
+                </Table>
+              ),
+            },
+            {
+              label: 'Your Offers',
+              view: (
+                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                  {geTableHeader()}
+                  {getTableBody(ordersMap?.userOrders)}
+                </Table>
+              ),
+            },
+          ]}
+        />
+        <div style={{ marginTop: 40, width: '100%' }} />
       </Grid>
-      <Tabs
-        containerClassName={tabsContainer}
-        tabsClassName={tabs}
-        tabs={[
-          {
-            label: 'Buy Offers',
-            view: (
-              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                {geTableHeader()}
-                {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
-              </Table>
-            ),
-          },
-          {
-            label: 'Sell Offers',
-            view: (
-              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                {geTableHeader()}
-                {getTableBody(ordersMap?.sellOrders, OrderType.SELL)}
-              </Table>
-            ),
-          },
-          {
-            label: 'Your Offers',
-            view: (
-              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                {geTableHeader()}
-                {getTableBody(ordersMap?.userOrders)}
-              </Table>
-            ),
-          },
-        ]}
-      />
-      <div style={{ marginTop: 40, width: '100%' }} />
     </Grid>
   );
 };

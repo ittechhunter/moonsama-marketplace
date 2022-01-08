@@ -55,8 +55,13 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
   });
   */
 
-  const getOrderCB = useAssetOrdersCallback(asset.assetAddress, asset.assetId, false, true)
-  const currency = useApprovedPaymentCurrency(asset)
+  const getOrderCB = useAssetOrdersCallback(
+    asset.assetAddress,
+    asset.assetId,
+    false,
+    true
+  );
+  const currency = useApprovedPaymentCurrency(asset);
 
   useEffect(() => {
     console.log('useEffect run!');

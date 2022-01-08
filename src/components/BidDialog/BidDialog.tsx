@@ -181,7 +181,7 @@ export const BidDialog = () => {
 
   const decimals = bidData?.decimals ?? 0;
 
-  const approvedPaymentCurrency = bidData?.approvedPaymentCurrency
+  const approvedPaymentCurrency = bidData?.approvedPaymentCurrency;
 
   const isAssetFungible = decimals > 0;
   const isAssetErc721 =
@@ -228,11 +228,14 @@ export const BidDialog = () => {
     sellAssetContract = {
       addr: approvedPaymentCurrency?.assetAddress ?? AddressZero,
       id: approvedPaymentCurrency?.assetId ?? '0',
-      assetType: stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ?? AssetType.NATIVE,
+      assetType:
+        stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ??
+        AssetType.NATIVE,
     };
 
-    sellAssetType = approvedPaymentCurrency?.assetType ?? StringAssetType.NATIVE;
-    sellDecimals = 18
+    sellAssetType =
+      approvedPaymentCurrency?.assetType ?? StringAssetType.NATIVE;
+    sellDecimals = 18;
 
     buyAssetContract = {
       addr: assetAddress ?? AddressZero,
@@ -274,7 +277,9 @@ export const BidDialog = () => {
     buyAssetContract = {
       addr: approvedPaymentCurrency?.assetAddress ?? AddressZero,
       id: approvedPaymentCurrency?.assetId ?? '0',
-      assetType: stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ?? AssetType.NATIVE
+      assetType:
+        stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ??
+        AssetType.NATIVE,
     };
 
     // sell- quantity input field is Ether
@@ -545,7 +550,9 @@ export const BidDialog = () => {
                   className={`${formValue}`}
                 >
                   <Grid item>
-                    <Typography className={formLabel}>{approvedPaymentCurrency?.symbol ?? 'MOVR'}</Typography>
+                    <Typography className={formLabel}>
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -673,7 +680,8 @@ export const BidDialog = () => {
                       You get brutto
                     </Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
 
@@ -702,7 +710,8 @@ export const BidDialog = () => {
                   <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 </>
@@ -762,7 +771,8 @@ export const BidDialog = () => {
                       You give netto
                     </Typography>
                     <Typography className={`${formValueGive} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 </>
