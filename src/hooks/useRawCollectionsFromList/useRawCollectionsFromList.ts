@@ -36,9 +36,11 @@ export type RawCollection = {
   decimals?: number;
   maxId?: number;
   minId: number;
-  idSearchOn: boolean;
-  subcollections?: RawSubcollection[];
-  auction?: AuctionParams;
+  idSearchOn: boolean,
+  subcollections?: RawSubcollection[],
+  auction?: AuctionParams,
+  plot?: boolean,
+  plotMap?: string
 };
 
 export type RawCollectionList = {
@@ -81,12 +83,11 @@ const collectionListSchema = yup.object<RawCollectionList>({
           maxId: yup.number().optional(),
           subcollections: yup.array(),
           idSearchOn: yup.boolean().required(),
-          auction: yup
-            .object<AuctionParams>({
-              deadline: yup.string(),
-              ids: yup.array().of(yup.string().required()).required(),
-            })
-            .optional(),
+          plot: yup.boolean().optional(),
+          auction: yup.object<AuctionParams>({
+            deadline: yup.string(),
+            ids: yup.array().of(yup.string().required()).required()
+          }).optional()
         })
         .required()
     )
