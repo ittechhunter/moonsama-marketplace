@@ -12,7 +12,7 @@ import { AssetType } from './marketplace';
 import { ChainId } from '../constants';
 import { AddressZero } from '@ethersproject/constants';
 import { Fraction } from './Fraction';
-import { parseEther, parseUnits } from '@ethersproject/units';
+import { parseUnits } from '@ethersproject/units';
 
 export enum StringOrderType {
   UNKNOWN = 'UNKNOWN',
