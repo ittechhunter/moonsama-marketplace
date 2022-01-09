@@ -158,10 +158,9 @@ const TokenPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
-  const rawCollection = useRawcollection(asset.assetAddress)
+  const rawCollection = useRawcollection(asset.assetAddress);
 
-
-  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset)
+  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset);
 
   const staticData = useTokenStaticData(assets);
   const balanceData = useTokenBasicData(assets);
@@ -401,11 +400,18 @@ const TokenPage = () => {
                     </Button>
                   ) : (
                     <Button
-                      style={isExlusiveRecipient ? { background: "blue" } : {}}
+                      style={isExlusiveRecipient ? { background: 'blue' } : {}}
                       disabled={!freeForAll && !isExlusiveRecipient}
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, decimals, symbol: tokenSymbol, name: tokenName, approvedPaymentCurrency });
+                        setPurchaseData({
+                          order,
+                          orderType: ot,
+                          decimals,
+                          symbol: tokenSymbol,
+                          name: tokenName,
+                          approvedPaymentCurrency,
+                        });
                       }}
                       variant="contained"
                       color={'primary'}
@@ -432,124 +438,119 @@ const TokenPage = () => {
     <Grid
       container
       className={pageContainer}
-      maxWidth="lg"
       style={{ margin: '0 auto' }}
+      alignItems="flex-start"
+      justifyContent="space-between"
+      maxWidth="lg"
     >
       <Grid
+        pr={{ lg: 3, md: 3 }}
         item
-        container
-        columnSpacing={20}
-        justifyContent="space-around"
-        alignItems="flex-start"
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+        className={imageContainer}
       >
-        <Grid
-          item
-          lg={6}
-          md={6}
-          xs={12}
-          className={imageContainer}
-          style={{ paddingTop: 0 }}
+        <Media uri={assetMeta?.image} className={image} />
+      </Grid>
+      <Grid
+        pl={{ lg: 3, md: 3 }}
+        item
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+      >
+        <GlitchText
+          variant="h1"
+          className={name}
+          style={{ textAlign: 'left', margin: 0 }}
         >
-          <Media uri={assetMeta?.image} className={image} />
-          {/*<img src={LootBox} className={image}/>*/}
-        </Grid>
-        <Grid item lg={6} md={6} xs={12} style={{ paddingTop: 0 }}>
+          {assetMeta?.name ??
+            assetMeta?.title ??
+            truncateHexString(asset?.assetAddress)}
+        </GlitchText>
+        {!isErc20 && (
           <GlitchText
-            variant="h1"
+            variant="h2"
             className={name}
-            style={{ textAlign: 'left', margin: 0 }}
+            style={{ textAlign: 'left', marginTop: '10px' }}
           >
-            {assetMeta?.name ??
-              assetMeta?.title ??
-              truncateHexString(asset?.assetAddress)}
+            #{truncateHexString(asset?.assetId)}
           </GlitchText>
-          {!isErc20 && (
-            <GlitchText
-              variant="h2"
-              className={name}
-              style={{ textAlign: 'left', marginTop: '10px' }}
-            >
-              #{truncateHexString(asset?.assetId)}
-            </GlitchText>
-          )}
-          <Box className={price}>
-            <PriceBox variant="primary">{assetType}</PriceBox>
-            {isErc20 ? (
-              <Typography color="textSecondary" variant="subtitle1">
-                BALANCE: {userBalanceString}
+        )}
+        <Box className={price}>
+          <PriceBox variant="primary">{assetType}</PriceBox>
+          {isErc20 ? (
+            <Typography color="textSecondary" variant="subtitle1">
+              BALANCE: {userBalanceString}
+            </Typography>
+          ) : isErc721 ? (
+            userBalanceString === '1' ? (
+              <Typography color="textSecondary" className={smallText}>
+                OWNED BY YOU
               </Typography>
-            ) : isErc721 ? (
-              userBalanceString === '1' ? (
-                <Typography color="textSecondary" className={smallText}>
-                  OWNED BY YOU
-                </Typography>
-              ) : (
-                <Typography color="textSecondary" className={smallText}>
-                  {owner && (
-                    <ExternalLink
-                      className={smallText}
-                      href={getExplorerLink(chainId, owner, 'address')}
-                    >
-                      {' '}
-                      Owned by {truncateHexString(owner)}
-                    </ExternalLink>
-                  )}
-                </Typography>
-              )
             ) : (
-              <Typography color="textSecondary" variant="subtitle1">
-                {`OWNED ${userBalanceString}${
-                  totalSupplyString ? ` OF ${totalSupplyString}` : ''
-                }`}
-            </Typography>
-            )}
-          </Box>
-
-          {/*TODO: Make traits calculation collection specific*/}
-          {displayRarity ? (
-            <Typography color="textSecondary" className={smallText}>
-              {transformedMetaData?.map((trait) => (
-                <Tooltip title={`${trait.rarity}% have this trait`}>
-                  <Chip label={trait.label} className={traitChip} />
-                </Tooltip>
-              ))}
-            </Typography>
+              <Typography color="textSecondary" className={smallText}>
+                {owner && (
+                  <ExternalLink
+                    className={smallText}
+                    href={getExplorerLink(chainId, owner, 'address')}
+                  >
+                    {' '}
+                    Owned by {truncateHexString(owner)}
+                  </ExternalLink>
+                )}
+              </Typography>
+            )
           ) : (
-            <Typography>{assetMeta?.description}</Typography>
-          )}
+            <Typography color="textSecondary" variant="subtitle1">
+              {`OWNED ${userBalanceString}${
+                totalSupplyString ? ` OF ${totalSupplyString}` : ''
+              }`}
+            </Typography>
           )}
         </Box>
 
         {/*TODO: Make traits calculation collection specific*/}
-        {displayRarity && <Typography color="textSecondary" className={smallText}>
-          {transformedMetaData?.map((trait) => (
-            <Tooltip title={`${trait.rarity}% have this trait`}>
-              <Chip label={trait.label} className={traitChip} />
-            </Tooltip>
-          ))}
-        </Typography>}
+        {displayRarity && (
+          <Typography color="textSecondary" className={smallText}>
+            {transformedMetaData?.map((trait) => (
+              <Tooltip title={`${trait.rarity}% have this trait`}>
+                <Chip label={trait.label} className={traitChip} />
+              </Tooltip>
+            ))}
+          </Typography>
+        )}
 
-        {rawCollection?.plot && <Typography color="textSecondary" className={smallText}>
-          {Object.keys(assetMeta?.plot ?? {}).map((key) => (
-            <Chip label={`${key}: ${assetMeta?.plot[key]}`} className={traitChip} />
-          ))}
-        </Typography>}
+        {rawCollection?.plot && (
+          <Typography color="textSecondary" className={smallText}>
+            {Object.keys(assetMeta?.plot ?? {}).map((key) => (
+              <Chip
+                label={`${key}: ${assetMeta?.plot[key]}`}
+                className={traitChip}
+              />
+            ))}
+          </Typography>
+        )}
 
-        {!displayRarity && !rawCollection?.plot && <Typography>{assetMeta?.description}</Typography>}
+        {!displayRarity && !rawCollection?.plot && (
+          <Typography>{assetMeta?.description}</Typography>
+        )}
 
         <Paper className={card}>
           {ltp && (
+            <Box className={formBox} style={{ marginBottom: 32 }}>
+              <div className={tradeContainer}>
+                <div className={tradeRow}>
+                  <Grid container alignItems="center">
+                    <Grid item style={{ marginRight: '0.3rem' }}>
+                      <AccountCircleIcon style={{ fontSize: 60 }} />
                     </Grid>
-                  </div>
-                  <div className={tradeRow}>
-                    <div className={formLabel}>Token Type: </div>
-                    <div
-                      className={`${formValue} ${formValueTokenDetails}`}
-                      style={{ marginLeft: 8 }}
-                    >
-                      {`${assetType}`}
-                    </div>
-                  </div>
+                    <Grid item>
+                      Last trade by:
+                      <AddressDisplayComponent
                         className={`${formValue} ${formValueTokenDetails}`}
                         charsShown={5}
                       >
@@ -586,7 +587,8 @@ const TokenPage = () => {
                     }}
                   >
                     <span className={assetActionsBidTokenAmount}>
-                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)} {approvedPaymentCurrency.symbol}
+                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)}{' '}
+                      {approvedPaymentCurrency.symbol}
                     </span>
                     {/** TODO USD PRICE 
                   <span className={assetActionsBidCurrency}>
@@ -603,32 +605,42 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            {!!ordersMap?.sellOrders && ordersMap?.sellOrders.length > 0 && (ordersMap.sellOrders[0].onlyTo === AddressZero || ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
-              <Button
-                style={{ background: "green" }}
-                onClick={() => {
-                  setPurchaseDialogOpen(true);
-                  setPurchaseData({
-                    order: ordersMap.sellOrders?.[0] as Order,
-                    orderType: OrderType.SELL,
-                    decimals,
-                    symbol: tokenSymbol,
-                    name: tokenName,
-                    approvedPaymentCurrency
-                  });
-                }}
-                startIcon={<AccountBalanceWalletIcon />}
-                variant="contained"
-                color="primary"
-              >
-                Buy now
-              </Button>
-            )}
+            {!!ordersMap?.sellOrders &&
+              ordersMap?.sellOrders.length > 0 &&
+              (ordersMap.sellOrders[0].onlyTo === AddressZero ||
+                ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
+                <Button
+                  style={{ background: 'green' }}
+                  onClick={() => {
+                    setPurchaseDialogOpen(true);
+                    setPurchaseData({
+                      order: ordersMap.sellOrders?.[0] as Order,
+                      orderType: OrderType.SELL,
+                      decimals,
+                      symbol: tokenSymbol,
+                      name: tokenName,
+                      approvedPaymentCurrency,
+                    });
+                  }}
+                  startIcon={<AccountBalanceWalletIcon />}
+                  variant="contained"
+                  color="primary"
+                >
+                  Buy now
+                </Button>
+              )}
             {((!isOwner && isErc721) || !isErc721) && (
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.BUY, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
+                  setBidData({
+                    orderType: OrderType.BUY,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
                 variant="contained"
@@ -641,7 +653,14 @@ const TokenPage = () => {
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
-                  setBidData({ orderType: OrderType.SELL, asset, decimals, name: tokenName, symbol: tokenSymbol, approvedPaymentCurrency });
+                  setBidData({
+                    orderType: OrderType.SELL,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
                 }}
                 startIcon={<MoneyIcon />}
                 variant="outlined"

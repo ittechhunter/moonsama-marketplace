@@ -101,7 +101,7 @@ export const PurchaseDialog = () => {
 
   const decimals = purchaseData?.decimals ?? 0;
   const isAssetFungible = decimals > 0;
-  const approvedPaymentCurrency = purchaseData?.approvedPaymentCurrency
+  const approvedPaymentCurrency = purchaseData?.approvedPaymentCurrency;
 
   const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
@@ -119,20 +119,21 @@ export const PurchaseDialog = () => {
   const getAsset = order?.sellAsset;
 
   const isGetAssetPayment =
-    getAsset?.assetType?.valueOf() === approvedPaymentCurrency?.assetType.valueOf()
-    && getAsset?.assetAddress === approvedPaymentCurrency?.assetAddress
+    getAsset?.assetType?.valueOf() ===
+      approvedPaymentCurrency?.assetType.valueOf() &&
+    getAsset?.assetAddress === approvedPaymentCurrency?.assetAddress;
 
-  const isGiveAssetPayment = !isGetAssetPayment
+  const isGiveAssetPayment = !isGetAssetPayment;
 
-  let giveAssetDecimals = 0
-  let getAssetDecimals = 0
-  
-  if(isGetAssetPayment) {
-    getAssetDecimals = 18
-    giveAssetDecimals = decimals
+  let giveAssetDecimals = 0;
+  let getAssetDecimals = 0;
+
+  if (isGetAssetPayment) {
+    getAssetDecimals = 18;
+    giveAssetDecimals = decimals;
   } else {
-    giveAssetDecimals = 18
-    getAssetDecimals = decimals
+    giveAssetDecimals = 18;
+    getAssetDecimals = decimals;
   }
 
   const total = getQuantity(
@@ -272,7 +273,7 @@ export const PurchaseDialog = () => {
     isGiveAssetPayment,
     giveAssetDecimals,
     isGetAssetPayment,
-    getAssetDecimals
+    getAssetDecimals,
   });
 
   const {
@@ -572,7 +573,8 @@ export const PurchaseDialog = () => {
                   <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                     </Typography>
                   </div>
                 )}
@@ -626,14 +628,16 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
-                    {displayBalance ?? '?'} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {displayBalance ?? '?'}{' '}
+                    {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                   </Typography>
                 </div>
 
                 <div className={infoContainer}>
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
-                    {userGiveDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {userGiveDisplay}{' '}
+                    {approvedPaymentCurrency?.symbol ?? 'MOVR'}
                   </Typography>
                 </div>
               </>

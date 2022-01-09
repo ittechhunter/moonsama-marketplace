@@ -207,7 +207,8 @@ export const collections = {
         */
       ],
       contractURI: 'ipfs://QmUCMVkJa849UQYN728hyiYm3ZJVPk8yGyiJQ6wwHfLcgz',
-      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-multiverseart'
+      subgraph:
+        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-multiverseart',
     },
     {
       chainId: 1285,
@@ -221,7 +222,8 @@ export const collections = {
       idSearchOn: true,
       type: 'ERC721',
       contractURI: 'ipfs://QmR8K7eLZnhFqC5qUStMyFAgawSJcpRfSvMDMffQVQFn38',
-      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-721-mmplots1'
+      subgraph:
+        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-721-mmplots1',
     },
     {
       chainId: 1285,

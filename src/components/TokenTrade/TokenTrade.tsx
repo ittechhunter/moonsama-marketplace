@@ -85,7 +85,7 @@ export const TokenTrade = ({
     decimals
   )?.toSignificant(5);
 
-  const currency = useApprovedPaymentCurrency(asset)
+  const currency = useApprovedPaymentCurrency(asset);
 
   const ppud = getDisplayUnitPrice(
     decimals,
@@ -94,10 +94,9 @@ export const TokenTrade = ({
     fill.order?.askPerUnitNominator,
     fill.order?.askPerUnitDenominator,
     true
-  )
-  const ppuDisplay = !!ppud && ppud !== '?'
-    ? `${ppud} ${currency.symbol}`
-    : action;
+  );
+  const ppuDisplay =
+    !!ppud && ppud !== '?' ? `${ppud} ${currency.symbol}` : action;
 
   return (
     <Paper className={container}>

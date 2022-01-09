@@ -33,7 +33,10 @@ import { styles } from './styles';
 import { useUserOrders } from 'hooks/marketplace/useUserOrders';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
-import { useApprovedPaymentCurrency, useApprovedPaymentCurrencyCallback } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
+import {
+  useApprovedPaymentCurrency,
+  useApprovedPaymentCurrencyCallback,
+} from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 
 const geTableHeader = () => {
   return (
@@ -89,13 +92,15 @@ export const MyOrdersPage = () => {
     num: 1000,
   });
 
-  
-  const staticDatas = useTokenStaticData((ordersMap?.userOrders ?? []).map(x => {
-    return stringToOrderType(x.orderType) === OrderType.BUY ? x?.buyAsset: x.sellAsset
-  }))
+  const staticDatas = useTokenStaticData(
+    (ordersMap?.userOrders ?? []).map((x) => {
+      return stringToOrderType(x.orderType) === OrderType.BUY
+        ? x?.buyAsset
+        : x.sellAsset;
+    })
+  );
 
-  const approvedPaymentCurrencyCallback = useApprovedPaymentCurrencyCallback()
-  
+  const approvedPaymentCurrencyCallback = useApprovedPaymentCurrencyCallback();
 
   const getTableBody = (
     orders: Order[] | undefined | null,
@@ -127,12 +132,13 @@ export const MyOrdersPage = () => {
             console.log(ot);
             const orderAsset = ot === OrderType.BUY ? buyAsset : sellAsset;
 
-            const currency = approvedPaymentCurrencyCallback(orderAsset)
+            const currency = approvedPaymentCurrencyCallback(orderAsset);
 
-            
-            const decimals = decimalOverrides[orderAsset.assetAddress.toLowerCase()] ?? staticDatas?.[i]?.decimals ?? 0 
-            console.log('yada', {decimals, decimalOverrides})
-
+            const decimals =
+              decimalOverrides[orderAsset.assetAddress.toLowerCase()] ??
+              staticDatas?.[i]?.decimals ??
+              0;
+            console.log('yada', { decimals, decimalOverrides });
 
             const displayUnitPrice = getDisplayUnitPrice(
               decimals,
@@ -264,7 +270,11 @@ export const MyOrdersPage = () => {
                     <Button
                       onClick={() => {
                         setPurchaseDialogOpen(true);
-                        setPurchaseData({ order, orderType: ot, approvedPaymentCurrency: currency });
+                        setPurchaseData({
+                          order,
+                          orderType: ot,
+                          approvedPaymentCurrency: currency,
+                        });
                       }}
                       variant="contained"
                       color="primary"
