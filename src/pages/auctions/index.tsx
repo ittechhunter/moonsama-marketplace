@@ -32,9 +32,7 @@ const AuctionListPage = () => {
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
   const collections = useRawCollectionsFromList();
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(
-    undefined
-  );
+  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(3);
   const [searchCounter, setSearchCounter] = useState<number>(0);
 
   const handleScrollToBottom = useCallback(() => {

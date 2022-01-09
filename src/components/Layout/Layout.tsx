@@ -24,7 +24,7 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <Header>
-        <Container maxWidth={false}>
+        <Container style={{ padding: '0 15px' }} maxWidth={false}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item xl={3} className={nav}>
               {showRegularMenu && (
@@ -44,9 +44,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   style={{ display: 'flex' }}
                   onClick={() => setIsDrawerOpened(false)}
                 >
-                  {/*<NavLink href="/" className={navItem}>*/}
-                  {/*  Welcome*/}
-                  {/*</NavLink>*/}
+                  <NavLink href="/auctions" className={navItem}>
+                    Auctions
+                  </NavLink>
                   <NavLink href="/collections" className={navItem}>
                     Collections
                   </NavLink>
@@ -75,6 +75,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   onClick={() => setIsDrawerOpened(false)}
                 >
                   <Box>
+                    <NavLink href="/auctions" className={navItemDrawer}>
+                      Auctions
+                    </NavLink>
                     <NavLink href="/collections" className={navItemDrawer}>
                       Collections
                     </NavLink>

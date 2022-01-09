@@ -85,4 +85,4 @@ export const IPFS_GATEWAYS = [
   'https://ipfs.io',
 ];
 
-export const MAX_WIDTH_TO_SHOW_NAVIGATION = 1000;
+export const MAX_WIDTH_TO_SHOW_NAVIGATION = 1044;

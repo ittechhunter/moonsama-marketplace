@@ -35,7 +35,7 @@ export const Header = ({ children }: { children: ReactNode }) => {
             />
           </div>
         )}
-        <Toolbar>{children}</Toolbar>
+        <Toolbar disableGutters>{children}</Toolbar>
       </AppBar>
       <Toolbar />
     </>
