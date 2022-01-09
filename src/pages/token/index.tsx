@@ -438,219 +438,187 @@ const TokenPage = () => {
     <Grid
       container
       className={pageContainer}
-      maxWidth="lg"
       style={{ margin: '0 auto' }}
+      alignItems="flex-start"
+      justifyContent="space-between"
+      maxWidth="lg"
     >
       <Grid
+        pr={{ lg: 3, md: 3 }}
         item
-        container
-        columnSpacing={20}
-        justifyContent="space-around"
-        alignItems="flex-start"
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+        className={imageContainer}
       >
-        <Grid
-          item
-          lg={6}
-          md={6}
-          xs={12}
-          className={imageContainer}
-          style={{ paddingTop: 0 }}
+        <Media uri={assetMeta?.image} className={image} />
+      </Grid>
+      <Grid
+        pl={{ lg: 3, md: 3 }}
+        item
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+      >
+        <GlitchText
+          variant="h1"
+          className={name}
+          style={{ textAlign: 'left', margin: 0 }}
         >
-          <Media uri={assetMeta?.image} className={image} />
-          {/*<img src={LootBox} className={image}/>*/}
-        </Grid>
-        <Grid item lg={6} md={6} xs={12} style={{ paddingTop: 0 }}>
+          {assetMeta?.name ??
+            assetMeta?.title ??
+            truncateHexString(asset?.assetAddress)}
+        </GlitchText>
+        {!isErc20 && (
           <GlitchText
-            variant="h1"
+            variant="h2"
             className={name}
-            style={{ textAlign: 'left', margin: 0 }}
+            style={{ textAlign: 'left', marginTop: '10px' }}
           >
-            {assetMeta?.name ??
-              assetMeta?.title ??
-              truncateHexString(asset?.assetAddress)}
+            #{truncateHexString(asset?.assetId)}
           </GlitchText>
-          {!isErc20 && (
-            <GlitchText
-              variant="h2"
-              className={name}
-              style={{ textAlign: 'left', marginTop: '10px' }}
-            >
-              #{truncateHexString(asset?.assetId)}
-            </GlitchText>
-          )}
-          <Box className={price}>
-            <PriceBox variant="primary">{assetType}</PriceBox>
-            {isErc20 ? (
-              <Typography color="textSecondary" variant="subtitle1">
-                BALANCE: {userBalanceString}
-              </Typography>
-            ) : isErc721 ? (
-              userBalanceString === '1' ? (
-                <Typography color="textSecondary" className={smallText}>
-                  OWNED BY YOU
-                </Typography>
-              ) : (
-                <Typography color="textSecondary" className={smallText}>
-                  {owner && (
-                    <ExternalLink
-                      className={smallText}
-                      href={getExplorerLink(chainId, owner, 'address')}
-                    >
-                      {' '}
-                      Owned by {truncateHexString(owner)}
-                    </ExternalLink>
-                  )}
-                </Typography>
-              )
-            ) : (
-              <Typography color="textSecondary" variant="subtitle1">
-                {`OWNED ${userBalanceString}${
-                  totalSupplyString ? ` OF ${totalSupplyString}` : ''
-                }`}
-              </Typography>
-            )}
-
-            {/*TODO: Make traits calculation collection specific*/}
-            {displayRarity ? (
+        )}
+        <Box className={price}>
+          <PriceBox variant="primary">{assetType}</PriceBox>
+          {isErc20 ? (
+            <Typography color="textSecondary" variant="subtitle1">
+              BALANCE: {userBalanceString}
+            </Typography>
+          ) : isErc721 ? (
+            userBalanceString === '1' ? (
               <Typography color="textSecondary" className={smallText}>
-                {transformedMetaData?.map((trait) => (
-                  <Tooltip title={`${trait.rarity}% have this trait`}>
-                    <Chip label={trait.label} className={traitChip} />
-                  </Tooltip>
-                ))}
+                OWNED BY YOU
               </Typography>
             ) : (
-              <Typography>{assetMeta?.description}</Typography>
-            )}
-          </Box>
-
-          {/*TODO: Make traits calculation collection specific*/}
-          {displayRarity && (
-            <Typography color="textSecondary" className={smallText}>
-              {transformedMetaData?.map((trait) => (
-                <Tooltip title={`${trait.rarity}% have this trait`}>
-                  <Chip label={trait.label} className={traitChip} />
-                </Tooltip>
-              ))}
+              <Typography color="textSecondary" className={smallText}>
+                {owner && (
+                  <ExternalLink
+                    className={smallText}
+                    href={getExplorerLink(chainId, owner, 'address')}
+                  >
+                    {' '}
+                    Owned by {truncateHexString(owner)}
+                  </ExternalLink>
+                )}
+              </Typography>
+            )
+          ) : (
+            <Typography color="textSecondary" variant="subtitle1">
+              {`OWNED ${userBalanceString}${
+                totalSupplyString ? ` OF ${totalSupplyString}` : ''
+              }`}
             </Typography>
           )}
+        </Box>
 
-          {rawCollection?.plot && (
-            <Typography color="textSecondary" className={smallText}>
-              {Object.keys(assetMeta?.plot ?? {}).map((key) => (
-                <Chip
-                  label={`${key}: ${assetMeta?.plot[key]}`}
-                  className={traitChip}
-                />
-              ))}
-            </Typography>
-          )}
+        {/*TODO: Make traits calculation collection specific*/}
+        {displayRarity && (
+          <Typography color="textSecondary" className={smallText}>
+            {transformedMetaData?.map((trait) => (
+              <Tooltip title={`${trait.rarity}% have this trait`}>
+                <Chip label={trait.label} className={traitChip} />
+              </Tooltip>
+            ))}
+          </Typography>
+        )}
 
-          {!displayRarity && !rawCollection?.plot && (
-            <Typography>{assetMeta?.description}</Typography>
-          )}
+        {rawCollection?.plot && (
+          <Typography color="textSecondary" className={smallText}>
+            {Object.keys(assetMeta?.plot ?? {}).map((key) => (
+              <Chip
+                label={`${key}: ${assetMeta?.plot[key]}`}
+                className={traitChip}
+              />
+            ))}
+          </Typography>
+        )}
 
-          <Paper className={card}>
-            {ltp && (
-              <Box className={formBox} style={{ marginBottom: 32 }}>
-                <div className={tradeContainer}>
-                  <div className={tradeRow}>
-                    <Grid container alignItems="center">
-                      <Grid item style={{ marginRight: '0.3rem' }}>
-                        <AccountCircleIcon style={{ fontSize: 60 }} />
-                      </Grid>
-                      <Grid item>
-                        Last trade by:
-                        <AddressDisplayComponent
-                          className={`${formValue} ${formValueTokenDetails}`}
-                          charsShown={5}
-                        >
-                          {ltp?.user}
-                        </AddressDisplayComponent>
-                      </Grid>
+        {!displayRarity && !rawCollection?.plot && (
+          <Typography>{assetMeta?.description}</Typography>
+        )}
+
+        <Paper className={card}>
+          {ltp && (
+            <Box className={formBox} style={{ marginBottom: 32 }}>
+              <div className={tradeContainer}>
+                <div className={tradeRow}>
+                  <Grid container alignItems="center">
+                    <Grid item style={{ marginRight: '0.3rem' }}>
+                      <AccountCircleIcon style={{ fontSize: 60 }} />
                     </Grid>
+                    <Grid item>
+                      Last trade by:
+                      <AddressDisplayComponent
+                        className={`${formValue} ${formValueTokenDetails}`}
+                        charsShown={5}
+                      >
+                        {ltp?.user}
+                      </AddressDisplayComponent>
+                    </Grid>
+                  </Grid>
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Token Type: </div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {`${assetType}`}
                   </div>
-                  <div className={tradeRow}>
-                    <div className={formLabel}>Token Type: </div>
-                    <div
-                      className={`${formValue} ${formValueTokenDetails}`}
-                      style={{ marginLeft: 8 }}
-                    >
-                      {`${assetType}`}
-                    </div>
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Offer Type:</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {`${ltp?.orderType ?? ''}`}
                   </div>
-                  <div className={tradeRow}>
-                    <div className={formLabel}>Offer Type:</div>
-                    <div
-                      className={`${formValue} ${formValueTokenDetails}`}
-                      style={{ marginLeft: 8 }}
-                    >
-                      {`${ltp?.orderType ?? ''}`}
-                    </div>
-                  </div>
-                  <div className={tradeRow}>
-                    <div className={formLabel}>Value:</div>
-                    <div
-                      className={`${formValue} ${formValueTokenDetails}`}
-                      style={{
-                        justifyContent: 'flex-end',
-                        marginLeft: 8,
-                      }}
-                    >
-                      <span className={assetActionsBidTokenAmount}>
-                        {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)}{' '}
-                        {approvedPaymentCurrency.symbol}
-                      </span>
-                      {/** TODO USD PRICE 
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Value:</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{
+                      justifyContent: 'flex-end',
+                      marginLeft: 8,
+                    }}
+                  >
+                    <span className={assetActionsBidTokenAmount}>
+                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)}{' '}
+                      {approvedPaymentCurrency.symbol}
+                    </span>
+                    {/** TODO USD PRICE 
                   <span className={assetActionsBidCurrency}>
                     {12 * 0.12} USD
                   </span>
                   */}
-                    </div>
                   </div>
                 </div>
-              </Box>
-            )}
+              </div>
+            </Box>
+          )}
 
-            <Box
-              className={buttonsContainer}
-              style={{ justifyContent: 'space-around' }}
-            >
-              {!!ordersMap?.sellOrders &&
-                ordersMap?.sellOrders.length > 0 &&
-                (ordersMap.sellOrders[0].onlyTo === AddressZero ||
-                  ordersMap.sellOrders[0].onlyTo ===
-                    account?.toLowerCase()) && (
-                  <Button
-                    style={{ background: 'green' }}
-                    onClick={() => {
-                      setPurchaseDialogOpen(true);
-                      setPurchaseData({
-                        order: ordersMap.sellOrders?.[0] as Order,
-                        orderType: OrderType.SELL,
-                        decimals,
-                        symbol: tokenSymbol,
-                        name: tokenName,
-                        approvedPaymentCurrency,
-                      });
-                    }}
-                    startIcon={<AccountBalanceWalletIcon />}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Buy now
-                  </Button>
-                )}
-              {((!isOwner && isErc721) || !isErc721) && (
+          <Box
+            className={buttonsContainer}
+            style={{ justifyContent: 'space-around' }}
+          >
+            {!!ordersMap?.sellOrders &&
+              ordersMap?.sellOrders.length > 0 &&
+              (ordersMap.sellOrders[0].onlyTo === AddressZero ||
+                ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
                 <Button
+                  style={{ background: 'green' }}
                   onClick={() => {
-                    setBidDialogOpen(true);
-                    setBidData({
-                      orderType: OrderType.BUY,
-                      asset,
+                    setPurchaseDialogOpen(true);
+                    setPurchaseData({
+                      order: ordersMap.sellOrders?.[0] as Order,
+                      orderType: OrderType.SELL,
                       decimals,
-                      name: tokenName,
                       symbol: tokenSymbol,
+                      name: tokenName,
                       approvedPaymentCurrency,
                     });
                   }}
@@ -658,113 +626,132 @@ const TokenPage = () => {
                   variant="contained"
                   color="primary"
                 >
-                  Make an offer
+                  Buy now
                 </Button>
               )}
-              {isOwner && (
-                <Button
-                  onClick={() => {
-                    setBidDialogOpen(true);
-                    setBidData({
-                      orderType: OrderType.SELL,
-                      asset,
-                      decimals,
-                      name: tokenName,
-                      symbol: tokenSymbol,
-                      approvedPaymentCurrency,
-                    });
-                  }}
-                  startIcon={<MoneyIcon />}
-                  variant="outlined"
-                  color="primary"
-                  className={newSellButton}
-                >
-                  New sell offer
-                </Button>
-              )}
-              {isOwner && (
-                <Button
-                  onClick={() => {
-                    setTransferDialogOpen(true);
-                    setTransferData({ asset, decimals });
-                  }}
-                  startIcon={<SyncAltIcon />}
-                  variant="outlined"
-                  color="primary"
-                  className={transferButton}
-                >
-                  Transfer
-                </Button>
-              )}
-            </Box>
-            <Box className={externals}>
-              {rawCollection?.plotMap && (
-                <ExternalLink href={rawCollection?.plotMap}>
-                  <Button>Plot map↗</Button>
-                </ExternalLink>
-              )}
-              {minecraftskin && (
-                <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
-                  <Button>Minecraft skin↗</Button>
-                </ExternalLink>
-              )}
-              {assetMeta?.external_url && (
-                <ExternalLink href={assetMeta?.external_url}>
-                  <Button>External site↗</Button>
-                </ExternalLink>
-              )}
-              {staticData?.[0]?.tokenURI && (
-                <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
-                  <Button>Full metadata↗</Button>
-                </ExternalLink>
-              )}
-              <ExternalLink
-                href={getExplorerLink(
-                  chainId ?? ChainId.MOONRIVER,
-                  asset?.assetAddress,
-                  'address'
-                )}
+            {((!isOwner && isErc721) || !isErc721) && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({
+                    orderType: OrderType.BUY,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
+                }}
+                startIcon={<AccountBalanceWalletIcon />}
+                variant="contained"
+                color="primary"
               >
-                <Button>Check the contract↗</Button>
+                Make an offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({
+                    orderType: OrderType.SELL,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
+                }}
+                startIcon={<MoneyIcon />}
+                variant="outlined"
+                color="primary"
+                className={newSellButton}
+              >
+                New sell offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setTransferDialogOpen(true);
+                  setTransferData({ asset, decimals });
+                }}
+                startIcon={<SyncAltIcon />}
+                variant="outlined"
+                color="primary"
+                className={transferButton}
+              >
+                Transfer
+              </Button>
+            )}
+          </Box>
+          <Box className={externals}>
+            {rawCollection?.plotMap && (
+              <ExternalLink href={rawCollection?.plotMap}>
+                <Button>Plot map↗</Button>
               </ExternalLink>
-            </Box>
-          </Paper>
-        </Grid>
-        <Tabs
-          containerClassName={tabsContainer}
-          tabsClassName={tabs}
-          tabs={[
-            {
-              label: 'Buy Offers',
-              view: (
-                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                  {geTableHeader()}
-                  {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
-                </Table>
-              ),
-            },
-            {
-              label: 'Sell Offers',
-              view: (
-                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                  {geTableHeader()}
-                  {getTableBody(ordersMap?.sellOrders, OrderType.SELL)}
-                </Table>
-              ),
-            },
-            {
-              label: 'Your Offers',
-              view: (
-                <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                  {geTableHeader()}
-                  {getTableBody(ordersMap?.userOrders)}
-                </Table>
-              ),
-            },
-          ]}
-        />
-        <div style={{ marginTop: 40, width: '100%' }} />
+            )}
+            {minecraftskin && (
+              <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
+                <Button>Minecraft skin↗</Button>
+              </ExternalLink>
+            )}
+            {assetMeta?.external_url && (
+              <ExternalLink href={assetMeta?.external_url}>
+                <Button>External site↗</Button>
+              </ExternalLink>
+            )}
+            {staticData?.[0]?.tokenURI && (
+              <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
+                <Button>Full metadata↗</Button>
+              </ExternalLink>
+            )}
+            <ExternalLink
+              href={getExplorerLink(
+                chainId ?? ChainId.MOONRIVER,
+                asset?.assetAddress,
+                'address'
+              )}
+            >
+              <Button>Check the contract↗</Button>
+            </ExternalLink>
+          </Box>
+        </Paper>
       </Grid>
+      <Tabs
+        containerClassName={tabsContainer}
+        tabsClassName={tabs}
+        tabs={[
+          {
+            label: 'Buy Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
+              </Table>
+            ),
+          },
+          {
+            label: 'Sell Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.sellOrders, OrderType.SELL)}
+              </Table>
+            ),
+          },
+          {
+            label: 'Your Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.userOrders)}
+              </Table>
+            ),
+          },
+        ]}
+      />
+      <div style={{ marginTop: 40, width: '100%' }} />
     </Grid>
   );
 };

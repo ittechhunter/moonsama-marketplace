@@ -7,8 +7,6 @@ export const styles = (theme: Theme) => ({
     marginBottom: theme.spacing(5),
   },
   imageContainer: {
-    display: 'flex',
-    justifyContent: 'flex-start',
     maxWidth: '60%',
     maxHeight: '80%',
     marginBottom: '20px',
@@ -18,16 +16,12 @@ export const styles = (theme: Theme) => ({
     },
   },
   image: {
-    width: '70%',
+    width: '100%',
     height: 'auto',
     borderRadius: 0,
     objectFit: 'contain',
     background: '#111',
     backgroundSize: 'cover',
-
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
   },
   name: {
     marginBottom: theme.spacing(1),
