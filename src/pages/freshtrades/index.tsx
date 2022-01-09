@@ -9,7 +9,7 @@ import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStat
 import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { GlitchText, Loader } from 'ui';
 import { styles } from './styles';
@@ -28,20 +28,9 @@ const FreshTradesPage = () => {
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
 
-  const {
-    placeholderContainer,
-    container,
-    scene,
-    canvas,
-    poster,
-    glass,
-    nftWrapper,
-    filterChip,
-  } = useClasses(styles);
+  const { placeholderContainer, container, filterChip } = useClasses(styles);
 
-  const sceneRef = useRef(null);
   const canvasRef = useRef(null);
-  const posterRef = useRef(null);
   const glassRef = useRef(null);
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
@@ -97,44 +86,6 @@ const FreshTradesPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCounter, paginationEnded, selectedTokenAddress]);
-
-  const handleTouchMove = (event: any): void => {
-    event.preventDefault();
-
-    const x = event.touches[0].pageX;
-    const y = event.touches[0].pageY;
-
-    updateRotation(x, y);
-  };
-
-  const handleMouseMove = (event: any): void => {
-    const x = event.pageX;
-    const y = event.pageY;
-    console.log(event);
-    updateRotation(x, y);
-  };
-
-  const updateRotation = (x: number, y: number) => {
-    console.log(x, y);
-    if (!!glassRef.current && !!canvasRef.current) {
-      const yAxisRotation =
-        (x - window.innerWidth / 8) * (80 / window.innerWidth);
-      const xAxisRotation =
-        (y - window.innerHeight / 8) * (-80 / window.innerHeight);
-
-      const transformations = [
-        'translate(-50%, -50%)',
-        'rotateY(' + yAxisRotation + 'deg)',
-        'rotateX(' + xAxisRotation + 'deg)',
-      ];
-
-      // @ts-ignore
-      glassRef.current.style.backgroundPosition =
-        500 - yAxisRotation * 5 + 'px ' + (xAxisRotation * 5 + 'px');
-      // @ts-ignore
-      canvasRef.current.style.transform = transformations.join(' ');
-    }
-  };
 
   const handleSelection = (i: number | undefined) => {
     if (i !== selectedIndex) {

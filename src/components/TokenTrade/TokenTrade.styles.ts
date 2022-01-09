@@ -26,7 +26,6 @@ export const styles = (theme: Theme) => ({
     backgroundSize: 'cover',
   },
   nameContainer: {
-    marginTop: 20,
     display: 'flex',
     fontSize: 16,
     justifyContent: 'space-between',
@@ -34,16 +33,13 @@ export const styles = (theme: Theme) => ({
   stockContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 12,
   },
   lastPriceContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 12,
   },
   bidContainer: {
     display: 'flex',
-    marginTop: 12,
   },
   tokenName: {
     overflow: 'hidden',
@@ -57,6 +53,7 @@ export const styles = (theme: Theme) => ({
   },
   mr: {
     fontSize: '12px',
+    lineHeight: 2,
     marginRight: theme.spacing(1),
   },
 });

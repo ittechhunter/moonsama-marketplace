@@ -28,21 +28,7 @@ const AuctionListPage = () => {
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
 
-  const {
-    placeholderContainer,
-    container,
-    scene,
-    canvas,
-    poster,
-    glass,
-    nftWrapper,
-    filterChip,
-  } = useClasses(styles);
-
-  const sceneRef = useRef(null);
-  const canvasRef = useRef(null);
-  const posterRef = useRef(null);
-  const glassRef = useRef(null);
+  const { placeholderContainer, container, filterChip } = useClasses(styles);
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
   const collections = useRawCollectionsFromList();
@@ -111,7 +97,7 @@ const AuctionListPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText variant="h1">Latest trades</GlitchText>
+        <GlitchText variant="h1">Active Auctions</GlitchText>
       </div>
       <Grid container display="flex" justifyContent="center">
         <Stack
@@ -121,8 +107,8 @@ const AuctionListPage = () => {
           alignItems="center"
         >
           <Chip
-            key={`all`}
-            label={'All'}
+            key="all"
+            label="All"
             variant="outlined"
             onClick={() => handleSelection(undefined)}
             className={`${filterChip}${
