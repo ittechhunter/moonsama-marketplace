@@ -9,7 +9,7 @@
     "eject": "react-scripts eject",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "format": "prettier --write src",
-    "lint": "eslint --ext js,jsx,ts,tsx --fix",
+    "lint": "eslint src --ext ts --ext tsx --ext js",
     "postinstall": "husky install"
   },
   "dependencies": {

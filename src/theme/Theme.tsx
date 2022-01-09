@@ -32,7 +32,7 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
           cursor: 'pointer',
         },
         '*::-webkit-scrollbar-track': {
-          '-webkit-box-shadow': 'inset 0 0 6px rgba(0, 0, 0, 0)',
+          '*WebkitBoxShadow': 'inset 0 0 6px rgba(0, 0, 0, 0)',
         },
         '*::-webkit-scrollbar-thumb': {
           backgroundColor: 'rgba(210, 2, 62, 1)',

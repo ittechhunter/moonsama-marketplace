@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Media } from 'components';
@@ -108,7 +109,6 @@ export const TokenTrade = ({
         tabIndex={0}
       >
         <Media uri={meta?.image} className={image} />
-        {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName} style={{ margin: '7px 0 0' }}>
@@ -122,9 +122,11 @@ export const TokenTrade = ({
             ? `${meta?.name} #${truncateHexString(asset.assetId)}`
             : `#${truncateHexString(asset.assetId)}`}
         </GlitchText>
-        <PriceBox margin={false} size="small" color={actionColor}>
-          {ppuDisplay}
-        </PriceBox>
+        <Box textAlign="right">
+          <PriceBox margin={false} size="small" color={actionColor}>
+            {ppuDisplay}
+          </PriceBox>
+        </Box>
       </div>
       <div className={stockContainer}>
         {staticData?.symbol && (

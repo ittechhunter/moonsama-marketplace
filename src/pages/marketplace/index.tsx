@@ -47,8 +47,8 @@ const MarketplacePage = () => {
   //const x = useMulticall2Static(s?.interface.fragments as any[], [['0xDC5b69374207a18e75F7cdCf5176CA63911e690d', 'balanceOf', [account]], ['0x1369eA55a479CC2A334ACa55e250DC5161677442', 'balanceOf', [account]]])
 
   const x = useMarketplaceBalances([
-    {
-      tokenAddress: '0xDC5b69374207a18e75F7cdCf5176CA63911e690d',
+ 
+    tokenAddress: '0xDC5b69374207a18e75F7cdCf5176CA63911e690d',
       tokenId: '0',
       tokenType: AssetType.ERC20,
       userAddress: account as string,

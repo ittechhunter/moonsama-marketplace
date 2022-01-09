@@ -11,6 +11,7 @@ import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
 import { CollectionListPage } from './collection-list';
 import MyNFTsPage from './mynfts';
 import { SubcollectionListPage } from './subcollection-list';
+import AuctionListPage from './auctions';
 
 export const Routing = () => (
   <Switch>
@@ -47,6 +48,9 @@ export const Routing = () => (
     </Route>
     <Route path="/subcollections/:address">
       <SubcollectionListPage />
+    </Route>
+    <Route path="/auctions">
+      <AuctionListPage />
     </Route>
   </Switch>
 );

@@ -9,14 +9,14 @@ import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStat
 import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { GlitchText, Loader } from 'ui';
 import { styles } from './styles';
 
 const PAGE_SIZE = 10;
 
-const FreshTradesPage = () => {
+const AuctionListPage = () => {
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
@@ -29,9 +29,6 @@ const FreshTradesPage = () => {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
 
   const { placeholderContainer, container, filterChip } = useClasses(styles);
-
-  const canvasRef = useRef(null);
-  const glassRef = useRef(null);
 
   const getPaginatedItems = useLatestTradesWithStaticCallback();
   const collections = useRawCollectionsFromList();
@@ -100,7 +97,7 @@ const FreshTradesPage = () => {
   return (
     <>
       <div className={container}>
-        <GlitchText variant="h1">Latest trades</GlitchText>
+        <GlitchText variant="h1">Active Auctions</GlitchText>
       </div>
       <Grid container display="flex" justifyContent="center">
         <Stack
@@ -110,8 +107,8 @@ const FreshTradesPage = () => {
           alignItems="center"
         >
           <Chip
-            key={`all`}
-            label={'All'}
+            key="all"
+            label="All"
             variant="outlined"
             onClick={() => handleSelection(undefined)}
             className={`${filterChip}${
@@ -155,21 +152,9 @@ const FreshTradesPage = () => {
         <div className={placeholderContainer}>
           <Loader />
         </div>
-        // <div className={nftWrapper}>
-        //   <div ref={sceneRef} className={scene} onTouchMove={handleTouchMove} onMouseMove={handleMouseMove}>
-        //     <div ref={canvasRef} className={canvas}>
-        //       <div ref={posterRef} className={poster}>
-        //           efwefw
-        //       </div>
-        //       <div ref={glassRef} className={glass}>
-        //
-        //       </div>
-        //     </div>
-        //   </div>
-        // </div>
       )}
     </>
   );
 };
 
-export default FreshTradesPage;
+export default AuctionListPage;

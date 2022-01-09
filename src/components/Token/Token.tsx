@@ -1,5 +1,4 @@
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import { Paper, Typography } from '@mui/material';
 import { Media } from 'components';
 import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
@@ -48,13 +47,6 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  /*
-  const ltp = useLastTradedPriceOnce({
-    assetAddress: asset.assetAddress,
-    assetId: asset.assetId,
-  });
-  */
-
   const getOrderCB = useAssetOrdersCallback(
     asset.assetAddress,
     asset.assetId,
@@ -94,15 +86,6 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
 
   const orderType = stringToOrderType(finalOrder?.orderType);
 
-  /*
-  const color =
-    ltp?.orderType.valueOf() === StringOrderType.BUY.valueOf()
-      ? 'green'
-      : '#b90e0e';
-  */
-  //console.log('STATIC',{staticData})
-
-  //console.log('ORDERTYPE', { orderType, original: finalOrder?.orderType })
   const color = orderType === OrderType.BUY ? 'green' : '#b90e0e';
 
   const decimals =
@@ -142,7 +125,6 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
       >
         <div role="button" className={imageContainer} tabIndex={0}>
           <Media uri={meta?.image} className={image} />
-          {/*<img src={LootBox} style={{width: '100%', height: 'auto'}}/>*/}
         </div>
         <div className={nameContainer}>
           <GlitchText
@@ -174,14 +156,6 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
             <Typography color="textSecondary">{totalSupplyString}</Typography>
           )}
         </div>
-        {/*{ltp && <div className={lastPriceContainer}>
-        <Typography color="textSecondary" noWrap className={mr}>
-          Last trade
-        </Typography>
-        <PriceBox margin={true} size="small" color='white'>
-          {Fraction.from(ltp.unitPrice, 18)?.toFixed(2)} {currency.symbol}
-        </PriceBox>
-      </div>}*/}
       </div>
     </Paper>
   );
