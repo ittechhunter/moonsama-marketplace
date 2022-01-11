@@ -16,7 +16,7 @@ export const Header = ({ children }: { children: ReactNode }) => {
         {!mhidden && (
           <div>
             <Marquee className={marquee} gradient={false} pauseOnHover={true}>
-              The second batch of
+              The final batch of
               <Link
                 className={marqueeLink}
                 to={
@@ -25,7 +25,7 @@ export const Header = ({ children }: { children: ReactNode }) => {
               >
                 Multiverse Art
               </Link>
-              auction ends on Jan 8, 5:00 PM UTC.
+              auction ends on Jan 15, 5:00 PM UTC.
             </Marquee>
             <X
               className={marqueeClose}
