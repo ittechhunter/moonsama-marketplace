@@ -44,9 +44,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   style={{ display: 'flex' }}
                   onClick={() => setIsDrawerOpened(false)}
                 >
-                  <NavLink href="/auctions" className={navItem}>
+                  {/*<NavLink href="/auctions" className={navItem}>
                     Auctions
-                  </NavLink>
+                  </NavLink>*/}
                   <NavLink href="/collections" className={navItem}>
                     Collections
                   </NavLink>
@@ -75,9 +75,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   onClick={() => setIsDrawerOpened(false)}
                 >
                   <Box>
-                    <NavLink href="/auctions" className={navItemDrawer}>
+                    {/*<NavLink href="/auctions" className={navItemDrawer}>
                       Auctions
-                    </NavLink>
+                    </NavLink>*/}
                     <NavLink href="/collections" className={navItemDrawer}>
                       Collections
                     </NavLink>
