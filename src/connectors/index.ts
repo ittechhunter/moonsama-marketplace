@@ -11,13 +11,11 @@ import {
   WalletConnectConnector,
   UserRejectedRequestError as UserRejectedRequestErrorWalletConnect,
 } from '@web3-react/walletconnect-connector';
-import { CHAIN_ID, POLLING_INTERVAL } from '../constants';
+import { CHAIN_ID, DEFAULT_CHAIN, PERMISSIONED_CHAINS, POLLING_INTERVAL, RPC_URLS } from '../constants';
 
-export const RPC_URL = process.env.REACT_APP_RPC_URL?.trim();
-
-if (typeof RPC_URL === 'undefined') {
-  throw new Error(`REACT_APP_RPC_URL must be a defined environment variable`);
-}
+// if (typeof RPC_URL === 'undefined') {
+//   throw new Error(`REACT_APP_RPC_URL must be a defined environment variable`);
+// }
 
 export const getConnectorErrorMessage = (error: Error) => {
   if (error instanceof NoEthereumProviderError) {
@@ -42,20 +40,21 @@ export const getLibrary = (provider: ExternalProvider) => {
 };
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [CHAIN_ID],
+  supportedChainIds: PERMISSIONED_CHAINS,
 });
 
 export const network = new NetworkConnector({
-  urls: { [CHAIN_ID]: RPC_URL },
+  urls: RPC_URLS,
+  defaultChainId: DEFAULT_CHAIN
 });
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: { [CHAIN_ID]: RPC_URL },
+  rpc: RPC_URLS,
   qrcode: true,
   pollingInterval: 5000,
   bridge: 'https://bridge.walletconnect.org',
-  chainId: CHAIN_ID,
-  supportedChainIds: [CHAIN_ID],
+  //chainId: CHAIN_ID,
+  supportedChainIds: PERMISSIONED_CHAINS,
 });
 
 export interface WalletInfo {

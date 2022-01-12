@@ -1,4 +1,4 @@
-import { SUBGRAPH_URL } from '../../constants';
+import { DEFAULT_CHAIN, MARKETPLACE_SUBGRAPH_URLS } from '../../constants';
 import { request } from 'graphql-request';
 import { inferOrderTYpe, OrderType, parseFillWithOrder } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
@@ -25,7 +25,7 @@ export const useLatestTradesWithStaticCallback = () => {
 
       while (fills.length < num) {
         const query = QUERY_LATEST_FILLS(skip, num);
-        const response = await request(SUBGRAPH_URL, query);
+        const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
 
         console.debug('YOLO useLatestTradesWithStaticCallback', response);
 
@@ -94,7 +94,7 @@ export const useLatestTradesForTokenWithStaticCallback = () => {
   const fetchLatestTradesWithStatic = useCallback(
     async (num: number, offset: number) => {
       const query = QUERY_LATEST_FILLS(offset, num);
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
 
       console.debug('YOLO useLatestTradesForTokenWithStaticCallback', response);
 

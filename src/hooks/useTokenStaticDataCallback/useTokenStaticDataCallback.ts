@@ -23,7 +23,7 @@ import { useMoonsamaAttrIds } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsama
 import { parseEther } from '@ethersproject/units';
 import { QUERY_ACTIVE_ORDERS_FOR_FILTER } from 'subgraph/orderQueries';
 import request from 'graphql-request';
-import { SUBGRAPH_URL } from '../../constants';
+import { DEFAULT_CHAIN, MARKETPLACE_SUBGRAPH_URLS } from '../../constants';
 import { TEN_POW_18 } from 'utils';
 import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 
@@ -312,7 +312,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
           rangeInWei[1].toString()
         );
 
-        const result = await request(SUBGRAPH_URL, query);
+        const result = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
         console.log('YOLO getOrders', result);
 
         const orders = result?.orders;

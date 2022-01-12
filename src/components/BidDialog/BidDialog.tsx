@@ -27,9 +27,9 @@ import { OrderType, StringAssetType } from 'utils/subgraph';
 import { AddressZero } from '@ethersproject/constants';
 import {
   ChainId,
-  PROTOCOL_FEE_BPS,
-  FRACTION_TO_BPS,
   STRATEGY_SIMPLE,
+  NATIVE_TOKEN_SYMBOL,
+  DEFAULT_CHAIN,
 } from '../../constants';
 import { useBalances } from 'hooks/useBalances/useBalances';
 import { useFees } from 'hooks/useFees/useFees';
@@ -551,7 +551,7 @@ export const BidDialog = () => {
                 >
                   <Grid item>
                     <Typography className={formLabel}>
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -681,7 +681,7 @@ export const BidDialog = () => {
                     </Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
                       {Fraction.from(brutto.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
@@ -692,7 +692,7 @@ export const BidDialog = () => {
                       </Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
@@ -702,7 +702,7 @@ export const BidDialog = () => {
                       <Typography className={formLabel}>Royalty fee</Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
@@ -711,7 +711,7 @@ export const BidDialog = () => {
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet} ${spaceOnLeft}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 </>
@@ -724,7 +724,7 @@ export const BidDialog = () => {
                     <Typography className={`${formValue} ${spaceOnLeft}`}>
                       {Fraction.from(sellBalance?.toString(), 18)?.toFixed(5) ??
                         '?'}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
@@ -740,7 +740,7 @@ export const BidDialog = () => {
                     </Typography>
                     <Typography className={`${formValue} ${spaceOnLeft}`}>
                       {Fraction.from(orderAmount.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
@@ -751,7 +751,7 @@ export const BidDialog = () => {
                       </Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
@@ -761,7 +761,7 @@ export const BidDialog = () => {
                       <Typography className={formLabel}>Royalty fee</Typography>
                       <Typography className={`${formValue} ${spaceOnLeft}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
@@ -772,7 +772,7 @@ export const BidDialog = () => {
                     </Typography>
                     <Typography className={`${formValueGive} ${spaceOnLeft}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 </>

@@ -2,7 +2,7 @@ import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { TokenTrade } from 'components/TokenTrade/TokenTrade';
-import { useClasses } from 'hooks';
+import { useActiveWeb3React, useClasses } from 'hooks';
 import { FillWithOrder } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { useLatestTradesWithStaticCallback } from 'hooks/useLatestTradesWithStaticCallback/useLatestTradesWithStaticCallback';
@@ -17,6 +17,7 @@ import { styles } from './styles';
 const PAGE_SIZE = 10;
 
 const FreshTradesPage = () => {
+  const {chainId} = useActiveWeb3React()
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
@@ -27,18 +28,26 @@ const FreshTradesPage = () => {
   const [take, setTake] = useState<number>(0);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
-
-  const { placeholderContainer, container, filterChip } = useClasses(styles);
-
-  const canvasRef = useRef(null);
-  const glassRef = useRef(null);
-
-  const getPaginatedItems = useLatestTradesWithStaticCallback();
-  const collections = useRawCollectionsFromList();
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>(
     undefined
   );
   const [searchCounter, setSearchCounter] = useState<number>(0);
+
+  useEffect(() => {
+    if (chainId) {
+      setCollection([])
+      setSelectedIndex(undefined)
+      setTake(0)
+      setSearchCounter(0)
+      setPaginationEnded(false)
+      setPageLoading(false)
+    }
+  }, [chainId])
+
+  const { placeholderContainer, container, filterChip } = useClasses(styles);
+
+  const getPaginatedItems = useLatestTradesWithStaticCallback();
+  const collections = useRawCollectionsFromList();  
 
   const handleScrollToBottom = useCallback(() => {
     setTake((state) => (state += PAGE_SIZE));

@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import WhiteLogo from 'assets/images/logo-white.svg';
 import { useMediaQuery } from 'beautiful-react-hooks';
 import { Account } from 'components';
+import { ConnectedNetwork } from 'components/ConnectedNetwork/ConnectedNetwork';
 import { useClasses } from 'hooks';
 import { useState } from 'react';
 import { Drawer, Footer, Header, NavLink } from 'ui';
@@ -97,6 +98,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 </Drawer>
               )}
 
+              <ConnectedNetwork />
               <Account />
             </Grid>
           </Grid>

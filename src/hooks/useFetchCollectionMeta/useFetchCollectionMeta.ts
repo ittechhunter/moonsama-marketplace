@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { RawCollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import { useFetchUrlCallback } from 'hooks/useFetchUrlCallback/useFetchUrlCallback';
 import uriToHttp from 'utils/uriToHttp';
+import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 
 export type CollectionMeta = {
   name: string;
@@ -15,9 +16,11 @@ export type CollectionMeta = {
 export function useFetchCollectionMeta(
   uris: { contractURI: string }[] | undefined
 ): (CollectionMeta | undefined)[] {
+  //const {chainId} = useActiveWeb3React()
   const [metas, setMetas] = useState<(CollectionMeta | undefined)[]>([]);
 
   const cb = useFetchUrlCallback();
+  const stringifiedUris = JSON.stringify(uris)
 
   const fetchMetas = useCallback(async () => {
     if (!uris) {
@@ -38,13 +41,13 @@ export function useFetchCollectionMeta(
     const metas = await Promise.all(promises);
 
     setMetas(metas);
-  }, [uris, cb]);
+  }, [stringifiedUris, cb]);
 
   useEffect(() => {
     if (uris) {
       fetchMetas();
     }
-  }, [uris]);
+  }, [stringifiedUris]);
 
   return metas;
 }

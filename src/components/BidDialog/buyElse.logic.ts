@@ -40,7 +40,7 @@ export const buyElse = ({
     quantityError = 'Invalid quantity value';
   }
 
-  // order amount in MOVR
+  // order amount in NATIVE CURRENCY
   orderAmount = ppu && quantity ? ppu.mul(quantity) : BigNumber.from('0');
   amountToApprove = orderAmount;
 

@@ -1,4 +1,3 @@
-import { NFT_SUBGRAPH_URL } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { request } from 'graphql-request';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';

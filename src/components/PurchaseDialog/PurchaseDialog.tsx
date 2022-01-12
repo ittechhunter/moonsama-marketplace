@@ -9,7 +9,7 @@ import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDial
 import { Dialog, Button } from 'ui';
 import { styles } from './PurchaseDialog.styles';
 import { SuccessIcon } from 'icons';
-import { ChainId, FRACTION_TO_BPS, PROTOCOL_FEE_BPS } from '../../constants';
+import { ChainId, DEFAULT_CHAIN, FRACTION_TO_BPS, NATIVE_TOKEN_SYMBOL, PROTOCOL_FEE_BPS } from '../../constants';
 import { useActiveWeb3React, useClasses } from 'hooks';
 import {
   getQuantity,
@@ -471,7 +471,7 @@ export const PurchaseDialog = () => {
                     justifyContent: 'flex-end',
                   }}
                 >
-                  {displayppu} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                  {displayppu} {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                 </div>
               </div>
               <div className={col}>
@@ -545,7 +545,7 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>You get brutto</Typography>
                   <Typography className={formValueGet}>
-                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
@@ -554,7 +554,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Protocol fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -564,7 +564,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Royalty fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -574,7 +574,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -629,7 +629,7 @@ export const PurchaseDialog = () => {
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
                     {displayBalance ?? '?'}{' '}
-                    {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
@@ -637,7 +637,7 @@ export const PurchaseDialog = () => {
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
                     {userGiveDisplay}{' '}
-                    {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
               </>

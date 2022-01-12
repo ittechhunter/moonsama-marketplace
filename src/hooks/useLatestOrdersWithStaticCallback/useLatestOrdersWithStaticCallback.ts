@@ -1,7 +1,5 @@
 import {
-  ChainId,
-  DEFAULT_ORDERBOOK_PAGINATION,
-  SUBGRAPH_URL,
+  ChainId, DEFAULT_CHAIN, MARKETPLACE_SUBGRAPH_URLS
 } from '../../constants';
 import { request } from 'graphql-request';
 import { inferOrderTYpe, OrderType, parseOrder } from 'utils/subgraph';
@@ -31,7 +29,7 @@ export const useLatestOrdersWithStaticCallback = () => {
     async (num: number, offset: number) => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_ORDERS(offset, num);
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -49,7 +47,7 @@ export const useLatestBuyOrdersWithStaticCallback = () => {
     async (num: number, offset: number) => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_BUY_ORDERS(`${AddressZero}-0`, offset, num);
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -67,7 +65,7 @@ export const useLatestSellOrdersWithStaticCallback = () => {
     async (num: number, offset: number) => {
       console.log('order query', offset, num);
       const query = QUERY_LATEST_SELL_ORDERS(`${AddressZero}-0`, offset, num);
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -90,7 +88,7 @@ export const useLatestSellOrdersForTokenWithStaticCallback = () => {
         offset,
         num
       );
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -113,7 +111,7 @@ export const useLatestBuyOrdersForTokenWithStaticCallback = () => {
         offset,
         num
       );
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -138,7 +136,7 @@ export const useLatestSellOrdersWithoutTokenWithStaticCallback = (
         offset,
         num
       );
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },
@@ -163,7 +161,7 @@ export const useLatestBuyOrdersWithoutTokenWithStaticCallback = (
         offset,
         num
       );
-      const response = await request(SUBGRAPH_URL, query);
+      const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
       const datas = await orderProcessCore(chainId, response, staticCallback);
       return datas;
     },

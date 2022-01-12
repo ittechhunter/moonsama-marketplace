@@ -21,7 +21,7 @@ const MyNFTsPage = () => {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const { placeholderContainer, container, subContainer } = useClasses(styles);
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const getPaginatedItems = useUserCollection();
 
@@ -35,7 +35,7 @@ const MyNFTsPage = () => {
 
     getCollectionById();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [chainId, account]);
 
   return (
     <>

@@ -47,6 +47,8 @@ const geTableHeader = () => {
 };
 
 const FreshOrdersPage = () => {
+  const { chainId } = useActiveWeb3React();
+
   const [buyOrders, setBuyOrders] = useState<
     {
       meta: TokenMeta | undefined;
@@ -72,6 +74,19 @@ const FreshOrdersPage = () => {
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [isDrawerOpened, setIsDrawerOpened] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (chainId) {
+      setBuyOrders([]);
+      setSellOrders([]);
+      setSelectedIndex(collections.findIndex((x) => (x.display_name = 'Moonsama')) ?? 0)
+      setTake(0)
+      setPaginationEnded(false)
+      setPageLoading(false)
+      setIsDrawerOpened(false)
+    }
+  }, [chainId, JSON.stringify(collections)])
+
   const {
     placeholderContainer,
     container,
@@ -86,7 +101,6 @@ const FreshOrdersPage = () => {
   } = useClasses(styles);
   const whitelist = useWhitelistedAddresses(); // REMOVEME later
 
-  const { chainId } = useActiveWeb3React();
   const getPaginatedSellOrders =
     useLatestSellOrdersForTokenWithStaticCallback();
   const getPaginatedBuyOrders = useLatestBuyOrdersForTokenWithStaticCallback();

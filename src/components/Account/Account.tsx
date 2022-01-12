@@ -26,7 +26,7 @@ export const Account = () => {
         className={button}
         size="medium"
         onClick={() => setAccountDialogOpen(true)}
-      >
+      > 
         {account && <HeaderBalance />}
 
         {showError ? (

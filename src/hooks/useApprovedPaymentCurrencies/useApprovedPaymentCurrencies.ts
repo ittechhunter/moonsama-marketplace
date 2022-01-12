@@ -1,5 +1,7 @@
 import { AddressZero } from '@ethersproject/constants';
-import { Asset } from 'hooks/marketplace/types';
+import { NATIVE_TOKEN_SYMBOL, DEFAULT_CHAIN } from '../../constants';
+import { useActiveWeb3React } from '../../hooks';
+import { Asset } from '../../hooks/marketplace/types';
 import { useCallback, useMemo } from 'react';
 import {
   getAssetEntityId,
@@ -19,6 +21,7 @@ export const useApprovedPaymentCurrency = (asset: {
   assetAddress: string;
   assetId?: string;
 }): Asset & { symbol: string } => {
+  const {chainId} = useActiveWeb3React()
   return useMemo(() => {
     let customCurrency = undefined;
     try {
@@ -33,7 +36,7 @@ export const useApprovedPaymentCurrency = (asset: {
         assetId: '0',
         assetType: StringAssetType.NATIVE,
         id: `${AddressZero}-0`,
-        symbol: 'MOVR',
+        symbol: NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN],
       };
     }
     return {
@@ -41,10 +44,11 @@ export const useApprovedPaymentCurrency = (asset: {
       id: getAssetEntityId(customCurrency.assetAddress, customCurrency.assetId),
       assetType: stringToStringAssetType(customCurrency.assetType),
     };
-  }, [asset.assetAddress, asset.assetId]);
+  }, [chainId, asset.assetAddress, asset.assetId]);
 };
 
 export const useApprovedPaymentCurrencyCallback = () => {
+  const {chainId} = useActiveWeb3React()
   const cb = useCallback(
     (asset: { assetAddress: string; assetId?: string }) => {
       let customCurrency = undefined;
@@ -60,7 +64,7 @@ export const useApprovedPaymentCurrencyCallback = () => {
           assetId: '0',
           assetType: StringAssetType.NATIVE,
           id: `${AddressZero}-0`,
-          symbol: 'MOVR',
+          symbol: NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN],
         };
       }
       return {
@@ -72,7 +76,7 @@ export const useApprovedPaymentCurrencyCallback = () => {
         assetType: stringToStringAssetType(customCurrency.assetType),
       };
     },
-    []
+    [chainId]
   );
 
   return cb;
