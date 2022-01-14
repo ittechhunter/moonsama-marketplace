@@ -5,6 +5,7 @@ import {
   Collapse,
   FormControl,
   Grid,
+  Stack,
   IconButton,
   OutlinedInput,
   Switch,
@@ -105,6 +106,10 @@ export const BidDialog = () => {
     formValueGive,
     formValueGet,
     spaceOnLeft,
+    flexEnd,
+    columGap,
+    placeButtonTopSpace,
+    mr15,
     fieldError,
     formButton,
     expand,
@@ -486,7 +491,7 @@ export const BidDialog = () => {
       );
     }
     return (
-      <>
+      <Stack spacing={2}>
         <Grid container spacing={1} justifyContent="center">
           <Grid item md={12} xs={12}>
             <Box className={formBox}>
@@ -519,7 +524,7 @@ export const BidDialog = () => {
 
               <div className={inputContainer}>
                 <Typography className={formLabel}>
-                  Quantity to {action} *
+                  Quantity to {action}
                 </Typography>
                 {!isAssetErc721 && (
                   <CoinQuantityField
@@ -541,7 +546,7 @@ export const BidDialog = () => {
               )}
 
               <div className={inputContainer}>
-                <Typography className={formLabel}>Price per unit *</Typography>
+                <Typography className={formLabel}>Price per unit</Typography>
                 <Grid
                   container
                   spacing={1}
@@ -629,8 +634,7 @@ export const BidDialog = () => {
                   </LocalizationProvider>
                 </div>
                 <div className={infoContainer}>
-                  <Typography>Exclusive to</Typography>
-
+                  <Typography className={mr15}>Exclusive to</Typography>
                   <FormControl className={formValue} variant="outlined">
                     {/* <Controller */}
                     {/* control={control} */}
@@ -663,23 +667,26 @@ export const BidDialog = () => {
               {orderType?.valueOf() === OrderType.SELL && (
                 <>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You have</Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
-                      {displaySellBalance ?? '?'} {symbolString}
-                    </Typography>
+                    <Typography className={`${formLabel} ${mr15}`}>You have</Typography>
+                    <div className={`${flexEnd}`}>
+                      <Typography className={`${formValue}`}>
+                        {displaySellBalance ?? '?'} {symbolString}
+                      </Typography>
+                    </div>
+
                   </div>
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You give</Typography>
-                    <Typography className={`${formValueGive} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You give</Typography>
+                    <Typography className={`${formValueGive}`}>
                       {displayQuantity} {symbolString}
                     </Typography>
                   </div>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You get brutto
                     </Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
+                    <Typography className={`${formValueGet}`}>
                       {Fraction.from(brutto.toString(), 18)?.toFixed(5)}{' '}
                       {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
@@ -687,10 +694,10 @@ export const BidDialog = () => {
 
                   {protocolFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>
+                      <Typography className={`${formLabel} ${mr15}`}>
                         Protocol fee
                       </Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
                         {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
@@ -699,8 +706,8 @@ export const BidDialog = () => {
 
                   {royaltyFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formLabel} ${mr15}`}>Royalty fee</Typography>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
                         {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
@@ -708,8 +715,8 @@ export const BidDialog = () => {
                   )}
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You get netto</Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You get netto</Typography>
+                    <Typography className={`${formValueGet}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
                       {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
@@ -720,8 +727,8 @@ export const BidDialog = () => {
               {orderType?.valueOf() === OrderType.BUY && (
                 <>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You have</Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You have</Typography>
+                    <Typography className={`${formValue}`}>
                       {Fraction.from(sellBalance?.toString(), 18)?.toFixed(5) ??
                         '?'}{' '}
                       {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
@@ -729,16 +736,16 @@ export const BidDialog = () => {
                   </div>
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You get</Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You get</Typography>
+                    <Typography className={`${formValueGet}`}>
                       {displayQuantity} {symbolString}
                     </Typography>
                   </div>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You give brutto
                     </Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
+                    <Typography className={`${formValue}`}>
                       {Fraction.from(orderAmount.toString(), 18)?.toFixed(5)}{' '}
                       {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
@@ -746,10 +753,10 @@ export const BidDialog = () => {
 
                   {protocolFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>
+                      <Typography className={`${formLabel} ${mr15}`}>
                         Protocol fee
                       </Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
                         {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
@@ -758,8 +765,8 @@ export const BidDialog = () => {
 
                   {royaltyFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formLabel} ${mr15}`}>Royalty fee</Typography>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
                         {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
@@ -767,10 +774,10 @@ export const BidDialog = () => {
                   )}
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You give netto
                     </Typography>
-                    <Typography className={`${formValueGive} ${spaceOnLeft}`}>
+                    <Typography className={`${formValueGive}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
                       {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
@@ -787,7 +794,7 @@ export const BidDialog = () => {
               approveCallback();
               setApprovalSubmitted(true);
             }}
-            className={button}
+            className={`${button} ${placeButtonTopSpace}`}
             variant="contained"
             color="primary"
             disabled={approvalState === ApprovalState.PENDING || !hasEnough}
@@ -805,7 +812,7 @@ export const BidDialog = () => {
                 setFinalTxSubmitted(false);
               }
             }}
-            className={formButton}
+            className={`${formButton} ${placeButtonTopSpace}`}
             variant="contained"
             color="primary"
             disabled={
@@ -820,7 +827,7 @@ export const BidDialog = () => {
         <Button className={formButton} onClick={handleClose} color="primary">
           Cancel
         </Button>
-      </>
+      </Stack>
     );
   };
   return (
@@ -828,7 +835,7 @@ export const BidDialog = () => {
       open={isBidDialogOpen}
       onClose={handleClose}
       title={title}
-      maxWidth="md"
+      maxWidth="lg"
     >
       <div className={dialogContainer}>{renderBody()}</div>
     </Dialog>

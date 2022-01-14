@@ -687,7 +687,7 @@ const TokenPage = () => {
           </Box>
           <Box className={externals}>
             {rawCollection?.plotMap && (
-              <ExternalLink href={rawCollection?.plotMap}>
+              <ExternalLink href={!!asset?.assetId ? `${rawCollection?.plotMap}/?plot=${asset?.assetId}` : `${rawCollection?.plotMap}`}>
                 <Button>Plot map↗</Button>
               </ExternalLink>
             )}

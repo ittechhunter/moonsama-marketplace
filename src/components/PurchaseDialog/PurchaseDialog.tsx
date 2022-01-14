@@ -58,7 +58,7 @@ export const PurchaseDialog = () => {
 
   const { chainId, account } = useActiveWeb3React();
 
-  const { dialogContainer, loadingContainer, successIcon, successContainer } =
+  const { dialogContainer, loadingContainer, successIcon, successContainer, columGap } =
     useClasses(styles);
 
   //console.log({ orderLoaded, purchaseData });
@@ -457,23 +457,28 @@ export const PurchaseDialog = () => {
                   {assetAddress ?? '?'}
                 </AddressDisplayComponent>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>ID</div>
                 <div className={`${formValue} ${formValueTokenDetails}`}>
                   {assetId}
                 </div>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>Price per unit</div>
                 <div
                   className={`${formValue} ${formValueTokenDetails}`}
                   style={{
+                    display: 'flex',
                     justifyContent: 'flex-end',
+                    flexWrap: 'nowrap'
                   }}
                 >
-                  {displayppu} {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                  {`${displayppu} ${approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}`}
                 </div>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>{availableLabel}</div>
                 <div
@@ -694,7 +699,7 @@ export const PurchaseDialog = () => {
 
   return (
     <Dialog
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth={true}
       open={isPurchaseDialogOpen}
       onClose={loading ? undefined : handleClose}

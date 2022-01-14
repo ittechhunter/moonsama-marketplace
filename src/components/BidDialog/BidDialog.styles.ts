@@ -42,4 +42,19 @@ export const styles = (theme: Theme) => ({
     height: 'auto',
     marginBottom: theme.spacing(2),
   },
+  flexEnd: {
+    alignSelf: 'flex-end',
+  },
+  flexStart: {
+    alignSelf: 'flex-start',
+  },
+  columGap : {
+    flex: '1 0 15px'
+  },
+  mr15: {
+    paddingRight: '15px'
+  },
+  placeButtonTopSpace: {
+    marginTop: '20px'
+  }
 });

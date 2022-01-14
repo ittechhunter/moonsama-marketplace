@@ -215,7 +215,7 @@ export const collections = {
       address: '0xa17A550871E5F5F692a69a3ABE26e8DBd5991B75',
       display_name: 'Msama MC Plots S1',
       plot: true,
-      plotMap: 'http://season.moonsama.com:8100',
+      plotMap: 'https://mcapi.moonsama.com/plot',
       symbol: 'MMPLOTS1',
       minId: 1,
       maxId: 338,

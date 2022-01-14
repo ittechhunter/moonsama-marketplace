@@ -22,4 +22,7 @@ export const styles = (theme: Theme) => ({
     height: 'auto',
     marginBottom: theme.spacing(2),
   },
+  columGap : {
+    flex: '1 0 15px'
+  }
 });

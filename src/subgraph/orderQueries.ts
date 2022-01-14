@@ -251,7 +251,7 @@ export const QUERY_ACTIVE_ORDERS_FOR_FILTER = (
   query getUserActiveOrders {
     ${META}
     orders(where: {active: true, pricePerUnit_lte: "${upperPPURange}", pricePerUnit_gte: "${lowerPPURange}", ${
-  orderType == OrderType.BUY ? 'buyAsset_in' : 'sellAsset_in'
+  orderType === OrderType.BUY ? 'buyAsset_in' : 'sellAsset_in'
 }: ${assetIdsJSONString}}, orderBy: createdAt, orderDirection: desc) {
       ${ORDER_FIELDS}
     }
