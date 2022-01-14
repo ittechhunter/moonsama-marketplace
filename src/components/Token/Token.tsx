@@ -109,6 +109,17 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
     true
   );
 
+  let displayName = truncateHexString(asset.assetId)
+  if (meta?.name) {
+    if(asset.assetAddress.toLowerCase() === '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf'.toLowerCase()) {
+      displayName = `${meta?.name} #${truncateHexString(asset.assetId)}`
+    } else if (asset.assetAddress.toLowerCase() === '0xa17A550871E5F5F692a69a3ABE26e8DBd5991B75'.toLowerCase()) {
+      displayName = `Plot #${truncateHexString(asset.assetId)}`
+    } else {
+      displayName = `${meta?.name}`
+    }
+  }
+
   const totalSupplyString =
     isErc721 || sup?.toString() === '1'
       ? 'unique'
@@ -133,14 +144,7 @@ export const Token = ({ meta, staticData, order }: TokenData) => {
             style={{ margin: '12px 0' }}
           >
             {/** FIXME BLACKLIST */}
-            {meta?.name
-              ? `${meta?.name}${
-                  asset.assetAddress.toLowerCase() ===
-                  '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf'.toLowerCase()
-                    ? ` #${truncateHexString(asset.assetId)}`
-                    : ''
-                }`
-              : truncateHexString(asset.assetId)}
+            {displayName}
           </GlitchText>
           {displayPPU && displayPPU !== '?' && (
             <PriceBox margin={false} size="small" color={color}>

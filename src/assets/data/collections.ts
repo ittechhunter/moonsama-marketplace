@@ -210,11 +210,10 @@ export const collections = {
       subgraph:
         'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-multiverseart',
     },
-    /*
     {
       chainId: 1285,
       address: '0xa17A550871E5F5F692a69a3ABE26e8DBd5991B75',
-      display_name: 'Moonsama Minecraft Plots Season 1',
+      display_name: 'Msama MC Plots S1',
       plot: true,
       plotMap: 'http://season.moonsama.com:8100',
       symbol: 'MMPLOTS1',
@@ -226,7 +225,6 @@ export const collections = {
       subgraph:
         'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-721-mmplots1',
     },
-    */
     {
       chainId: 1285,
       address: '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf',
