@@ -13,7 +13,8 @@ export const Header = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <AppBar className={appBar} elevation={0}>
-        {!mhidden && (
+        
+        {/*!mhidden && (
           <div>
             <Marquee className={marquee} gradient={false} pauseOnHover={true}>
               The final batch of
@@ -34,7 +35,7 @@ export const Header = ({ children }: { children: ReactNode }) => {
               }}
             />
           </div>
-        )}
+        )*/}
         <Toolbar disableGutters>{children}</Toolbar>
       </AppBar>
       <Toolbar />

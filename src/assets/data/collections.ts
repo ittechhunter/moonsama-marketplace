@@ -77,7 +77,7 @@ export const collections = {
       address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
       display_name: '???',
       minId: 1,
-      maxId: 2,
+      maxId: 10,
       idSearchOn: false,
       decimals: 0,
       symbol: '???',
