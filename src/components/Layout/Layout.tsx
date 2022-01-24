@@ -42,14 +42,17 @@ export const Layout = ({ children }: LayoutProps) => {
             </Grid>
             <Grid item className={buttonContainer}>
               {!showRegularMenu ? (
-                <Box style={{ display: 'flex ' }} onClick={() => setIsDrawerOpened(false)}>
+                <Box
+                  style={{ display: 'flex ' }}
+                  onClick={() => setIsDrawerOpened(false)}
+                >
                   {/*<NavLink href="/" className={navItem}>*/}
                   {/*  Welcome*/}
                   {/*</NavLink>*/}
                   <NavLink href="/collections" className={navItem}>
                     Collections
                   </NavLink>
-                  <NavLink href="/collections" className={navItem}>
+                  <NavLink href="/mints" className={navItem}>
                     Mint
                   </NavLink>
                   <NavLink href="/freshoffers" className={navItem}>
