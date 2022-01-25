@@ -1,6 +1,7 @@
 export { Layout } from './Layout/Layout';
 export { ErrorBoundary } from './ErrorBoundary/ErrorBoundary';
 export { Token } from './Token/Token';
+export { TokenLootbox } from './TokenLootbox/TokenLootbox';
 export { PurchaseDialog } from './PurchaseDialog/PurchaseDialog';
 export { BidDialog } from './BidDialog/BidDialog';
 export { ExternalLink } from './ExternalLink/ExternalLink';

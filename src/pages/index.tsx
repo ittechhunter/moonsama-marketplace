@@ -2,6 +2,7 @@ import { Switch, Route } from 'react-router-dom';
 import CollectionPage from './collection';
 import HomePage from './home';
 import TokenPage from './token';
+import LootboxPage from './lootbox';
 import MyOrdersPage from './yourorders';
 import FreshOrdersPage from './freshorders';
 import FreshTradesPage from './freshtrades';
@@ -30,6 +31,13 @@ export const Routing = () => (
       <BidDialog />
       <TransferDialog />
       <TokenPage />
+    </Route>
+    <Route path="/tokenLootbox/:type/:address/:id">
+      <CancelDialog />
+      <PurchaseDialog />
+      <BidDialog />
+      <TransferDialog />
+      <LootboxPage />
     </Route>
     <Route path="/mints">
       <MintListPage />

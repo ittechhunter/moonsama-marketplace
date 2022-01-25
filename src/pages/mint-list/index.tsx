@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 
-import { Token as TokenComponent } from 'components';
+import { TokenLootbox as TokenComponent } from 'components';
 import { Button, GlitchText, Loader, Filters } from 'ui';
 import {
   getAssetEntityId,
