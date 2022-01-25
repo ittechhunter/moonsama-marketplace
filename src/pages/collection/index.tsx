@@ -51,12 +51,12 @@ const CollectionPage = () => {
   const maxId = recognizedCollection?.maxId ?? 1000
   const searchBarOn = recognizedCollection?.idSearchOn ?? true
   const subcollection = recognizedCollection?.subcollections?.find(x => x.id === subcollectionId)
-  const submeta = useFetchSubcollectionMeta(subcollection ? [subcollection]: undefined);
-  
+  const submeta = useFetchSubcollectionMeta(subcollection ? [subcollection] : undefined);
+
   //console.log('SUBMETA', submeta)
   const isSubcollection = subcollectionId !== '0'
 
-  const minId = isSubcollection ? 0: recognizedCollection?.minId ?? 1
+  const minId = isSubcollection ? 0 : recognizedCollection?.minId ?? 1
 
   const [take, setTake] = useState<number>(minId);
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
@@ -74,13 +74,13 @@ const CollectionPage = () => {
   } = useStyles();
   const { register, handleSubmit } = useForm();
 
-  
+
 
   const displayFilters = assetType === StringAssetType.ERC721
 
   // TODO: wire it to search result
 
-  
+
   const collectionName = recognizedCollection ? recognizedCollection.display_name : `Collection ${truncateHexString(address)}`
 
   const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
@@ -105,7 +105,7 @@ const CollectionPage = () => {
   console.log('MSATTR', m)
   */
 
-  const searchSize = filters?.selectedOrderType == undefined ? DEFAULT_PAGE_SIZE: SEARCH_PAGE_SIZE
+  const searchSize = filters?.selectedOrderType == undefined ? DEFAULT_PAGE_SIZE : SEARCH_PAGE_SIZE
 
   const handleScrollToBottom = useCallback(() => {
     console.log('SCROLLBOTTOM');
@@ -173,7 +173,7 @@ const CollectionPage = () => {
     setSearchCounter((state) => (state += 1));
   }, []);
 
-  
+
 
   return (
     <>
@@ -249,7 +249,7 @@ const CollectionPage = () => {
           {/*    </Select>*/}
           {/*  </FormControl>*/}
           {/*</div>*/}
-          
+
           {displayFilters && <div>
             <Filters onFiltersUpdate={handleFiltersUpdate} assetAddress={asset.assetAddress} />
           </div>}
@@ -257,7 +257,7 @@ const CollectionPage = () => {
       </div>
       <Grid container spacing={1}>
         {collection.map(
-          (token, i) => 
+          (token, i) =>
             token && (
               <Grid
                 item

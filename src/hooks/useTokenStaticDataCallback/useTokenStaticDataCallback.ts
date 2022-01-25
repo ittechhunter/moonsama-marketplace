@@ -192,6 +192,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
   maxId?: number,
   subcollectionId?: string
 ) => {
+  console.log("useTokenStaticDataCallbackArrayWithFilter", {assetAddress, assetType, filter, maxId, subcollectionId})
   const { chainId } = useActiveWeb3React();
   const multi = useMulticall2Contract();
 
@@ -202,6 +203,8 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
   if (!!subcollectionId && subcollectionId !== '0') {
     ids = coll?.subcollections?.find(c => c.id === subcollectionId)?.tokens ?? []
   }
+
+  console.log("ids, coll", {ids, coll})
 
   const priceRange = filter?.priceRange
   const selectedOrderType = filter?.selectedOrderType
