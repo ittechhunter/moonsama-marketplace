@@ -57,6 +57,7 @@ import uriToHttp from 'utils/uriToHttp';
 import { getMinecraftSkinUrl } from 'utils/meta';
 import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
 import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { RARITY_COLORS } from 'constants/colors';
 
 const geTableHeader = () => {
   return (
@@ -145,6 +146,8 @@ const TokenPage = () => {
     tradeRow,
     smallText,
     traitChip,
+    rarityChip,
+    artist
   } = useClasses(styles);
 
   const { setBidDialogOpen, setBidData } = useBidDialog();
@@ -201,9 +204,9 @@ const TokenPage = () => {
 
   let userBalanceString = isFungible
     ? Fraction.from(
-        balanceData?.[0]?.userBalance?.toString() ?? '0',
-        decimals
-      )?.toFixed(2) ?? '0'
+      balanceData?.[0]?.userBalance?.toString() ?? '0',
+      decimals
+    )?.toFixed(2) ?? '0'
     : balanceData?.[0]?.userBalance?.toString() ?? '0';
 
   userBalanceString = account ? userBalanceString : '0';
@@ -214,13 +217,13 @@ const TokenPage = () => {
   let totalSupplyString = balanceData?.[0]?.totalSupply
     ? isFungible
       ? Fraction.from(
-          balanceData?.[0]?.totalSupply?.toString() ?? '0',
-          decimals
-        )?.toFixed(2) ?? '0'
+        balanceData?.[0]?.totalSupply?.toString() ?? '0',
+        decimals
+      )?.toFixed(2) ?? '0'
       : balanceData?.[0]?.totalSupply?.toString()
     : asset.assetType.valueOf() === StringAssetType.ERC721
-    ? '1'
-    : undefined;
+      ? '1'
+      : undefined;
 
   //console.log('data', { balanceData, staticData, assetMeta });
 
@@ -506,12 +509,23 @@ const TokenPage = () => {
             )
           ) : (
             <Typography color="textSecondary" variant="subtitle1">
-              {`OWNED ${userBalanceString}${
-                totalSupplyString ? ` OF ${totalSupplyString}` : ''
-              }`}
+              {`OWNED ${userBalanceString}${totalSupplyString ? ` OF ${totalSupplyString}` : ''
+                }`}
             </Typography>
           )}
         </Box>
+
+        {assetMeta?.rarity && (
+          <Box className={artist}>
+            <Typography color="textSecondary" variant="subtitle1">
+              <Chip
+                label={assetMeta.rarity}
+                className={rarityChip}
+                style={{background: RARITY_COLORS[assetMeta.rarity]}}
+              />
+            </Typography>
+          </Box>
+        )}
 
         {/*TODO: Make traits calculation collection specific*/}
         {displayRarity && (
@@ -537,6 +551,14 @@ const TokenPage = () => {
 
         {!displayRarity && !rawCollection?.plot && (
           <Typography>{assetMeta?.description}</Typography>
+        )}
+
+        {assetMeta?.external_url && assetMeta?.artist && (
+          <Box className={artist}>
+            <Typography color="textSecondary" variant="subtitle1">
+              Made by <ExternalLink href={assetMeta.external_url} fontSize='14px'>{assetMeta.artist}</ExternalLink>
+            </Typography>
+          </Box>
         )}
 
         <Paper className={card}>

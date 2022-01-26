@@ -60,6 +60,17 @@ export const collections = {
     },
     */
     {
+      chainId: 1284,
+      address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
+      display_name: '???',
+      minId: 1,
+      maxId: 2,
+      idSearchOn: true,
+      symbol: 'MEGG',
+      type: 'ERC721',
+      contractURI: 'ipfs://QmX4yW2AiMUieGCufkJtvqqVVbgiVBXHoJWywXeEfGs9tm',
+    },
+    {
       chainId: 1285,
       address: '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a',
       display_name: 'Moonsama',
@@ -77,7 +88,7 @@ export const collections = {
       address: '0x1974eEAF317Ecf792ff307F25A3521C35eECde86',
       display_name: '???',
       minId: 1,
-      maxId: 10,
+      maxId: 59,
       idSearchOn: false,
       decimals: 0,
       symbol: '???',

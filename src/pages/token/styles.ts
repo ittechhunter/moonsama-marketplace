@@ -79,7 +79,13 @@ export const styles = (theme: Theme) => ({
   price: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: theme.spacing(5),
+    marginBottom: theme.spacing(1),
+  },
+  artist: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
   },
   externals: {
     display: 'flex',
@@ -136,6 +142,13 @@ export const styles = (theme: Theme) => ({
   },
   traitChip: {
     fontSize: '12px',
+    color: '#c5c5c5',
+    background: 'transparent',
+    border: '2px solid #111',
+    margin: '0 5px 5px 0',
+  },
+  rarityChip: {
+    fontSize: '14px',
     color: '#c5c5c5',
     background: 'transparent',
     border: '2px solid #111',

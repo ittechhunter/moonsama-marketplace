@@ -19,6 +19,8 @@ export type TokenMeta = {
   properties?: any;
   plot?: any;
   marketplace?: any;
+  artist?: string;
+  rarity?: string
 };
 
 export type TokenData = {
