@@ -89,7 +89,7 @@ export const collections = {
       display_name: '???',
       minId: 1,
       maxId: 59,
-      idSearchOn: false,
+      idSearchOn: true,
       decimals: 0,
       symbol: '???',
       type: 'ERC1155',
