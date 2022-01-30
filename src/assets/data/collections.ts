@@ -238,6 +238,18 @@ export const collections = {
     },
     {
       chainId: 1285,
+      address: '0xd335417999Ff2b9b59737244e554370264B3F877',
+      display_name: 'Sama Box',
+      symbol: 'SAMABOX',
+      minId: 1,
+      maxId: 338,
+      type: 'ERC1155',
+      contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM',
+      subgraph:
+        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-721-mmplots1',
+    },
+    {
+      chainId: 1285,
       address: '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf',
       display_name: 'BlvckMarketNFT',
       minId: 0,
