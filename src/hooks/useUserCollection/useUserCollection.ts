@@ -1,10 +1,12 @@
-import { NFT_SUBGRAPH_URL } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { request } from 'graphql-request';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback } from 'react';
 import { Asset } from 'hooks/marketplace/types';
-import { StaticTokenData, useTokenStaticDataCallbackArray } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
+import {
+  StaticTokenData,
+  useTokenStaticDataCallbackArray,
+} from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { QUERY_USER_ERC721 } from 'subgraph/erc721Queries';
 import { getAssetEntityId, StringAssetType } from 'utils/subgraph';
 import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
@@ -19,49 +21,48 @@ export interface OwnedTokens {
 export interface TokenOwner {
   id: string;
   balance: string;
-  token: { id: string, contract: {id: string} };
+  token: { id: string; contract: { id: string } };
 }
 
 export interface UserCollection {
   [key: string]: {
-    meta: TokenMeta | undefined,
-    staticData: StaticTokenData,
-    asset: Asset,
-  }[]
+    meta: TokenMeta | undefined;
+    staticData: StaticTokenData;
+    asset: Asset;
+  }[];
 }
 
 export const useUserCollection = () => {
   const { chainId } = useActiveWeb3React();
   const staticCallback = useTokenStaticDataCallbackArray();
-  const rawCollections = useRawCollectionsFromList()
+  const rawCollections = useRawCollectionsFromList();
 
   const fetchUserCollection = useCallback(
     async (account: string) => {
-      const result: UserCollection = {}
+      const result: UserCollection = {};
       const fetches = rawCollections.map(async (collection) => {
-        
         if (!collection.subgraph) {
-          result[collection.display_name] = []
-          return; 
+          result[collection.display_name] = [];
+          return;
         }
 
-        let assets: Asset[] = []
+        let assets: Asset[] = [];
 
-        if(collection.type === 'ERC721') {
-          const query = QUERY_USER_ERC721(account)
+        if (collection.type === 'ERC721') {
+          const query = QUERY_USER_ERC721(account);
           const response = await request(collection.subgraph, query);
 
           console.debug('YOLO fetchUserCollection', response);
 
           if (!response) {
-            result[collection.display_name] = []
+            result[collection.display_name] = [];
             return;
           }
 
           const ot: OwnedTokens = response.owners?.[0];
 
           if (!ot) {
-            result[collection.display_name] = []
+            result[collection.display_name] = [];
             return;
           }
 
@@ -75,34 +76,34 @@ export const useUserCollection = () => {
             };
           });
         } else {
-          const query = QUERY_USER_ERC1155(account)
+          const query = QUERY_USER_ERC1155(account);
           const response = await request(collection.subgraph, query);
 
           console.debug('YOLO fetchUserCollection', response);
 
           if (!response) {
-            result[collection.display_name] = []
+            result[collection.display_name] = [];
             return;
           }
 
           const to: TokenOwner[] = response.tokenOwners;
 
           if (!to) {
-            result[collection.display_name] = []
+            result[collection.display_name] = [];
             return;
           }
 
           assets = to
-          .filter(x => x.balance !== '0')
-          .map((x) => {
-            const aid = BigNumber.from(x.token.id).toString();
-            return {
-              assetId: aid,
-              id: getAssetEntityId(x.token.contract.id, aid),
-              assetType: StringAssetType.ERC1155,
-              assetAddress: x.token.contract.id,
-            };
-          });
+            .filter((x) => x.balance !== '0')
+            .map((x) => {
+              const aid = BigNumber.from(x.token.id).toString();
+              return {
+                assetId: aid,
+                id: getAssetEntityId(x.token.contract.id, aid),
+                assetType: StringAssetType.ERC1155,
+                assetAddress: x.token.contract.id,
+              };
+            });
         }
 
         const staticDatas = await staticCallback(assets);
@@ -114,12 +115,12 @@ export const useUserCollection = () => {
             asset: assets[i],
           };
         });
-        result[collection.display_name] = datas
-        return
-      })
+        result[collection.display_name] = datas;
+        return;
+      });
 
-      await Promise.all(fetches)
-      return result
+      await Promise.all(fetches);
+      return result;
     },
     [chainId]
   );

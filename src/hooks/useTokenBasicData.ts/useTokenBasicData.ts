@@ -1,9 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
 import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
-import {
-  useMulticall2Contract,
-} from 'hooks/useContracts/useContracts';
+import { useMulticall2Contract } from 'hooks/useContracts/useContracts';
 import { StringAssetType } from 'utils/subgraph';
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React/useActiveWeb3React';
 import { useCallback, useEffect, useState } from 'react';
@@ -72,16 +70,11 @@ export const useTokenBasicData = (assets: Asset[]) => {
   const [datas, setBasicDatas] = useState<BasicTokenData[] | undefined>();
 
   const getCalldata = (asset: Asset) => {
-    if (
-      !asset ||
-      !asset.assetAddress ||
-      !asset.assetId ||
-      !asset.assetType
-    ) {
+    if (!asset || !asset.assetAddress || !asset.assetId || !asset.assetType) {
       return [];
     }
 
-    const sanitizedAddres = account ?? AddressZero
+    const sanitizedAddres = account ?? AddressZero;
     if (asset.assetType?.valueOf() === StringAssetType.ERC20) {
       return [
         [

@@ -10,7 +10,7 @@ export type PurchaseData = {
   name?: string;
   symbol?: string;
   decimals?: number;
-  approvedPaymentCurrency: ApprovedPaymentCurrency
+  approvedPaymentCurrency: ApprovedPaymentCurrency;
 } | null;
 
 export type PurchaseDialogContextType = {

@@ -1,4 +1,3 @@
-import DateFnsUtils from '@date-io/date-fns';
 import { BigNumber } from '@ethersproject/bignumber';
 import { parseEther, parseUnits } from '@ethersproject/units';
 import {
@@ -6,24 +5,21 @@ import {
   Collapse,
   FormControl,
   Grid,
+  Stack,
   IconButton,
   OutlinedInput,
   Switch,
-} from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Divider from '@material-ui/core/Divider';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+  TextField,
+  Typography,
+  Divider,
+  CircularProgress,
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
 import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import 'date-fns';
-import { useActiveWeb3React, useBidDialog } from 'hooks';
+import { useActiveWeb3React, useBidDialog, useClasses } from 'hooks';
 import {
   ApprovalState,
   useApproveCallback,
@@ -32,9 +28,9 @@ import { OrderType, StringAssetType } from 'utils/subgraph';
 import { AddressZero } from '@ethersproject/constants';
 import {
   ChainId,
-  PROTOCOL_FEE_BPS,
-  FRACTION_TO_BPS,
   STRATEGY_SIMPLE,
+  NATIVE_TOKEN_SYMBOL,
+  DEFAULT_CHAIN,
 } from '../../constants';
 import { useBalances } from 'hooks/useBalances/useBalances';
 import { useFees } from 'hooks/useFees/useFees';
@@ -55,12 +51,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSubmittedOrderTx } from 'state/transactions/hooks';
 import { Button, Dialog } from 'ui';
 import { appStyles } from '../../app.styles';
-import { useStyles } from './BidDialog.styles';
+import { styles } from './BidDialog.styles';
 import { Fraction } from 'utils/Fraction';
 import { buyFungible } from './buyFungible.logic';
 import { buyElse } from './buyElse.logic';
 import { sellFungible } from './sellFungible.logic';
 import { sellElse } from './sellElse.logic';
+import { DatePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 // type TransferFormData = yup.TypeOf<
 //   ReturnType<typeof makeTransferFormDataSchema>
@@ -75,11 +73,18 @@ export const BidDialog = () => {
   const { isBidDialogOpen, setBidDialogOpen, bidData } = useBidDialog();
   const [orderLoaded, setOrderLoaded] = useState<boolean>(false);
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const [onlyTo, setOnlyTo] = useState<{address: string, error?: string}>({address: AddressZero});
+  const [onlyTo, setOnlyTo] = useState<{ address: string; error?: string }>({
+    address: AddressZero,
+  });
   const [startsAt, setStartsAt] = useState<BigNumber>(BigNumber.from('0'));
-  const [expiresAt, setExpiresAt] = useState<{date: BigNumber, error?: string}>({date: BigNumber.from('0')});
+  const [expiresAt, setExpiresAt] = useState<{
+    date: BigNumber;
+    error?: string;
+  }>({ date: BigNumber.from('0') });
 
-  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
+  const [globalError, setGlobalError] = useState<unknown | undefined>(
+    undefined
+  );
 
   const [quantityText, setQuantityText] = useState<string | undefined>(
     undefined
@@ -101,11 +106,15 @@ export const BidDialog = () => {
     formValueGive,
     formValueGet,
     spaceOnLeft,
+    flexEnd,
+    columGap,
+    placeButtonTopSpace,
+    mr15,
     fieldError,
     formButton,
     expand,
     expandOpen,
-  } = appStyles();
+  } = useClasses(appStyles);
 
   const [UIAdvancedSectionExpanded, setExpanded] = useState(false);
   const UIHandleExpandClick = () => {
@@ -121,7 +130,7 @@ export const BidDialog = () => {
       setSelectedDate(date);
       const v = BigNumber.from(date.valueOf()).div('1000');
       if (!v.eq(expiresAt.date)) {
-        setExpiresAt({date: v});
+        setExpiresAt({ date: v });
       }
     }
   };
@@ -132,18 +141,18 @@ export const BidDialog = () => {
     successContainer,
     successIcon,
     inputContainer,
-  } = useStyles();
+  } = useClasses(styles);
 
   const { chainId, account } = useActiveWeb3React();
 
   const handleClose = () => {
     setBidDialogOpen(false);
     setOrderLoaded(false);
-    setGlobalError(undefined)
+    setGlobalError(undefined);
     setFinalTxSubmitted(false);
-    setExpiresAt({date: BigNumber.from('0')});
+    setExpiresAt({ date: BigNumber.from('0') });
     setPartialAllowed(true);
-    setOnlyTo({address: AddressZero});
+    setOnlyTo({ address: AddressZero });
     setFinalTxSubmitted(false);
     setFinalTxSubmitted(false);
     setQuantityText(undefined);
@@ -160,8 +169,8 @@ export const BidDialog = () => {
   let action: string;
   let ppu: BigNumber;
   let ppuError: string | undefined;
-  let displaySellBalance: string | undefined
-  let sellDecimals: number
+  let displaySellBalance: string | undefined;
+  let sellDecimals: number;
 
   let sellAssetContract: Asset;
   let buyAssetContract: Asset;
@@ -175,34 +184,35 @@ export const BidDialog = () => {
 
   const orderType = bidData?.orderType;
 
-  const decimals = bidData?.decimals ?? 0
+  const decimals = bidData?.decimals ?? 0;
 
-  const approvedPaymentCurrency = bidData?.approvedPaymentCurrency
+  const approvedPaymentCurrency = bidData?.approvedPaymentCurrency;
 
   const isAssetFungible = decimals > 0;
-  const isAssetErc721 = assetType?.valueOf() === StringAssetType.ERC721.valueOf()
+  const isAssetErc721 =
+    assetType?.valueOf() === StringAssetType.ERC721.valueOf();
 
   useEffect(() => {
     if (isAssetErc721) {
-      setQuantityText('1')
+      setQuantityText('1');
     }
   }, [isAssetErc721]);
 
   const handleOnlyToChange = (address: string) => {
     if (!address || address === '') {
-      setOnlyTo({address: AddressZero})
-      return
+      setOnlyTo({ address: AddressZero });
+      return;
     }
     if (isAddress(address)) {
-      setOnlyTo({address})
+      setOnlyTo({ address });
     } else {
-      setOnlyTo({address: AddressZero, error: 'Invalid address'})
+      setOnlyTo({ address: AddressZero, error: 'Invalid address' });
     }
-  }
+  };
 
   // buy- PPU is always in ether!
   try {
-    ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0')
+    ppu = ppuText ? parseEther(ppuText) : BigNumber.from('0');
     ppuError = undefined;
   } catch {
     ppu = BigNumber.from('0');
@@ -214,7 +224,7 @@ export const BidDialog = () => {
     ppuError = 'Invalid price value';
   }
 
-  let meat
+  let meat;
 
   if (orderType === OrderType.BUY) {
     title = 'Create buy offer';
@@ -223,11 +233,14 @@ export const BidDialog = () => {
     sellAssetContract = {
       addr: approvedPaymentCurrency?.assetAddress ?? AddressZero,
       id: approvedPaymentCurrency?.assetId ?? '0',
-      assetType: stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ?? AssetType.NATIVE,
+      assetType:
+        stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ??
+        AssetType.NATIVE,
     };
 
-    sellAssetType = approvedPaymentCurrency?.assetType ?? StringAssetType.NATIVE;
-    sellDecimals = 18
+    sellAssetType =
+      approvedPaymentCurrency?.assetType ?? StringAssetType.NATIVE;
+    sellDecimals = 18;
 
     buyAssetContract = {
       addr: assetAddress ?? AddressZero,
@@ -237,21 +250,21 @@ export const BidDialog = () => {
 
     // buy- quantity input field is Ether
     if (isAssetFungible) {
-      console.log('BID-BUY-FUNGIBLE')
+      console.log('BID-BUY-FUNGIBLE');
       meat = buyFungible({
         decimals,
         ppu,
         quantityText,
-        feeValue: fee?.value
-      })
+        feeValue: fee?.value,
+      });
     } else {
-      console.log('BID-BUY-NON-FUNGIBLE')
+      console.log('BID-BUY-NON-FUNGIBLE');
       meat = buyElse({
         decimals,
         ppu,
         quantityText,
-        feeValue: fee?.value
-      })
+        feeValue: fee?.value,
+      });
     }
   } else {
     title = 'Create sell offer';
@@ -264,31 +277,33 @@ export const BidDialog = () => {
     };
 
     sellAssetType = assetType;
-    sellDecimals = decimals
+    sellDecimals = decimals;
 
     buyAssetContract = {
       addr: approvedPaymentCurrency?.assetAddress ?? AddressZero,
       id: approvedPaymentCurrency?.assetId ?? '0',
-      assetType: stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ?? AssetType.NATIVE
+      assetType:
+        stringAssetTypeToAssetType(approvedPaymentCurrency?.assetType) ??
+        AssetType.NATIVE,
     };
 
     // sell- quantity input field is Ether
     if (isAssetFungible) {
-      console.log('BID-SELL-FUNGIBLE')
+      console.log('BID-SELL-FUNGIBLE');
       meat = sellFungible({
         decimals,
         ppu,
         quantityText,
-        feeValue: fee?.value
-      }) 
+        feeValue: fee?.value,
+      });
     } else {
-      console.log('BID-SELL-NON_FUNGIBLE')
+      console.log('BID-SELL-NON_FUNGIBLE');
       meat = sellElse({
         decimals,
         ppu,
         quantityText,
-        feeValue: fee?.value
-      }) 
+        feeValue: fee?.value,
+      });
     }
   }
 
@@ -302,8 +317,8 @@ export const BidDialog = () => {
     askPerUnitDenominator,
     royaltyFee,
     protocolFee,
-    displayQuantity
-  } = meat
+    displayQuantity,
+  } = meat;
 
   const sellBalance = useBalances([
     {
@@ -314,7 +329,9 @@ export const BidDialog = () => {
     },
   ])?.[0];
 
-  displaySellBalance = Fraction.from(sellBalance ?? '0', sellDecimals)?.toFixed(sellDecimals > 0 ? 5: 0)
+  displaySellBalance = Fraction.from(sellBalance ?? '0', sellDecimals)?.toFixed(
+    sellDecimals > 0 ? 5 : 0
+  );
 
   const hasEnough = sellBalance?.gte(amountToApprove);
 
@@ -354,19 +371,22 @@ export const BidDialog = () => {
     partialAllowed,
     amountToApprove: amountToApprove?.toString(),
     hasEnough,
-    globalError
+    globalError,
   });
 
-  const { state: createOrderState, callback: createOrderCallback, error } =
-    useCreateOrderCallback(orderData, {
-      askPerUnitDenominator,
-      askPerUnitNominator,
-      expiresAt: expiresAt.date,
-      startsAt: startsAt,
-      quantity: orderAmount,
-      onlyTo: onlyTo.address,
-      partialAllowed,
-    });
+  const {
+    state: createOrderState,
+    callback: createOrderCallback,
+    error,
+  } = useCreateOrderCallback(orderData, {
+    askPerUnitDenominator,
+    askPerUnitNominator,
+    expiresAt: expiresAt.date,
+    startsAt: startsAt,
+    quantity: orderAmount,
+    onlyTo: onlyTo.address,
+    partialAllowed,
+  });
 
   const { orderSubmitted, orderTx } = useSubmittedOrderTx(orderHash);
 
@@ -411,16 +431,20 @@ export const BidDialog = () => {
         <div className={successContainer}>
           <Typography>Something went wrong</Typography>
           <Typography color="textSecondary" variant="h5">
-            {(globalError as Error)?.message as string ?? 'Unknown error'}
+            {((globalError as Error)?.message as string) ?? 'Unknown error'}
           </Typography>
-          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+          <Button
+            className={formButton}
+            onClick={() => {
+              setGlobalError(undefined);
+            }}
+            color="primary"
+          >
             Back
           </Button>
         </div>
       );
     }
-
-    
 
     if (finalTxSubmitted && !orderSubmitted) {
       return (
@@ -467,7 +491,7 @@ export const BidDialog = () => {
       );
     }
     return (
-      <>
+      <Stack spacing={2}>
         <Grid container spacing={1} justifyContent="center">
           <Grid item md={12} xs={12}>
             <Box className={formBox}>
@@ -500,26 +524,29 @@ export const BidDialog = () => {
 
               <div className={inputContainer}>
                 <Typography className={formLabel}>
-                  Quantity to {action} *
+                  Quantity to {action}
                 </Typography>
-                {!isAssetErc721 && <CoinQuantityField
-                  id="quantity-amount"
-                  className={formValue}
-                  value={quantityText}
-                  setValue={setQuantityText}
-                  assetType={assetType}
-                ></CoinQuantityField>}
-                {isAssetErc721 && <Typography className={formValue}>
-                  1 {symbolString}
-                </Typography>
-                }
+                {!isAssetErc721 && (
+                  <CoinQuantityField
+                    id="quantity-amount"
+                    className={formValue}
+                    value={quantityText}
+                    setValue={setQuantityText}
+                    assetType={assetType}
+                  ></CoinQuantityField>
+                )}
+                {isAssetErc721 && (
+                  <Typography className={formValue}>
+                    1 {symbolString}
+                  </Typography>
+                )}
               </div>
               {quantityError && (
                 <div className={fieldError}>{quantityError}</div>
               )}
 
               <div className={inputContainer}>
-                <Typography className={formLabel}>Price per unit *</Typography>
+                <Typography className={formLabel}>Price per unit</Typography>
                 <Grid
                   container
                   spacing={1}
@@ -528,7 +555,9 @@ export const BidDialog = () => {
                   className={`${formValue}`}
                 >
                   <Grid item>
-                    <Typography className={formLabel}>{approvedPaymentCurrency?.symbol ?? 'MOVR'}</Typography>
+                    <Typography className={formLabel}>
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -589,31 +618,23 @@ export const BidDialog = () => {
               >
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Expiration</Typography>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <FormControl
                       className={`${formValue} ${spaceOnLeft}`}
                       variant="outlined"
                     >
-                      <KeyboardDatePicker
-                        disableToolbar
-                        format="MM/dd/yyyy"
-                        margin="normal"
+                      <DatePicker
+                        disablePast
+                        inputFormat="MM/dd/yyyy"
                         value={selectedDate}
                         onChange={handleDateChange}
-                        // onChange={(event) =>
-                        //   inputToBigNum(event.target.value, setExpiresAt)
-                        // }
-                        id="datetime-picker"
-                        KeyboardButtonProps={{
-                          'aria-label': 'change date',
-                        }}
+                        renderInput={(params) => <TextField {...params} />}
                       />
                     </FormControl>
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </div>
                 <div className={infoContainer}>
-                  <Typography>Exclusive to</Typography>
-
+                  <Typography className={mr15}>Exclusive to</Typography>
                   <FormControl className={formValue} variant="outlined">
                     {/* <Controller */}
                     {/* control={control} */}
@@ -621,9 +642,10 @@ export const BidDialog = () => {
                     <OutlinedInput
                       id="exlusive-to-address"
                       type="text"
-                      labelWidth={0}
                       // onChange={onChange}
-                      onChange={(event) => handleOnlyToChange(event.target.value)}
+                      onChange={(event) =>
+                        handleOnlyToChange(event.target.value)
+                      }
                       // onBlur={onBlur}
                       // value={value}
                       placeholder={'0x0...'}
@@ -645,53 +667,58 @@ export const BidDialog = () => {
               {orderType?.valueOf() === OrderType.SELL && (
                 <>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You have</Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
-                      {displaySellBalance ?? '?'} {symbolString}
-                    </Typography>
+                    <Typography className={`${formLabel} ${mr15}`}>You have</Typography>
+                    <div className={`${flexEnd}`}>
+                      <Typography className={`${formValue}`}>
+                        {displaySellBalance ?? '?'} {symbolString}
+                      </Typography>
+                    </div>
+
                   </div>
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You give</Typography>
-                    <Typography className={`${formValueGive} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You give</Typography>
+                    <Typography className={`${formValueGive}`}>
                       {displayQuantity} {symbolString}
                     </Typography>
                   </div>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You get brutto
                     </Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    <Typography className={`${formValueGet}`}>
+                      {Fraction.from(brutto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
                   {protocolFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>
+                      <Typography className={`${formLabel} ${mr15}`}>
                         Protocol fee
                       </Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
 
                   {royaltyFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formLabel} ${mr15}`}>Royalty fee</Typography>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You get netto</Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    <Typography className={`${formLabel} ${mr15}`}>You get netto</Typography>
+                    <Typography className={`${formValueGet}`}>
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 </>
@@ -700,58 +727,59 @@ export const BidDialog = () => {
               {orderType?.valueOf() === OrderType.BUY && (
                 <>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You have</Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You have</Typography>
+                    <Typography className={`${formValue}`}>
                       {Fraction.from(sellBalance?.toString(), 18)?.toFixed(5) ??
                         '?'}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>You get</Typography>
-                    <Typography className={`${formValueGet} ${spaceOnLeft}`}>
+                    <Typography className={`${formLabel} ${mr15}`}>You get</Typography>
+                    <Typography className={`${formValueGet}`}>
                       {displayQuantity} {symbolString}
                     </Typography>
                   </div>
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You give brutto
                     </Typography>
-                    <Typography className={`${formValue} ${spaceOnLeft}`}>
+                    <Typography className={`${formValue}`}>
                       {Fraction.from(orderAmount.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
 
                   {protocolFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>
+                      <Typography className={`${formLabel} ${mr15}`}>
                         Protocol fee
                       </Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
 
                   {royaltyFee && (
                     <div className={infoContainer}>
-                      <Typography className={formLabel}>Royalty fee</Typography>
-                      <Typography className={`${formValue} ${spaceOnLeft}`}>
+                      <Typography className={`${formLabel} ${mr15}`}>Royalty fee</Typography>
+                      <Typography className={`${formValue}`}>
                         {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                        {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                        {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                       </Typography>
                     </div>
                   )}
 
                   <div className={infoContainer}>
-                    <Typography className={formLabel}>
+                    <Typography className={`${formLabel} ${mr15}`}>
                       You give netto
                     </Typography>
-                    <Typography className={`${formValueGive} ${spaceOnLeft}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    <Typography className={`${formValueGive}`}>
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 </>
@@ -766,7 +794,7 @@ export const BidDialog = () => {
               approveCallback();
               setApprovalSubmitted(true);
             }}
-            className={button}
+            className={`${button} ${placeButtonTopSpace}`}
             variant="contained"
             color="primary"
             disabled={approvalState === ApprovalState.PENDING || !hasEnough}
@@ -780,15 +808,17 @@ export const BidDialog = () => {
               try {
                 await createOrderCallback?.();
               } catch (err) {
-                setGlobalError(err)
+                setGlobalError(err);
                 setFinalTxSubmitted(false);
               }
             }}
-            className={formButton}
+            className={`${formButton} ${placeButtonTopSpace}`}
             variant="contained"
             color="primary"
             disabled={
-              createOrderState !== CreateOrderCallbackState.VALID || !hasEnough || !!onlyTo.error
+              createOrderState !== CreateOrderCallbackState.VALID ||
+              !hasEnough ||
+              !!onlyTo.error
             }
           >
             Place offer
@@ -797,7 +827,7 @@ export const BidDialog = () => {
         <Button className={formButton} onClick={handleClose} color="primary">
           Cancel
         </Button>
-      </>
+      </Stack>
     );
   };
   return (
@@ -805,7 +835,7 @@ export const BidDialog = () => {
       open={isBidDialogOpen}
       onClose={handleClose}
       title={title}
-      maxWidth="md"
+      maxWidth="lg"
     >
       <div className={dialogContainer}>{renderBody()}</div>
     </Dialog>

@@ -1,7 +1,7 @@
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Media } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useClasses } from 'hooks';
 import { Asset } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { GlitchText } from 'ui';
 import { truncateHexString } from 'utils';
 import { StringAssetType } from 'utils/subgraph';
-import { useStyles } from './TokenOwned.styles';
+import { styles } from './TokenOwned.styles';
 import { Fraction } from 'utils/Fraction';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
@@ -31,11 +31,11 @@ export const TokenOwned = ({
     tokenName,
     mr,
     lastPriceContainer,
-  } = useStyles();
+  } = useClasses(styles);
   const { push } = useHistory();
 
   const { chainId } = useActiveWeb3React();
-  const decimalOverrides = useDecimalOverrides()
+  const decimalOverrides = useDecimalOverrides();
 
   //console.log('FRESH', {asset, action, actionColor})
 
@@ -43,11 +43,14 @@ export const TokenOwned = ({
     push(`/token/${asset.assetType}/${asset.assetAddress}/${asset.assetId}`);
   };
 
-  const decimals = decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ?? staticData?.decimals ?? 0
+  const decimals =
+    decimalOverrides[staticData?.asset?.assetAddress?.toLowerCase()] ??
+    staticData?.decimals ??
+    0;
 
   const isErc721 =
     asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
- /*
+  /*
  const sup = Fraction.from(staticData.
   const totalSupplyString = isErc721
     ? 'unique'
@@ -55,7 +58,7 @@ export const TokenOwned = ({
     ? `${sup} pieces`
     : undefined;
   */
- const totalSupplyString = undefined
+  const totalSupplyString = undefined;
 
   return (
     <Paper className={container}>
@@ -71,7 +74,15 @@ export const TokenOwned = ({
       </div>
       <div className={nameContainer}>
         <GlitchText className={tokenName}>
-          {['0xb654611f84a8dc429ba3cb4fda9fad236c505a1a', '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777', '0x1974eeaf317ecf792ff307f25a3521c35eecde86'].includes(asset.assetAddress) ? meta?.name ?? truncateHexString(asset.assetId) : meta?.name ? `${meta?.name} #${truncateHexString(asset.assetId)}`: `#${truncateHexString(asset.assetId)}`}
+          {[
+            '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a',
+            '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777',
+            '0x1974eeaf317ecf792ff307f25a3521c35eecde86',
+          ].includes(asset.assetAddress)
+            ? meta?.name ?? truncateHexString(asset.assetId)
+            : meta?.name
+            ? `${meta?.name} #${truncateHexString(asset.assetId)}`
+            : `#${truncateHexString(asset.assetId)}`}
         </GlitchText>
       </div>
       <div className={stockContainer}>

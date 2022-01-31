@@ -14,12 +14,17 @@ export function useFetchTokenUriCallback() {
       }
 
       const promises = uris.map(async (uri) => {
-        
-        console.log('uri', {uri})
+        console.log('uri', { uri });
         // FIXME fucking black NFTs
-        const rawmeta = await cb<TokenMeta>(uri?.tokenURI === 'https://ipfs.io/ipfs/QmcuV7UqedmTKVzQ9yD2QNm3dhiaN5JXdqRtJTFKqTJEL3'? 'ipfs://QmcN86vmnTrYaRjtPn3fP98rfAE7BUEkaoVLGHKhUtAurJ': uri?.tokenURI, false);
+        const rawmeta = await cb<TokenMeta>(
+          uri?.tokenURI ===
+            'https://ipfs.io/ipfs/QmcuV7UqedmTKVzQ9yD2QNm3dhiaN5JXdqRtJTFKqTJEL3'
+            ? 'ipfs://QmcN86vmnTrYaRjtPn3fP98rfAE7BUEkaoVLGHKhUtAurJ'
+            : uri?.tokenURI,
+          false
+        );
 
-        console.log('rawMeta', {rawmeta})
+        console.log('rawMeta', { rawmeta });
 
         let meta;
         if (typeof rawmeta === 'string' || rawmeta instanceof String) {

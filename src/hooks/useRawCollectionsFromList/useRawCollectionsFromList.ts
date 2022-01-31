@@ -12,15 +12,15 @@ const enum Indexing {
 }
 
 export type RawSubcollection = {
-  id: string
-  uri: string
-  tokens: number[]
-}
+  id: string;
+  uri: string;
+  tokens: number[];
+};
 
 export type AuctionParams = {
-  ids: string[],
-  deadline: string
-}
+  ids: string[];
+  deadline: string;
+};
 
 export type RawCollection = {
   chainId: number;
@@ -36,11 +36,11 @@ export type RawCollection = {
   decimals?: number;
   maxId?: number;
   minId: number;
-  idSearchOn: boolean,
-  subcollections?: RawSubcollection[],
-  auction?: AuctionParams,
-  plot?: boolean,
-  plotMap?: string
+  idSearchOn: boolean;
+  subcollections?: RawSubcollection[];
+  auction?: AuctionParams;
+  plot?: boolean;
+  plotMap?: string;
 };
 
 export type RawCollectionList = {
@@ -84,10 +84,12 @@ const collectionListSchema = yup.object<RawCollectionList>({
           subcollections: yup.array(),
           idSearchOn: yup.boolean().required(),
           plot: yup.boolean().optional(),
-          auction: yup.object<AuctionParams>({
-            deadline: yup.string(),
-            ids: yup.array().of(yup.string().required()).required()
-          }).optional()
+          auction: yup
+            .object<AuctionParams>({
+              deadline: yup.string(),
+              ids: yup.array().of(yup.string().required()).required(),
+            })
+            .optional(),
         })
         .required()
     )
@@ -112,21 +114,24 @@ export function useRawcollection(address: string) {
   const { chainId } = useActiveWeb3React();
   const collections = useRawCollectionsFromList();
   const collection = useMemo(() => {
-    const collection = collections.find(collection => collection.address.toLowerCase() === address?.toLowerCase())
-    return collection
+    const collection = collections.find(
+      (collection) =>
+        collection.address.toLowerCase() === address?.toLowerCase()
+    );
+    return collection;
   }, [chainId, address]);
 
   return collection;
 }
 
 export function useAuction(address: string, tokenId: string) {
-  const x = useRawcollection(address.toLowerCase())
+  const x = useRawcollection(address.toLowerCase());
 
   if (!x?.auction) {
-    return undefined
+    return undefined;
   }
 
-  const found = (x.auction.ids ?? []).find(id => id === tokenId)
+  const found = (x.auction.ids ?? []).find((id) => id === tokenId);
 
-  return found ? x.auction : undefined
+  return found ? x.auction : undefined;
 }

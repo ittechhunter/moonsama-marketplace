@@ -1,6 +1,6 @@
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = (theme: Theme) => ({
   dialogContainer: {
     display: 'flex',
     padding: theme.spacing(4),
@@ -22,4 +22,7 @@ export const useStyles = makeStyles((theme) => ({
     height: 'auto',
     marginBottom: theme.spacing(2),
   },
-}));
+  columGap : {
+    flex: '1 0 15px'
+  }
+});

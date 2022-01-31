@@ -121,10 +121,16 @@ export const QUERY_ACTIVE_ORDERS_AT_BLOCK = gql`
   }
 `;
 
-export const QUERY_ASSET_ORDERS = (isBuy: boolean, onlyActive: boolean, assetEntityId: string) => gql`
+export const QUERY_ASSET_ORDERS = (
+  isBuy: boolean,
+  onlyActive: boolean,
+  assetEntityId: string
+) => gql`
   query getAssetOrders {
     ${META}
-    orders(where: {${onlyActive ? 'active: true, ' : ''}${isBuy ? 'buyAsset' : 'sellAsset'}: "${assetEntityId}"}) {
+    orders(where: {${onlyActive ? 'active: true, ' : ''}${
+  isBuy ? 'buyAsset' : 'sellAsset'
+}: "${assetEntityId}"}) {
       ${ORDER_FIELDS}
     }
   }
@@ -244,7 +250,9 @@ export const QUERY_ACTIVE_ORDERS_FOR_FILTER = (
 ) => gql`
   query getUserActiveOrders {
     ${META}
-    orders(where: {active: true, pricePerUnit_lte: "${upperPPURange}", pricePerUnit_gte: "${lowerPPURange}", ${orderType == OrderType.BUY ? 'buyAsset_in': 'sellAsset_in'}: ${assetIdsJSONString}}, orderBy: createdAt, orderDirection: desc) {
+    orders(where: {active: true, pricePerUnit_lte: "${upperPPURange}", pricePerUnit_gte: "${lowerPPURange}", ${
+  orderType === OrderType.BUY ? 'buyAsset_in' : 'sellAsset_in'
+}: ${assetIdsJSONString}}, orderBy: createdAt, orderDirection: desc) {
       ${ORDER_FIELDS}
     }
   }

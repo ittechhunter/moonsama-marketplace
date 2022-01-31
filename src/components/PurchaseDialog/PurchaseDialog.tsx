@@ -1,16 +1,16 @@
 import { appStyles } from '../../app.styles';
 
 import { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import { Dialog, Button } from 'ui';
-import { useStyles } from './PurchaseDialog.styles';
+import { styles } from './PurchaseDialog.styles';
 import { SuccessIcon } from 'icons';
-import { ChainId, FRACTION_TO_BPS, PROTOCOL_FEE_BPS } from '../../constants';
-import { useActiveWeb3React } from 'hooks';
+import { ChainId, DEFAULT_CHAIN, FRACTION_TO_BPS, NATIVE_TOKEN_SYMBOL, PROTOCOL_FEE_BPS } from '../../constants';
+import { useActiveWeb3React, useClasses } from 'hooks';
 import {
   getQuantity,
   getUnitPrice,
@@ -30,7 +30,7 @@ import {
   useFillOrderCallback,
 } from 'hooks/marketplace/useFillOrderCallback';
 import { useBalances } from 'hooks/useBalances/useBalances';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import { Fraction } from 'utils/Fraction';
@@ -48,7 +48,9 @@ export const PurchaseDialog = () => {
   const [finalTxSubmitted, setFinalTxSubmitted] = useState<boolean>(false);
   const { isPurchaseDialogOpen, setPurchaseDialogOpen, purchaseData } =
     usePurchaseDialog();
-  const [globalError, setGlobalError] = useState<unknown | undefined>(undefined);
+  const [globalError, setGlobalError] = useState<unknown | undefined>(
+    undefined
+  );
 
   const [inputAmountText, setInputAmountText] = useState<string | undefined>(
     undefined
@@ -56,14 +58,14 @@ export const PurchaseDialog = () => {
 
   const { chainId, account } = useActiveWeb3React();
 
-  const { dialogContainer, loadingContainer, successIcon, successContainer } =
-    useStyles();
+  const { dialogContainer, loadingContainer, successIcon, successContainer, columGap } =
+    useClasses(styles);
 
   //console.log({ orderLoaded, purchaseData });
   const handleClose = () => {
     setLoading(false);
     setPurchaseDialogOpen(false);
-    setGlobalError(undefined)
+    setGlobalError(undefined);
     setOrderLoaded(false);
     setApprovalSubmitted(false);
     setFinalTxSubmitted(false);
@@ -97,9 +99,9 @@ export const PurchaseDialog = () => {
 
   const orderHash = order?.id;
 
-  const decimals = purchaseData?.decimals ?? 0
+  const decimals = purchaseData?.decimals ?? 0;
   const isAssetFungible = decimals > 0;
-  const approvedPaymentCurrency = purchaseData?.approvedPaymentCurrency
+  const approvedPaymentCurrency = purchaseData?.approvedPaymentCurrency;
 
   const partialAllowed = order?.partialAllowed;
   const ppu = getUnitPrice(
@@ -117,20 +119,21 @@ export const PurchaseDialog = () => {
   const getAsset = order?.sellAsset;
 
   const isGetAssetPayment =
-    getAsset?.assetType?.valueOf() === approvedPaymentCurrency?.assetType.valueOf()
-    && getAsset?.assetAddress === approvedPaymentCurrency?.assetAddress
+    getAsset?.assetType?.valueOf() ===
+      approvedPaymentCurrency?.assetType.valueOf() &&
+    getAsset?.assetAddress === approvedPaymentCurrency?.assetAddress;
 
-  const isGiveAssetPayment = !isGetAssetPayment
+  const isGiveAssetPayment = !isGetAssetPayment;
 
-  let giveAssetDecimals = 0
-  let getAssetDecimals = 0
-  
-  if(isGetAssetPayment) {
-    getAssetDecimals = 18
-    giveAssetDecimals = decimals
+  let giveAssetDecimals = 0;
+  let getAssetDecimals = 0;
+
+  if (isGetAssetPayment) {
+    getAssetDecimals = 18;
+    giveAssetDecimals = decimals;
   } else {
-    giveAssetDecimals = 18
-    getAssetDecimals = decimals
+    giveAssetDecimals = 18;
+    getAssetDecimals = decimals;
   }
 
   const total = getQuantity(
@@ -171,7 +174,7 @@ export const PurchaseDialog = () => {
         inputAmountText,
         giveAssetDecimals,
         getAssetDecimals
-      )
+      );
     } else {
       meat = sellElse(
         userAsset,
@@ -180,7 +183,7 @@ export const PurchaseDialog = () => {
         inputAmountText,
         giveAssetDecimals,
         getAssetDecimals
-      )
+      );
     }
   } else {
     action = 'BUY';
@@ -199,7 +202,7 @@ export const PurchaseDialog = () => {
         inputAmountText,
         giveAssetDecimals,
         getAssetDecimals
-      )
+      );
 
       // we buy into a sell order, which is an NFT
     } else {
@@ -209,7 +212,7 @@ export const PurchaseDialog = () => {
         inputAmountText,
         giveAssetDecimals,
         getAssetDecimals
-      )
+      );
     }
   }
 
@@ -222,8 +225,8 @@ export const PurchaseDialog = () => {
     userGiveDisplay,
     feeAsset,
     showFee,
-    displayTotal
-  } = meat
+    displayTotal,
+  } = meat;
 
   const [approvalState, approveCallback] = useApproveCallback({
     assetAddress: userAsset?.assetAddress,
@@ -243,14 +246,16 @@ export const PurchaseDialog = () => {
 
   const hasEnough = userAssetBalance?.gte(userGive);
 
-  const displayBalance = Fraction.from(userAssetBalance?.toString(), giveAssetDecimals)?.toFixed(giveAssetDecimals > 0 ? 5: 0)
+  const displayBalance = Fraction.from(
+    userAssetBalance?.toString(),
+    giveAssetDecimals
+  )?.toFixed(giveAssetDecimals > 0 ? 5 : 0);
 
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
   }, [approvalState, approvalSubmitted]);
-  
 
   fee = useFees([feeAsset])?.[0];
   royaltyFee =
@@ -268,7 +273,7 @@ export const PurchaseDialog = () => {
     isGiveAssetPayment,
     giveAssetDecimals,
     isGetAssetPayment,
-    getAssetDecimals
+    getAssetDecimals,
   });
 
   const {
@@ -305,7 +310,7 @@ export const PurchaseDialog = () => {
   });
   */
 
- console.warn('FILL', {
+  console.warn('FILL', {
     hasEnough,
     buyer: account?.toString(),
     quantity: quantity?.toString(),
@@ -324,7 +329,7 @@ export const PurchaseDialog = () => {
     fillOrderState,
     fillSubmitted,
     error,
-    amountToApprove: userGive?.toString()
+    amountToApprove: userGive?.toString(),
   });
 
   const {
@@ -345,7 +350,7 @@ export const PurchaseDialog = () => {
     formSubheader,
     fieldError,
     formButton,
-  } = appStyles();
+  } = useClasses(appStyles);
 
   const renderBody = () => {
     if (!orderLoaded) {
@@ -367,9 +372,15 @@ export const PurchaseDialog = () => {
         <div className={successContainer}>
           <Typography>Something went wrong</Typography>
           <Typography color="textSecondary" variant="h5">
-            {(globalError as Error)?.message as string ?? 'Unknown error'}
+            {((globalError as Error)?.message as string) ?? 'Unknown error'}
           </Typography>
-          <Button className={formButton} onClick={() => {setGlobalError(undefined)}} color="primary">
+          <Button
+            className={formButton}
+            onClick={() => {
+              setGlobalError(undefined);
+            }}
+            color="primary"
+          >
             Back
           </Button>
         </div>
@@ -446,23 +457,28 @@ export const PurchaseDialog = () => {
                   {assetAddress ?? '?'}
                 </AddressDisplayComponent>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>ID</div>
                 <div className={`${formValue} ${formValueTokenDetails}`}>
                   {assetId}
                 </div>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>Price per unit</div>
                 <div
                   className={`${formValue} ${formValueTokenDetails}`}
                   style={{
+                    display: 'flex',
                     justifyContent: 'flex-end',
+                    flexWrap: 'nowrap'
                   }}
                 >
-                  {displayppu} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                  {`${displayppu} ${approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}`}
                 </div>
               </div>
+              <div className={columGap}></div>
               <div className={col}>
                 <div className={formLabel}>{availableLabel}</div>
                 <div
@@ -499,10 +515,18 @@ export const PurchaseDialog = () => {
                       value={inputAmountText}
                       setValue={setInputAmountText}
                       setMaxValue={() => {
-                        console.log('maaax', total?.toString())
-                        console.log( Fraction.from(total?.toString() ?? '0', giveAssetDecimals)?.toFixed(giveAssetDecimals))
+                        console.log('maaax', total?.toString());
+                        console.log(
+                          Fraction.from(
+                            total?.toString() ?? '0',
+                            giveAssetDecimals
+                          )?.toFixed(giveAssetDecimals)
+                        );
                         setInputAmountText(
-                          Fraction.from(total?.toString() ?? '0', giveAssetDecimals)?.toFixed(giveAssetDecimals)
+                          Fraction.from(
+                            total?.toString() ?? '0',
+                            giveAssetDecimals
+                          )?.toFixed(giveAssetDecimals)
                         );
                       }}
                       withMaxButton={true}
@@ -526,7 +550,7 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>You get brutto</Typography>
                   <Typography className={formValueGet}>
-                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
@@ -535,7 +559,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Protocol fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -545,7 +569,7 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Royalty fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -554,7 +578,8 @@ export const PurchaseDialog = () => {
                   <div className={infoContainer}>
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
-                      {Fraction.from(netto.toString(), 18)?.toFixed(5)} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                      {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
+                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -572,10 +597,18 @@ export const PurchaseDialog = () => {
                       value={inputAmountText}
                       setValue={setInputAmountText}
                       setMaxValue={() => {
-                        console.log('maaax', total?.toString())
-                        console.log( Fraction.from(total?.toString() ?? '0', getAssetDecimals)?.toFixed(getAssetDecimals))
+                        console.log('maaax', total?.toString());
+                        console.log(
+                          Fraction.from(
+                            total?.toString() ?? '0',
+                            getAssetDecimals
+                          )?.toFixed(getAssetDecimals)
+                        );
                         setInputAmountText(
-                          Fraction.from(total?.toString() ?? '0', getAssetDecimals)?.toFixed(getAssetDecimals)
+                          Fraction.from(
+                            total?.toString() ?? '0',
+                            getAssetDecimals
+                          )?.toFixed(getAssetDecimals)
                         );
                       }}
                       withMaxButton={true}
@@ -600,14 +633,16 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
-                    {displayBalance ?? '?'} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {displayBalance ?? '?'}{' '}
+                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
                 <div className={infoContainer}>
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
-                    {userGiveDisplay} {approvedPaymentCurrency?.symbol ?? 'MOVR'}
+                    {userGiveDisplay}{' '}
+                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
               </>
@@ -630,12 +665,12 @@ export const PurchaseDialog = () => {
           </Button>
         ) : (
           <Button
-            onClick={async () => {       
+            onClick={async () => {
               setFinalTxSubmitted(true);
               try {
                 await fillOrderCallback?.();
               } catch (err) {
-                setGlobalError(err)
+                setGlobalError(err);
                 setFinalTxSubmitted(false);
               }
             }}
@@ -664,7 +699,7 @@ export const PurchaseDialog = () => {
 
   return (
     <Dialog
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth={true}
       open={isPurchaseDialogOpen}
       onClose={loading ? undefined : handleClose}
