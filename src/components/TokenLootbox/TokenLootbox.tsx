@@ -17,11 +17,7 @@ import {
   StringAssetType,
 } from '../../utils/subgraph';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import {
-  UserCollection,
-  useFetchUserItem,
-} from 'hooks/useFetchUserItem/useFetchUserItem';
-import { AddressZero } from '@ethersproject/constants';
+import { Asset } from 'hooks/marketplace/types';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -44,28 +40,18 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
   console.log('meta', meta);
   console.log('order  ', order);
 
-  const asset = staticData.asset;
-
   const { chainId, account } = useActiveWeb3React();
-  const getPaginatedItems = useFetchUserItem();
+  const decimalOverrides = useDecimalOverrides();
+
+  const asset = staticData.asset;
 
   const assetsMain = useMemo(() => {
     return [asset];
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
-  const getCollectionById = async () => {
-    const data = await getPaginatedItems(account ?? AddressZero);
-    const multi_array = data['Multiverse Asset Factory'];
-    console.log("data:", multi_array)
-  };
-  getCollectionById();
-
-
-  const balanceData = useTokenBasicData(assetsMain);
-  console.log('balanceData', balanceData);
-  const decimalOverrides = useDecimalOverrides();
-  const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
-  const isFungible = decimals > 0;
+  let balanceData = useTokenBasicData(assetsMain);
+  let decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
+  let isFungible = decimals > 0;
 
   let userBalanceString = isFungible
     ? Fraction.from(
@@ -85,6 +71,66 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
     : asset.assetType.valueOf() === StringAssetType.ERC721
       ? '1'
       : undefined;
+
+  // useEffect(() => {
+  //   const getUserItemCount = (asset: Asset): string => {
+  //     const balanceData =  useTokenBasicData([asset]);
+  //     const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
+  //     const isFungible = decimals > 0;
+
+  //     let userItemCount = isFungible
+  //       ? Fraction.from(
+  //         balanceData?.[0]?.userBalance?.toString() ?? '0',
+  //         decimals
+  //       )?.toFixed(2) ?? '0'
+  //       : balanceData?.[0]?.userBalance?.toString() ?? '0';
+  //     userItemCount = account ? userItemCount : '0';
+  //     return userItemCount;
+  //   }
+
+  //   const wood = {
+  //     assetAddress: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777",
+  //     assetId: "1",
+  //     assetType: StringAssetType.ERC1155,
+  //     id: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777-1"
+  //   }
+  //   const userWoodCount = getUserItemCount(wood);
+
+
+  //   const stone = {
+  //     assetAddress: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777",
+  //     assetId: "1",
+  //     assetType: StringAssetType.ERC1155,
+  //     id: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777-2"
+  //   }
+  //   const userStoneCount = getUserItemCount(stone);
+
+
+  //   const iron = {
+  //     assetAddress: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777",
+  //     assetId: "1",
+  //     assetType: StringAssetType.ERC1155,
+  //     id: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777-3"
+  //   }
+  //   const userIronCount = getUserItemCount(iron);
+
+
+  //   const gold = {
+  //     assetAddress: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777",
+  //     assetId: "1",
+  //     assetType: StringAssetType.ERC1155,
+  //     id: "0x1b30a3b5744e733d8d2f19f0812e3f79152a8777-4"
+  //   }
+  //   const userGoldCount = getUserItemCount(gold);
+
+  //   console.log("userWoodCount", userWoodCount)
+  //   console.log("userStoneCount", userStoneCount)
+  //   console.log("userIronCount", userIronCount)
+  //   console.log("userGoldCount", userGoldCount)
+  // }, [chainId, account]);
+
+
+
 
 
 
