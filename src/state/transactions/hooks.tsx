@@ -33,6 +33,10 @@ export function useTransactionAdder(): (
       asset: Asset;
       amount: BigNumber;
     };
+    craft?: {
+      blueprintId: string;
+      amount: string;
+    }
     claim?: { recipient: string };
   }
 ) => void {
@@ -49,6 +53,7 @@ export function useTransactionAdder(): (
         fill,
         cancel,
         transfer,
+        craft
       }: {
         summary?: string;
         claim?: { recipient: string };
@@ -70,6 +75,10 @@ export function useTransactionAdder(): (
           asset: Asset;
           amount: BigNumber;
         };
+        craft?: {
+          blueprintId: string;
+          amount: string;
+        }
       } = {}
     ) => {
       if (!account) return;
@@ -90,6 +99,7 @@ export function useTransactionAdder(): (
           fill,
           cancel,
           transfer,
+          craft
         })
       );
     },

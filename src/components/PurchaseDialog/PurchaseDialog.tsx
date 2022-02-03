@@ -143,18 +143,6 @@ export const PurchaseDialog = () => {
     askPerUnitDenominator
   );
 
-  useEffect(() => {
-    if (total) {
-      if (!partialAllowed) {
-        setInputAmountText(total?.toString());
-      }
-
-      if (total.eq('1')) {
-        setInputAmountText(total?.toString());
-      }
-    }
-  }, [partialAllowed, total]);
-
   let meat;
 
   if (orderType === OrderType.BUY) {
@@ -206,6 +194,7 @@ export const PurchaseDialog = () => {
 
       // we buy into a sell order, which is an NFT
     } else {
+      console.log('buyELSE', partialAllowed)
       meat = buyElse(
         ppu,
         total,
@@ -227,6 +216,14 @@ export const PurchaseDialog = () => {
     showFee,
     displayTotal,
   } = meat;
+
+  useEffect(() => {
+    if (total && displayTotal) {
+      if (!partialAllowed || total.eq('1')) {
+        setInputAmountText(displayTotal?.toString());
+      }
+    }
+  }, [partialAllowed, total, displayTotal]);
 
   const [approvalState, approveCallback] = useApproveCallback({
     assetAddress: userAsset?.assetAddress,

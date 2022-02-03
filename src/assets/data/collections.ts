@@ -242,11 +242,9 @@ export const collections = {
       display_name: 'Sama Box',
       symbol: 'SAMABOX',
       minId: 1,
-      maxId: 338,
+      maxId: 2,
       type: 'ERC1155',
-      contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM',
-      subgraph:
-        'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-721-mmplots1',
+      contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM'
     },
     {
       chainId: 1285,
