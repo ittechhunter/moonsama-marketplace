@@ -1,4 +1,4 @@
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, Button } from '@mui/material';
 import { Media } from 'components';
 import { useHistory } from 'react-router-dom';
 import { GlitchText, PriceBox } from 'ui';
@@ -160,6 +160,12 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
             <Typography color="textSecondary">{totalSupplyString}</Typography>
           )}
         </div>
+        <Button
+          variant="contained"
+          color="primary"
+        >
+          Make an offer
+        </Button>
       </div>
     </Paper>
   );

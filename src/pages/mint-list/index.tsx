@@ -39,7 +39,7 @@ const MintListPage = () => {
   >([]);
   // const { address, type, subcollectionId } =
   //   useParams<{ address: string; type: string; subcollectionId: string }>();
-  const address = "0xd335417999Ff2b9b59737244e554370264B3F877";
+  const address = "0x9984440FB82f1aF013865141909276d26B86E303";
   const type = "ERC1155";
   const subcollectionId = "0";
   const assetType = stringToStringAssetType(type);
