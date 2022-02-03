@@ -59,6 +59,10 @@ export const MULTICALL_NETWORKS: { [chainId: number]: string } = {
   [ChainId.MOONBEAM]: '0x62614aee098C7a84dC070fF06688F4C35D3868F9'
 };
 
+export const WORKBENCH_ADDRESSES: { [chainId: number]: string } = {
+  [ChainId.MOONRIVER]: '0x694665f738fA1D9349744098D6cECDCCc2Adbfb4'
+};
+
 export enum SUPPORTED_CONTRACTS {
   'ENS_RESOLVER' = 'ENS_RESOLVER',
 }

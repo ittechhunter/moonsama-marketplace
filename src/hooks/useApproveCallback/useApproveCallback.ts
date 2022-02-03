@@ -3,13 +3,12 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useActiveWeb3React } from 'hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { BalanceQuery } from 'hooks/marketplace/types';
 import {
   useERC20Contract,
   useERC1155Contract,
   useERC721Contract,
+  useMulticall2Contract,
 } from 'hooks/useContracts/useContracts';
-import token from 'pages/token';
 import {
   useHasPendingApproval,
   useTransactionAdder,
@@ -19,6 +18,8 @@ import { StringAssetType } from 'utils/subgraph';
 import { WAREHOUSE_ADDRESS, ChainId } from '../../constants';
 import { AllowanceQuery } from './useApproveCallback.types';
 import { useBlockNumber } from 'state/application/hooks';
+import { getTokenAllowanceCalls, processTokenAllowanceCalls } from 'utils/allowances';
+import { tryMultiCallCore } from 'hooks/useMulticall2/useMulticall2';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -278,4 +279,44 @@ export function useApproveCallback(
   ]);
 
   return [approvalState, approve];
+}
+
+
+export function useAllowances(
+  queries: AllowanceQuery[],
+  owner?: string
+): (BigNumber | undefined)[] | undefined {
+  const { account, chainId } = useActiveWeb3React();
+  const blockumber = useBlockNumber();
+  const [allowances, setAllowances] = useState<(BigNumber | undefined)[] | undefined>();
+
+  const multi = useMulticall2Contract();
+
+  let calls = getTokenAllowanceCalls(queries, owner)
+
+  const allowanceCheck = useCallback(async () => {
+    if (!owner || !calls || calls.length === 0) {
+      setAllowances([]);
+      return;
+    }
+
+    const results = await tryMultiCallCore(multi, calls, false);
+
+    if (!results) {
+      setAllowances([]);
+      return;
+    }
+    //console.log('yolo tryMultiCallCore res', results);
+    const x = processTokenAllowanceCalls(queries, results);
+
+    setAllowances(x.map(x => x?.allowance));
+  }, [chainId, blockumber, owner, multi, calls]);
+
+  useEffect(() => {
+    if (owner) {
+      allowanceCheck();
+    }
+  }, [chainId, blockumber, owner, multi, calls]);
+
+  return allowances;
 }
