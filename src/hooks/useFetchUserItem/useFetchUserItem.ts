@@ -36,13 +36,13 @@ export const useFetchUserItem = () => {
   const { chainId } = useActiveWeb3React();
   const staticCallback = useTokenStaticDataCallbackArray();
   const rawCollections = useRawCollectionsFromList();
-  const rawCollection = useRawcollection("0x1b30a3b5744e733d8d2f19f0812e3f79152a8777");
+  // const rawCollection = useRawcollection("0x1b30a3b5744e733d8d2f19f0812e3f79152a8777");
 
   const fetchUserCollection = useCallback(
     async (account: string) => {
       const result: UserCollection = {};
       const fetches = rawCollections.map(async (collection) => {
-        if (!collection.subgraph) {
+        if (!collection.subgraph || collection.address.toLowerCase() != '0x1b30a3b5744e733d8d2f19f0812e3f79152a8777') {
           result[collection.display_name] = [];
           return;
         }
