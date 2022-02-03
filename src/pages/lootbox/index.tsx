@@ -1,277 +1,780 @@
-import { isAddress } from '@ethersproject/address';
-import { BigNumber } from '@ethersproject/bignumber';
-import SearchIcon from '@mui/icons-material/SearchSharp';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { AddressZero } from '@ethersproject/constants';
+import { Chip, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import { Token as TokenComponent } from 'components';
-import { useClasses } from 'hooks';
-import { Asset } from 'hooks/marketplace/types';
-import { useFetchSubcollectionMeta } from 'hooks/useFetchCollectionMeta/useFetchCollectionMeta';
-import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
-import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
-import {
-  StaticTokenData,
-  useTokenStaticDataCallbackArrayWithFilter,
-} from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useBottomScrollListener } from 'react-bottom-scroll-listener';
-import { useForm } from 'react-hook-form';
+import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import MoneyIcon from '@mui/icons-material/Money';
+import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
+import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
+import { useActiveWeb3React, useBidDialog, useClasses } from 'hooks';
+import { LastTradedPrice, Order } from 'hooks/marketplace/types';
+import { useTokenPageOrders } from 'hooks/marketplace/useTokenPageOrders';
+import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
+import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
+import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
+import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
+import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Filters, GlitchText, Loader } from 'ui';
-import { truncateHexString } from 'utils';
+import {
+  Button,
+  GlitchText,
+  PriceBox,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  Tabs,
+} from 'ui';
+import { getExplorerLink, truncateHexString } from 'utils';
+import { appStyles } from '../../app.styles';
+import { ExternalLink, Media } from '../../components';
+import { ChainId } from '../../constants';
+import { useCancelDialog } from '../../hooks/useCancelDialog/useCancelDialog';
+import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
 import {
   getAssetEntityId,
+  getDisplayQuantity,
+  StrategyMap,
   StringAssetType,
+  stringToOrderType,
   stringToStringAssetType,
-} from 'utils/subgraph';
+  formatExpirationDateString,
+  getDisplayUnitPrice,
+  OrderType,
+} from '../../utils/subgraph';
 import { styles } from './styles';
+import { useLastTradedPrice } from 'hooks/marketplace/useLastTradedPrice';
+import { Fraction } from 'utils/Fraction';
+import { MOONSAMA_TRAITS, MOONSAMA_MAX_SUPPLY } from 'utils/constants';
+import { useWhitelistedAddresses } from 'hooks/useWhitelistedAddresses/useWhitelistedAddresses';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
+import uriToHttp from 'utils/uriToHttp';
+import { getMinecraftSkinUrl } from 'utils/meta';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
+import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { RARITY_COLORS } from 'constants/colors';
 
-const DEFAULT_PAGE_SIZE = 10;
-const SEARCH_PAGE_SIZE = 50;
+const geTableHeader = () => {
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableCell>ID</TableCell>
+        <TableCell>Unit Price</TableCell>
+        <TableCell>Quantity</TableCell>
+        <TableCell>Currency</TableCell>
+        <TableCell>Expiration</TableCell>
+        <TableCell>Maker</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+    </TableHeader>
+  );
+};
 
+// TEST URL: http://localhost:3000/token/0xff3e85e33a8cfc73fe08f437bfaeadff7c95e285/0
 const LootboxPage = () => {
-  const [collection, setCollection] = useState<
-    {
-      meta: TokenMeta | undefined;
-      staticData: StaticTokenData;
-    }[]
-  >([]);
-  // const { address, type, subcollectionId } =  useParams<{ address: string; type: string; subcollectionId: string }>();
-  const address = "0xd335417999Ff2b9b59737244e554370264B3F877";
-  const type = "ERC1155"
-  const subcollectionId = "0"
+  const { chainId, account } = useActiveWeb3React();
+  const whitelist = useWhitelistedAddresses(); // REMOVEME later
+  let { id, address, type } =
+    useParams<{ id: string; address: string; type: string }>();
+
   const assetType = stringToStringAssetType(type);
-  const asset: Asset = {
+
+  if (assetType.valueOf() === StringAssetType.UNKNOWN.valueOf())
+    throw Error('Token type was not recognized');
+
+  if (address.toLowerCase() === AddressZero) throw Error('Nonexistant token');
+
+  if (!whitelist.includes(address.toLowerCase())) {
+    console.log({ whitelist, address });
+    // REMOVEME later
+    throw Error('Unsupported token');
+  }
+
+  if (assetType.valueOf() === StringAssetType.ERC20.valueOf())
+    throw Error('ERC20 trades are not enabled yet');
+
+  if (!id) {
+    if (assetType.valueOf() !== StringAssetType.ERC20.valueOf()) {
+      throw Error('Token ID was not given');
+    }
+  }
+
+  const asset = {
+    assetType,
     assetAddress: address?.toLowerCase(),
-    assetType: assetType,
-    assetId: '0',
-    id: getAssetEntityId(address?.toLowerCase(), '0'),
+    assetId: id,
+    id: getAssetEntityId(address, id),
   };
-  const recognizedCollection = useRawcollection(asset.assetAddress);
-  const maxId = recognizedCollection?.maxId ?? 1000;
-  const searchBarOn = recognizedCollection?.idSearchOn ?? true;
-  const subcollection = recognizedCollection?.subcollections?.find(
-    (x) => x.id === subcollectionId
-  );
-  const submeta = useFetchSubcollectionMeta(
-    subcollection ? [subcollection] : undefined
-  );
 
-  //console.log('SUBMETA', submeta)
-  const isSubcollection = subcollectionId !== '0';
+  const ordersMap = useTokenPageOrders({
+    assetId: id,
+    assetAddress: address?.toLowerCase(),
+    from: 0,
+    num: 1000,
+  });
 
-  const minId = isSubcollection ? 0 : recognizedCollection?.minId ?? 1;
+  const ltp = useLastTradedPrice({
+    assetId: id,
+    assetAddress: address?.toLowerCase(),
+  }) as LastTradedPrice;
 
-  const [take, setTake] = useState<number>(minId);
-  const [filters, setFilters] = useState<Filters | undefined>(undefined);
-  const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
-  const [pageLoading, setPageLoading] = useState<boolean>(false);
-  const [searchCounter, setSearchCounter] = useState<number>(0);
+  const { formBox, formLabel, formValue, formValueTokenDetails } =
+    useClasses(appStyles);
+
   const {
-    placeholderContainer,
-    collectionStats,
-    statItem,
-    container,
-    select,
-    selectLabel,
-    dropDown,
+    image,
+    imageContainer,
+    pageContainer,
+    name,
+    card,
+    price,
+    buttonsContainer,
+    tabsContainer,
+    tabs,
+    externals,
+    subHeader,
+    subItemTitleCell,
+    assetActionsBidTokenAmount,
+    transferButton,
+    newSellButton,
+    tradeContainer,
+    tradeRow,
+    smallText,
+    traitChip,
+    rarityChip,
+    artist
   } = useClasses(styles);
-  const { register, handleSubmit } = useForm();
 
-  const displayFilters = assetType === StringAssetType.ERC721;
+  const { setBidDialogOpen, setBidData } = useBidDialog();
+  const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
+  const { setCancelData, setCancelDialogOpen } = useCancelDialog();
 
-  // TODO: wire it to search result
+  const { setTransferData, setTransferDialogOpen } = useTransferDialog();
 
-  const collectionName = recognizedCollection
-    ? recognizedCollection.display_name
-    : `Collection ${truncateHexString(address)}`;
-
-  const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
-    asset,
-    filters,
-    maxId,
-    subcollectionId
-  ); //useTokenStaticDataCallback(asset)//
-  /*
-  const f = x(['Black Bird', 'White Shades'])
-  console.log('MSATTR', f)
-  const m = searchItems(
-    f.map(num => {
-      return {
-        assetAddress: asset.assetAddress,
-        assetType: assetType,
-        assetId: num.toString(),
-        id: '000'
-      }
-    }
-  ))
-  console.log('MSATTR', m)
-  */
-
-  const searchSize =
-    filters?.selectedOrderType == undefined
-      ? DEFAULT_PAGE_SIZE
-      : SEARCH_PAGE_SIZE;
-
-  const handleScrollToBottom = useCallback(() => {
-    console.log('SCROLLBOTTOM');
-    setTake((state) => (state += searchSize));
-    setSearchCounter((state) => (state += 1));
-  }, [searchSize]);
-
-  const handleTokenSearch = useCallback(
-    async ({ tokenID }) => {
-      if (!!tokenID) {
-        setPaginationEnded(true);
-        setPageLoading(true);
-        const data = await getItemsWithFilter(
-          1,
-          BigNumber.from(tokenID),
-          setTake
-        );
-        setPageLoading(false);
-        setCollection(data);
-      } else {
-        setPaginationEnded(false);
-        setPageLoading(true);
-        const data = await getItemsWithFilter(
-          searchSize,
-          BigNumber.from(take),
-          setTake
-        );
-        setPageLoading(false);
-        setCollection(data);
-      }
-    },
-    [searchSize]
-  );
-
-  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
-
-  //console.log('before FETCH', { searchSize, address, take, paginationEnded, searchCounter, filters });
-  useEffect(() => {
-    const getCollectionById = async () => {
-      setPageLoading(true);
-      console.log('FETCH', { searchSize, address, take, paginationEnded });
-      const data = await getItemsWithFilter(
-        searchSize,
-        BigNumber.from(take),
-        setTake
-      );
-      const isEnd = !data || data.length == 0;
-      const pieces = data.filter(({ meta }) => !!meta);
-      setPageLoading(false);
-
-      //console.log('IS END', {paginationEnded, isEnd, pieces, data})
-
-      if (isEnd) {
-        setPaginationEnded(true);
-        setCollection((state) => state.concat(pieces));
-        return;
-      }
-      setCollection((state) => state.concat(pieces));
-    };
-    if (!paginationEnded) {
-      getCollectionById();
-    }
+  const assets = useMemo(() => {
+    return [asset];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    address,
-    searchCounter,
-    paginationEnded,
-    searchSize,
-    JSON.stringify(filters?.traits),
-  ]);
+  }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
-  if (assetType.valueOf() === StringAssetType.UNKNOWN) {
-    throw Error('Asset type was not recognized');
-  }
-  if (!isAddress(address)) {
-    throw Error('Address format is incorrect');
-  }
+  const rawCollection = useRawcollection(asset.assetAddress);
 
-  const handleFiltersUpdate = useCallback(async (filters: Filters) => {
-    console.log('FILTER', filters);
-    setCollection([]);
-    setTake(minId);
-    setFilters(filters);
-    setPageLoading(true);
-    setPaginationEnded(false);
-    setSearchCounter((state) => (state += 1));
-  }, []);
+  const approvedPaymentCurrency = useApprovedPaymentCurrency(asset);
+
+  const staticData = useTokenStaticData(assets);
+  const balanceData = useTokenBasicData(assets);
+  const metas = useFetchTokenUri(staticData);
+  const decimalOverrides = useDecimalOverrides();
+
+  //console.log('METAS', {metas, staticData})
+
+  //console.error('ERRRORORS', {asset, assets, staticData, balanceData, metas, chainId, account})
+
+  //const currencyLogo = useCurrencyLogo(asset.assetAddress);
+  //const auctiondetails = useAuction(asset.assetAddress, asset.assetId)
+  // check deadline
+  // if deadline is passed, check if there was a sell order after deadline
+  // 1. now is before deadline -> business as usual
+  // 2. now is after deadline: auction mode ON -> BIDDING IS OFF
+  // - check current highest bid
+  // - fetch the bids between deadline and next 5 minutes, get the highest one.
+  // - if there isn't a highest one in the next 5 minutes,
+  //        - if now > those extra 5 minutes, auction ends, and the winner is the highest one => bidding over
+  //        - if now <= those extra five minutes -> Bidding is ON -> Minimum increment requirement is needed
+  // - if there is a highest one, keep note of it and repeat loop
+
+  const isErc20 = asset.assetType.valueOf() === StringAssetType.ERC20.valueOf();
+  const isErc721 =
+    asset.assetType.valueOf() === StringAssetType.ERC721.valueOf();
+
+  const owner = balanceData?.[0].owner;
+
+  const assetMeta = metas?.[0];
+
+  const decimals =
+    decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
+  const tokenName = staticData?.[0]?.name;
+  const tokenSymbol = staticData?.[0]?.symbol;
+
+  const isFungible = decimals > 0;
+
+  let userBalanceString = isFungible
+    ? Fraction.from(
+      balanceData?.[0]?.userBalance?.toString() ?? '0',
+      decimals
+    )?.toFixed(2) ?? '0'
+    : balanceData?.[0]?.userBalance?.toString() ?? '0';
+
+  userBalanceString = account ? userBalanceString : '0';
+
+  const isOwner = userBalanceString !== '0' && userBalanceString !== '0.0';
+
+  console.log('yoyoyo', { ...balanceData?.[0] });
+  let totalSupplyString = balanceData?.[0]?.totalSupply
+    ? isFungible
+      ? Fraction.from(
+        balanceData?.[0]?.totalSupply?.toString() ?? '0',
+        decimals
+      )?.toFixed(2) ?? '0'
+      : balanceData?.[0]?.totalSupply?.toString()
+    : asset.assetType.valueOf() === StringAssetType.ERC721
+      ? '1'
+      : undefined;
+
+  //console.log('data', { balanceData, staticData, assetMeta });
+
+  const transformedMetaData = assetMeta?.description
+    ?.replace(/\s*,\s*/g, ',')
+    .split(',')
+    .map((trait: string) => {
+      // TODO: Get token supply correctly
+      const rarity = (
+        ((MOONSAMA_TRAITS as any)[trait] / MOONSAMA_MAX_SUPPLY) *
+        100
+      ).toFixed(2);
+
+      return {
+        label: trait,
+        rarity,
+      };
+    });
+
+  const displayRarity =
+    asset.assetAddress ==
+    '0xb654611F84A8dc429BA3cb4FDA9Fad236C505a1a'.toLowerCase();
+  const minecraftskin = getMinecraftSkinUrl(assetMeta?.attributes);
+
+  const getTableBody = (
+    orders: Order[] | undefined | null,
+    orderType?: OrderType
+  ) => {
+    return (
+      <TableBody>
+        {orders && orders.length > 0 ? (
+          orders.map((order) => {
+            const {
+              id,
+              seller,
+              createdAt,
+              strategyType,
+              sellAsset,
+              buyAsset,
+              quantityLeft,
+              askPerUnitDenominator,
+              askPerUnitNominator,
+              expiresAt,
+              onlyTo,
+              partialAllowed,
+              orderType: indexedOrderType,
+            } = order;
+
+            const expiration = formatExpirationDateString(expiresAt);
+
+            const sellerShort = truncateHexString(seller);
+
+            const ot = orderType ?? stringToOrderType(indexedOrderType);
+
+            const displayUnitPrice = getDisplayUnitPrice(
+              decimals,
+              5,
+              ot,
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
+
+            const qty = getDisplayQuantity(
+              decimals,
+              ot,
+              quantityLeft,
+              askPerUnitNominator,
+              askPerUnitDenominator
+            );
+
+            const freeForAll = onlyTo === AddressZero;
+            const isExlusiveRecipient = onlyTo === account?.toLowerCase();
+
+            return (
+              <TableRow
+                key={id}
+                renderExpand={() => {
+                  return (
+                    <div>
+                      <Typography className={subHeader}>
+                        Order Details
+                      </Typography>
+
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
+                            <Grid item className={subItemTitleCell}>
+                              Order ID
+                            </Grid>
+                            <Grid item>{id}</Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
+                            <Grid item className={subItemTitleCell}>
+                              Maker
+                            </Grid>
+                            <Grid item>{seller}</Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
+                            <Grid item className={subItemTitleCell}>
+                              Created at
+                            </Grid>
+                            <Grid item>
+                              {formatExpirationDateString(createdAt)}
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
+                            <Grid item className={subItemTitleCell}>
+                              Available to
+                            </Grid>
+                            <Grid item>{freeForAll ? 'everyone' : onlyTo}</Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={2}
+                            style={{ justifyContent: 'start' }}
+                          >
+                            <Grid item className={subItemTitleCell}>
+                              Partial fills allowed
+                            </Grid>
+                            <Grid item>
+                              {partialAllowed ? (
+                                <DoneOutlineIcon aria-label="yes" />
+                              ) : (
+                                'no'
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  );
+                }}
+              >
+                <TableCell title={id}> {truncateHexString(id)}</TableCell>
+                <TableCell>{displayUnitPrice?.toString()}</TableCell>
+                <TableCell>{qty?.toString()}</TableCell>
+                <TableCell>{approvedPaymentCurrency.symbol}</TableCell>
+                <TableCell>{expiration}</TableCell>
+                <TableCell title={seller}>
+                  <ExternalLink
+                    href={getExplorerLink(
+                      chainId ?? ChainId.MOONRIVER,
+                      seller,
+                      'address'
+                    )}
+                  >
+                    {truncateHexString(sellerShort)}
+                  </ExternalLink>
+                </TableCell>
+                <TableCell>
+                  {seller.toLowerCase() === account?.toLowerCase() ? (
+                    <Button
+                      onClick={() => {
+                        setCancelDialogOpen(true);
+                        setCancelData({ orderHash: order.id });
+                      }}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Cancel
+                    </Button>
+                  ) : (
+                    <Button
+                      style={isExlusiveRecipient ? { background: 'blue' } : {}}
+                      disabled={!freeForAll && !isExlusiveRecipient}
+                      onClick={() => {
+                        setPurchaseDialogOpen(true);
+                        setPurchaseData({
+                          order,
+                          orderType: ot,
+                          decimals,
+                          symbol: tokenSymbol,
+                          name: tokenName,
+                          approvedPaymentCurrency,
+                        });
+                      }}
+                      variant="contained"
+                      color={'primary'}
+                    >
+                      Fill
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })
+        ) : (
+          <TableRow>
+            <TableCell style={{ textAlign: 'center' }} colSpan={7}>
+              No records available...
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    );
+  };
 
   return (
-    <>
-      <div className={container}>
-        <GlitchText variant="h1">{collectionName}</GlitchText>
-        {isSubcollection && !!submeta?.[0]?.name && (
-          <GlitchText variant="h2">{submeta?.[0].name}</GlitchText>
-        )}
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={{ xs: 1, sm: 2, md: 4 }}
-          sx={{
-            marginTop: '10px',
-            padding: '16px',
-          }}
-          justifyContent="flex-end"
-          alignItems="center"
+    <Grid
+      container
+      className={pageContainer}
+      style={{ margin: '0 auto' }}
+      alignItems="flex-start"
+      justifyContent="space-between"
+      maxWidth="lg"
+    >
+      <Grid
+        pr={{ lg: 3, md: 3 }}
+        item
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+        className={imageContainer}
+      >
+        <Media uri={assetMeta?.image} className={image} />
+      </Grid>
+      <Grid
+        pl={{ lg: 3, md: 3 }}
+        item
+        lg={6}
+        md={6}
+        xs={12}
+        style={{ paddingTop: 0 }}
+      >
+        <GlitchText
+          variant="h1"
+          className={name}
+          style={{ textAlign: 'left', margin: 0 }}
         >
-          {searchBarOn && (
-            <div>
-              <TextField
-                placeholder="Search by token ID"
-                variant="outlined"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        onClick={handleSubmit(handleTokenSearch)}
-                        onMouseDown={handleSubmit(handleTokenSearch)}
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                {...register('tokenID')}
+          {assetMeta?.name ??
+            assetMeta?.title ??
+            truncateHexString(asset?.assetAddress)}
+        </GlitchText>
+        {!isErc20 && (
+          <GlitchText
+            variant="h2"
+            className={name}
+            style={{ textAlign: 'left', marginTop: '10px' }}
+          >
+            #{truncateHexString(asset?.assetId)}
+          </GlitchText>
+        )}
+        <Box className={price}>
+          <PriceBox variant="primary">{assetType}</PriceBox>
+          {isErc20 ? (
+            <Typography color="textSecondary" variant="subtitle1">
+              BALANCE: {userBalanceString}
+            </Typography>
+          ) : isErc721 ? (
+            userBalanceString === '1' ? (
+              <Typography color="textSecondary" className={smallText}>
+                OWNED BY YOU
+              </Typography>
+            ) : (
+              <Typography color="textSecondary" className={smallText}>
+                {owner && (
+                  <ExternalLink
+                    className={smallText}
+                    href={getExplorerLink(chainId, owner, 'address')}
+                  >
+                    {' '}
+                    Owned by {truncateHexString(owner)}
+                  </ExternalLink>
+                )}
+              </Typography>
+            )
+          ) : (
+            <Typography color="textSecondary" variant="subtitle1">
+              {`OWNED ${userBalanceString}${totalSupplyString ? ` OF ${totalSupplyString}` : ''
+                }`}
+            </Typography>
+          )}
+        </Box>
+
+        {assetMeta?.rarity && (
+          <Box className={artist}>
+            <Typography color="textSecondary" variant="subtitle1">
+              <Chip
+                label={assetMeta.rarity}
+                className={rarityChip}
+                style={{background: RARITY_COLORS[assetMeta.rarity]}}
               />
-            </div>
+            </Typography>
+          </Box>
+        )}
+
+        {/*TODO: Make traits calculation collection specific*/}
+        {displayRarity && (
+          <Typography color="textSecondary" className={smallText}>
+            {transformedMetaData?.map((trait) => (
+              <Tooltip title={`${trait.rarity}% have this trait`}>
+                <Chip label={trait.label} className={traitChip} />
+              </Tooltip>
+            ))}
+          </Typography>
+        )}
+
+        {rawCollection?.plot && (
+          <Typography color="textSecondary" className={smallText}>
+            {Object.keys(assetMeta?.plot ?? {}).map((key) => (
+              <Chip
+                label={`${key}: ${assetMeta?.plot[key]}`}
+                className={traitChip}
+              />
+            ))}
+          </Typography>
+        )}
+
+        {!displayRarity && !rawCollection?.plot && (
+          <Typography>{assetMeta?.description}</Typography>
+        )}
+
+        {assetMeta?.external_url && assetMeta?.artist && (
+          <Box className={artist}>
+            <Typography color="textSecondary" variant="subtitle1">
+              Made by <ExternalLink href={assetMeta.external_url} fontSize='14px'>{assetMeta.artist}</ExternalLink>
+            </Typography>
+          </Box>
+        )}
+
+        <Paper className={card}>
+          {ltp && (
+            <Box className={formBox} style={{ marginBottom: 32 }}>
+              <div className={tradeContainer}>
+                <div className={tradeRow}>
+                  <Grid container alignItems="center">
+                    <Grid item style={{ marginRight: '0.3rem' }}>
+                      <AccountCircleIcon style={{ fontSize: 60 }} />
+                    </Grid>
+                    <Grid item>
+                      Last trade by:
+                      <AddressDisplayComponent
+                        className={`${formValue} ${formValueTokenDetails}`}
+                        charsShown={5}
+                      >
+                        {ltp?.user}
+                      </AddressDisplayComponent>
+                    </Grid>
+                  </Grid>
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Token Type: </div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {`${assetType}`}
+                  </div>
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Offer Type:</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {`${ltp?.orderType ?? ''}`}
+                  </div>
+                </div>
+                <div className={tradeRow}>
+                  <div className={formLabel}>Value:</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{
+                      justifyContent: 'flex-end',
+                      marginLeft: 8,
+                    }}
+                  >
+                    <span className={assetActionsBidTokenAmount}>
+                      {Fraction.from(ltp?.unitPrice, 18)?.toFixed(0)}{' '}
+                      {approvedPaymentCurrency.symbol}
+                    </span>
+                    {/** TODO USD PRICE 
+                  <span className={assetActionsBidCurrency}>
+                    {12 * 0.12} USD
+                  </span>
+                  */}
+                  </div>
+                </div>
+              </div>
+            </Box>
           )}
 
-          {displayFilters && (
-            <div>
-              <Filters
-                onFiltersUpdate={handleFiltersUpdate}
-                assetAddress={asset.assetAddress}
-              />
-            </div>
-          )}
-        </Stack>
-      </div>
-      <Grid container alignContent="center">
-        {collection.map(
-          (token, i) =>
-            token && (
-              <Grid
-                item
-                key={`${token.staticData.asset.id}-${i}`}
-                xs={12}
-                md={6}
-                lg={3}
+          <Box
+            className={buttonsContainer}
+            style={{ justifyContent: 'space-around' }}
+          >
+            {!!ordersMap?.sellOrders &&
+              ordersMap?.sellOrders.length > 0 &&
+              (ordersMap.sellOrders[0].onlyTo === AddressZero ||
+                ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
+                <Button
+                  style={{ background: 'green' }}
+                  onClick={() => {
+                    setPurchaseDialogOpen(true);
+                    setPurchaseData({
+                      order: ordersMap.sellOrders?.[0] as Order,
+                      orderType: OrderType.SELL,
+                      decimals,
+                      symbol: tokenSymbol,
+                      name: tokenName,
+                      approvedPaymentCurrency,
+                    });
+                  }}
+                  startIcon={<AccountBalanceWalletIcon />}
+                  variant="contained"
+                  color="primary"
+                >
+                  Buy now
+                </Button>
+              )}
+            {((!isOwner && isErc721) || !isErc721) && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({
+                    orderType: OrderType.BUY,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
+                }}
+                startIcon={<AccountBalanceWalletIcon />}
+                variant="contained"
+                color="primary"
               >
-                <TokenComponent {...token} />
-              </Grid>
-            )
-        )}
+                Make an offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setBidDialogOpen(true);
+                  setBidData({
+                    orderType: OrderType.SELL,
+                    asset,
+                    decimals,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    approvedPaymentCurrency,
+                  });
+                }}
+                startIcon={<MoneyIcon />}
+                variant="outlined"
+                color="primary"
+                className={newSellButton}
+              >
+                New sell offer
+              </Button>
+            )}
+            {isOwner && (
+              <Button
+                onClick={() => {
+                  setTransferDialogOpen(true);
+                  setTransferData({ asset, decimals });
+                }}
+                startIcon={<SyncAltIcon />}
+                variant="outlined"
+                color="primary"
+                className={transferButton}
+              >
+                Transfer
+              </Button>
+            )}
+          </Box>
+          <Box className={externals}>
+            {rawCollection?.plotMap && (
+              <ExternalLink href={!!asset?.assetId ? `${rawCollection?.plotMap}/?plot=${asset?.assetId}` : `${rawCollection?.plotMap}`}>
+                <Button>Plot map↗</Button>
+              </ExternalLink>
+            )}
+            {minecraftskin && (
+              <ExternalLink href={uriToHttp(minecraftskin)?.[0]}>
+                <Button>Minecraft skin↗</Button>
+              </ExternalLink>
+            )}
+            {assetMeta?.external_url && (
+              <ExternalLink href={assetMeta?.external_url}>
+                <Button>External site↗</Button>
+              </ExternalLink>
+            )}
+            {staticData?.[0]?.tokenURI && (
+              <ExternalLink href={uriToHttp(staticData?.[0].tokenURI)?.[0]}>
+                <Button>Full metadata↗</Button>
+              </ExternalLink>
+            )}
+            <ExternalLink
+              href={getExplorerLink(
+                chainId ?? ChainId.MOONRIVER,
+                asset?.assetAddress,
+                'address'
+              )}
+            >
+              <Button>Check the contract↗</Button>
+            </ExternalLink>
+          </Box>
+        </Paper>
       </Grid>
-      {pageLoading && (
-        <div className={placeholderContainer}>
-          <Loader />
-        </div>
-      )}
-    </>
+      <Tabs
+        containerClassName={tabsContainer}
+        tabsClassName={tabs}
+        tabs={[
+          {
+            label: 'Buy Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.buyOrders, OrderType.BUY)}
+              </Table>
+            ),
+          },
+          {
+            label: 'Sell Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.sellOrders, OrderType.SELL)}
+              </Table>
+            ),
+          },
+          {
+            label: 'Your Offers',
+            view: (
+              <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
+                {geTableHeader()}
+                {getTableBody(ordersMap?.userOrders)}
+              </Table>
+            ),
+          },
+        ]}
+      />
+      <div style={{ marginTop: 40, width: '100%' }} />
+    </Grid>
   );
 };
 

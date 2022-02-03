@@ -216,6 +216,9 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       coll?.subcollections?.find((c) => c.id === subcollectionId)?.tokens ?? [];
   }
 
+  console.log("ids", ids)
+  console.log("coll", coll)
+
   const priceRange = filter?.priceRange;
   const selectedOrderType = filter?.selectedOrderType;
 
@@ -250,6 +253,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
 
       const fetchStatics = async (assets: Asset[], orders?: Order[]) => {
         console.log('fetch statistics');
+        console.log('assets', assets);
         if (orders && orders.length !== assets.length) {
           throw new Error('Orders/assets length mismatch');
         }
@@ -270,7 +274,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
 
         const metas = await fetchUri(staticData);
 
-        console.log(metas);
+        console.log("metas",metas);
 
         return metas.map((x, i) => {
           return {

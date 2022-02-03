@@ -1,4 +1,5 @@
 import { Theme } from '@mui/material';
+import { fontWeight } from 'theme/typography';
 
 export const styles = (theme: Theme) => ({
   container: {
@@ -53,5 +54,26 @@ export const styles = (theme: Theme) => ({
   },
   mr: {
     marginRight: theme.spacing(1),
+  },
+  price: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(1),
+  },
+  buttonsContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    // marginTop: theme.spacing(4),
+    flexDirection: 'column',
+    gap: 16,
+  },
+  name: {
+    marginBottom: theme.spacing(1),
+    fontWeight: fontWeight.bolder,
+    lineHeight: 1,
+    letterSpacing: '-.02em',
+    [theme.breakpoints.down('md')]: {
+      textAlign: 'center',
+    },
   },
 });

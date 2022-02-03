@@ -51,7 +51,6 @@ export const useUserCollection = () => {
         if (collection.type === 'ERC721') {
           const query = QUERY_USER_ERC721(account);
           const response = await request(collection.subgraph, query);
-
           console.debug('YOLO fetchUserCollection', response);
 
           if (!response) {
@@ -78,7 +77,6 @@ export const useUserCollection = () => {
         } else {
           const query = QUERY_USER_ERC1155(account);
           const response = await request(collection.subgraph, query);
-
           console.debug('YOLO fetchUserCollection', response);
 
           if (!response) {
