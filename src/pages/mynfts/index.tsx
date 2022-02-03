@@ -4,14 +4,10 @@ import { useEffect, useState } from 'react';
 import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import { styles } from './styles';
-// import {
-//   UserCollection,
-//   useUserCollection,
-// } from 'hooks/useUserCollection/useUserCollection';
 import {
   UserCollection,
-  useFetchUserItem,
-} from 'hooks/useFetchUserItem/useFetchUserItem';
+  useUserCollection,
+} from 'hooks/useUserCollection/useUserCollection';
 import { useActiveWeb3React, useClasses } from 'hooks';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenOwned } from 'components/TokenOwned/TokenOwned';
@@ -27,8 +23,7 @@ const MyNFTsPage = () => {
 
   const { account, chainId } = useActiveWeb3React();
 
-  // const getPaginatedItems = useUserCollection();
-  const getPaginatedItems = useFetchUserItem();
+  const getPaginatedItems = useUserCollection();
 
   useEffect(() => {
     const getCollectionById = async () => {

@@ -17,6 +17,11 @@ import {
   StringAssetType,
 } from '../../utils/subgraph';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import {
+  UserCollection,
+  useFetchUserItem,
+} from 'hooks/useFetchUserItem/useFetchUserItem';
+import { AddressZero } from '@ethersproject/constants';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -31,9 +36,6 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
     imageContainer,
     nameContainer,
     stockContainer,
-    tokenName,
-    mr,
-    lastPriceContainer,
     price,
     buttonsContainer,
     name,
@@ -45,11 +47,21 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
   const asset = staticData.asset;
 
   const { chainId, account } = useActiveWeb3React();
-  const assets = useMemo(() => {
+  const getPaginatedItems = useFetchUserItem();
+
+  const assetsMain = useMemo(() => {
     return [asset];
   }, [chainId, asset.assetAddress, asset.assetType, asset.assetId]);
 
-  const balanceData = useTokenBasicData(assets);
+  const getCollectionById = async () => {
+    const data = await getPaginatedItems(account ?? AddressZero);
+    const multi_array = data['Multiverse Asset Factory'];
+    console.log("data:", multi_array)
+  };
+  getCollectionById();
+
+
+  const balanceData = useTokenBasicData(assetsMain);
   console.log('balanceData', balanceData);
   const decimalOverrides = useDecimalOverrides();
   const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
