@@ -4,7 +4,8 @@ import { fontWeight } from 'theme/typography';
 export const styles = (theme: Theme) => ({
   approveItemContainer: {
     display: 'flex',
-    justifyContent: 'between-center',
+    justifyContent: 'space-between',
+    marginBottom: 5,
   },
   transferButton: {
     '&:hover': {

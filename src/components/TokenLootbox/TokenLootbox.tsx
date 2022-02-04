@@ -188,11 +188,16 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           title={"Approve Resources"}
         >
           <div className={dialogContainer}>
-          { items?.map((item, index) =>
+          { items?.map((item, index) => {
+            console.log('item map shin', item)
+            return (
             <MintResourceApproveItem
+              key={index}
               {...item.asset}
               assetName={item.name}
             />
+            );
+          }
             )
           }
             </div>
