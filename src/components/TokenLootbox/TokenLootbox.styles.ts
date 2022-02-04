@@ -9,6 +9,45 @@ export const styles = (theme: Theme) => ({
     padding: theme.spacing(0.1),
     borderRadius: 0,
   },
+  lootboxResultContainer: {
+    width: '70%',
+    display: 'flex',
+    alignItems: 'stretch',
+    margin: 'auto',
+  },
+  lootCardContainer: {
+    flex: '1 1',
+    height: '100%',
+    transition: 'opacity 0.2s ease-in, transform 0.2s ease-in',
+    opacity: '0',
+    transform: 'scale(0.9)',
+    padding: '1rem',
+    boxSizing: 'border-box',
+  },
+  commonLoot: {
+      backgroundColor: "#222222EE",
+      boxShadow: '#AAAAAA 0 0 1rem',
+  },
+
+  uncommonLoot: {
+      backgroundColor: "#1b331bEE",
+      boxShadow: '#55FF55 0 0 1rem',
+  },
+
+  rareLoot: {
+      backgroundColor: "#0b3652EE",
+      boxShadow: '#22AAFF 0 0 1rem',
+  },
+
+  epicLoot: {
+      backgroundColor: "#23182eEE",
+      boxShadow: '#AA55FF 0 0 1rem 0.125rem',
+  },
+
+  legendaryLoot: {
+      backgroundColor: "#2e1906EE",
+      boxShadow: '#FFAA55 0 0 1rem 0.25rem',
+  },
   imageContainer: {
     width: '100%',
     textAlign: 'center',

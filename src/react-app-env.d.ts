@@ -20,3 +20,8 @@ interface Window {
   };
   web3?: {};
 }
+
+declare module '*.mp4' {
+  const src: string;
+  export default src;
+}

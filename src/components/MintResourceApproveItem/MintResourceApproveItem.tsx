@@ -17,18 +17,7 @@ export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amoun
     assetType,
     amountToApprove: amount,
   });
-  const [approvalSubmitted, setApprovalSubmitted] = useState(false)
 
-  useEffect(() => {
-    console.log('approvalState', approvalState)
-    if (approvalState === ApprovalState.PENDING) {
-      setApprovalSubmitted(true);
-    }
-  }, [approvalState, approvalSubmitted]);
-
-  const showApproveFlow =
-    approvalState === ApprovalState.NOT_APPROVED ||
-    approvalState === ApprovalState.PENDING;
   const {
     approveItemContainer,
     transferButton
@@ -43,7 +32,6 @@ export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amoun
       <Button
         onClick={() => {
           approveCallback();
-          setApprovalSubmitted(true);
         }}
         startIcon={<MoneyIcon />}
         variant="contained"

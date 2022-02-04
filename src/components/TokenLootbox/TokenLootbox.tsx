@@ -1,9 +1,11 @@
 import { Paper, Typography, Button } from '@mui/material';
+import Grow from '@mui/material/Grow';
+import DialogUI from '@mui/material/Dialog';
 import Box from '@mui/material/Box';
 import MoneyIcon from '@mui/icons-material/Money';
 import { Media, MintResourceApproveItem } from 'components';
 import { GlitchText, NavLink, Dialog } from 'ui';
-import {DoDisturb} from '@mui/icons-material';
+import { DoDisturb } from '@mui/icons-material';
 import { truncateHexString } from 'utils';
 import { styles } from './TokenLootbox.styles';
 import { Fraction } from 'utils/Fraction';
@@ -18,12 +20,14 @@ import {
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useApproveDialog } from 'hooks/useApproveDialog/useApproveDialog';
 import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
 import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
+import { useLootboxOpen, OpenData, RewardData, Reward } from 'hooks/loot/useLootboxOpen';
 import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
+import samaboxOpenVideo from 'assets/samabox/samabox.mp4';
 
 
 interface Item {
@@ -43,8 +47,16 @@ export const TokenLootbox = (asset: Asset) => {
     newSellButton,
     transferButton,
     dialogContainer,
+    lootCardContainer,
+    commonLoot,
+    uncommonLoot,
+    rareLoot,
+    epicLoot,
+    legendaryLoot,
+    lootboxResultContainer,
   } = useClasses(styles);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false)
+  const [openBoxDialogOpen, setOpenBoxDialogOpen] = useState(false)
   const { chainId, account } = useActiveWeb3React();
   const decimalOverrides = useDecimalOverrides();
   const blueprint = useBlueprint("1"); // 2 for prod
@@ -114,19 +126,19 @@ export const TokenLootbox = (asset: Asset) => {
 
   const allowances = useAllowances(
     inputAssets?.map(x => {
-      return {...x, operator: WORKBENCH_ADDRESSES[chainId ?? ChainId.MOONRIVER]}
+      return { ...x, operator: WORKBENCH_ADDRESSES[chainId ?? ChainId.MOONRIVER] }
     }) ?? [],
     account ?? undefined
   )
 
-  let approvalNeeded = false 
+  let approvalNeeded = false
   allowances?.map((x, i) => {
     if (BigNumber.from(inputAssets?.[i].amount ?? '0').gt(x ?? '0')) {
       approvalNeeded = true
     }
   })
 
-  let userHasEnough = true 
+  let userHasEnough = true
   inputsBalanceData?.map((x, i) => {
     if (BigNumber.from(inputAssets?.[i].amount ?? '0').lt(x.userBalance ?? '0')) {
       userHasEnough = false
@@ -134,7 +146,10 @@ export const TokenLootbox = (asset: Asset) => {
   })
 
 
-  console.log(lootboxMeta)
+  const { callback } = useLootboxOpen({ lootboxId: '0x9984440fb82f1af013865141909276d26b86e303-1-1' } as OpenData);
+  const openVidRef = useRef<any>(null)
+  const [videoPlay, setvideoPlay] = useState(false)
+  const [confirmButtonShow, setConfirmButtonShow] = useState(false)
 
   return (
     <Paper className={container}>
@@ -176,13 +191,13 @@ export const TokenLootbox = (asset: Asset) => {
           >
             Crafting cost
           </GlitchText>
-          {console.log(items)}
           {items?.map((item, index) =>
             <Typography color="textSecondary" variant="subtitle1" key={index}>
               {`${item?.target} ${item?.name}`}
             </Typography>)
           }
         </div>
+
 
         <Dialog
           fullWidth={true}
@@ -193,19 +208,18 @@ export const TokenLootbox = (asset: Asset) => {
           title={"Approve Resources"}
         >
           <div className={dialogContainer}>
-          { items?.map((item, index) => {
-            console.log('item map shin', item)
-            return (
-            <MintResourceApproveItem
-              key={index}
-              {...item.asset}
-              assetName={item.name}
-            />
-            );
-          }
+            {items?.map((item, index) => {
+              return (
+                <MintResourceApproveItem
+                  key={index}
+                  {...item.asset}
+                  assetName={item.name}
+                />
+              );
+            }
             )
-          }
-            </div>
+            }
+          </div>
         </Dialog>
 
         <div>
@@ -253,6 +267,84 @@ export const TokenLootbox = (asset: Asset) => {
                 </Box>
           }
         </div>
+
+        <DialogUI
+          className={dialogContainer}
+          fullWidth={true}
+          open={openBoxDialogOpen}
+          onClose={() => {
+            setOpenBoxDialogOpen(false)
+          }}
+          maxWidth="lg"
+        >
+          <video ref={openVidRef} style={{ width: '100%' }} playsInline src={samaboxOpenVideo} poster="samabox_unopened.jpg">
+          </video>
+          {!videoPlay ?
+            <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+            >
+              <Button onClick={() => {
+                openVidRef?.current?.play();
+                setvideoPlay(true)
+                setTimeout(() => {
+                  setConfirmButtonShow(true)
+                }, 5500)
+              }}
+              >
+                <GlitchText
+                  style={{ width: '100%', color: 'white' }}
+                  variant="h1">
+                  Click to Open</GlitchText></Button>
+            </div> :
+
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', textAlign: 'center', height: '100%', flexDirection: 'column'}}>
+              <div className={lootboxResultContainer} style={{ width: '60%' }}>
+
+                <Grow style={{marginLeft: 30, transitionDelay: `5000ms`}} in={true}>
+                  <div className={`${lootCardContainer} ${rareLoot}`}>
+                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmXdPz7YgmtiHnEY58MxAqRxGncqvsuc3KBnyuXU9vHub8" />
+                    <span className="name">Moonshine Moonbrella</span>
+                    <span className="asset-id">#5</span>
+                  </div></Grow>
+                <Grow style={{marginLeft: 30, transitionDelay: `5200ms`}} in={true}>
+                  <div className={`${lootCardContainer} ${epicLoot}`}>
+                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmP99Umwc4GbVNcxqKh9agywJHRBv9N1YnepaEjECRSKfc" />
+                    <span className="name">Blood Moon Sword</span>
+                    <span className="asset-id">#30</span>
+                  </div></Grow>
+
+                <Grow style={{marginLeft: 30, transitionDelay: `5400ms`}} in={true}>
+                  <div className={`${lootCardContainer} ${commonLoot}`}>
+                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmejQBPzsmXVXhdHudbvcihYoR5rX4wD3U2ArgHR7aMF4x" />
+                    <span className="name">Amethyst Short Sword</span>
+                    <span className="asset-id">#49</span>
+                  </div></Grow>
+              </div>
+              {confirmButtonShow && 
+              <Button onClick={() => { setOpenBoxDialogOpen(false) }} variant="contained"
+                color="primary"
+              ><Typography variant="h4">Nice!</Typography></Button>}
+            </div>
+          }
+        </DialogUI>
+        {Number(userBalanceString) == 0 && (
+          <Box
+            className={buttonsContainer}
+            style={{ justifyContent: 'space-around' }}
+          >
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => {
+                if (callback)
+                  callback().then((res) => {
+                    console.log(res)
+                    setOpenBoxDialogOpen(true)
+                  })
+              }}
+            >
+              Open
+            </Button>
+          </Box>)}
       </div>
     </Paper >
   );
