@@ -17,13 +17,14 @@ export type BlueprintAsset = {
     assetId: string,
     assetType: StringAssetType,
     amount?: BigNumber
+    id?: string
 }
 
 export type BlueprintData = {
     inputTarget: string,
     inputs: BlueprintAsset[],
     output: BlueprintAsset,
-    availableToMint: BigNumber,
+    availableToMint: BigNumber
 }
 
 export function useBlueprint(

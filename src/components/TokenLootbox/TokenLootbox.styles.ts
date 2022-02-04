@@ -7,7 +7,7 @@ export const styles = (theme: Theme) => ({
     flexDirection: 'column',
     marginTop: theme.spacing(2),
     padding: theme.spacing(0.1),
-    borderRadius: 0,
+    borderRadius: 0
   },
   lootboxResultContainer: {
     width: '70%',

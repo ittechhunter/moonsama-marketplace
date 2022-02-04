@@ -5,6 +5,7 @@ export const styles = (theme: Theme) => ({
     textAlign: 'center',
     color: theme.palette.text.primary,
     margin: `${theme.spacing(8)}px 0 ${theme.spacing(4)}px 0`,
+    paddingTop: theme.spacing(8)
   },
   iconsWrapper: {
     margin: `${theme.spacing(2)}px 0`,
