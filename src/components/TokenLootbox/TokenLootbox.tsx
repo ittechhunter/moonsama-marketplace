@@ -1,40 +1,30 @@
 import { Paper, Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import MoneyIcon from '@mui/icons-material/Money';
-import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
 import { Media, MintResourceApproveItem } from 'components';
 import { GlitchText, NavLink, Dialog } from 'ui';
+import {DoDisturb} from '@mui/icons-material';
 import { truncateHexString } from 'utils';
 import { styles } from './TokenLootbox.styles';
-import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
-import { StaticTokenData } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
-import { Order } from 'hooks/marketplace/types';
 import { Fraction } from 'utils/Fraction';
 import { useActiveWeb3React, useClasses } from 'hooks';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
 import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
 import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
-
-import {
-  ApprovalState,
-  useApproveCallback,
-} from 'hooks/useApproveCallback/useApproveCallback';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import {
   StringAssetType,
 } from '../../utils/subgraph';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
-import { useCraftCallback } from 'hooks/loot/useCraftCallback'
 import { Asset } from 'hooks/marketplace/types';
 import React, { useEffect, useState } from 'react';
 import { useApproveDialog } from 'hooks/useApproveDialog/useApproveDialog';
+import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
+import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
+import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
+import { BigNumber } from '@ethersproject/bignumber';
 
-export interface TokenData {
-  meta: TokenMeta | undefined;
-  staticData: StaticTokenData;
-  order?: Order | undefined;
-}
 
 interface Item {
   asset: any;
@@ -42,8 +32,7 @@ interface Item {
   current: string;
   name: string | undefined;
 }
-
-export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
+export const TokenLootbox = (asset: Asset) => {
   const {
     container,
     image,
@@ -61,13 +50,10 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
   const blueprint = useBlueprint("1"); // 2 for prod
   let notEnough = false;
   let approve = true;
-  // const { setApproveData, setApproveDialogOpen } = useApproveDialog();
 
-  const asset = staticData.asset;
   const balanceData = useTokenBasicData([asset]);
   const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
   const isFungible = decimals > 0;
-
 
   let userBalanceString = isFungible
     ? Fraction.from(
@@ -90,40 +76,65 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
 
   let mintable = blueprint?.availableToMint.toString() ?? '0'
 
-  const TokenLootboxInput = (): Item[] => {
-    const assets = blueprint?.inputs.map(input => ({
-      id: input.assetAddress + input.assetId,
-      assetId: input.assetId,
-      assetType: input.assetType,
-      assetAddress: input.assetAddress,
-      amount: input.amount,
-    }))
+  const lootboxStaticData = useTokenStaticData([asset]);
+  const lootboxMeta = useFetchTokenUri(lootboxStaticData)?.[0];
 
-    const staticData = useTokenStaticData(assets! || []);
-    const metas = useFetchTokenUri(staticData);
-    const balanceData = useTokenBasicData(assets! || []);
-    return assets?.map((asset, i) => {
-      const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
-      const isFungible = decimals > 0;
-      let userItemCount = isFungible
-        ? Fraction.from(
-          balanceData?.[i]?.userBalance?.toString() ?? '0',
-          decimals
-        )?.toFixed(2) ?? '0'
-        : balanceData?.[i]?.userBalance?.toString() ?? '0';
-      userItemCount = account ? userItemCount : '0';
-      const target = assets[i].amount ? assets[i].amount?.toString() : '0';
-      const name = metas[i]?.name ? metas[i]?.name : '';
-      if (!notEnough && target && target >= userItemCount) notEnough = true;
-      return {
-        'asset': asset,
-        'target': target,
-        'current': userItemCount,
-        'name': name,
-      }
-    })!
-  };
-  let items: Item[] = TokenLootboxInput();
+
+  const inputAssets = blueprint?.inputs.map(input => ({
+    id: input.assetAddress + input.assetId,
+    assetId: input.assetId,
+    assetType: input.assetType,
+    assetAddress: input.assetAddress,
+    amount: input.amount,
+  }))
+
+  const inputsStaticData = useTokenStaticData(inputAssets ?? []);
+  const inputMetas = useFetchTokenUri(inputsStaticData);
+  const inputsBalanceData = useTokenBasicData(inputAssets ?? []);
+
+  const items = inputAssets?.map((asset, i) => {
+    const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
+    const isFungible = decimals > 0;
+    let userItemCount = isFungible
+      ? Fraction.from(
+        balanceData?.[i]?.userBalance?.toString() ?? '0',
+        decimals
+      )?.toFixed(2) ?? '0'
+      : balanceData?.[i]?.userBalance?.toString() ?? '0';
+    userItemCount = account ? userItemCount : '0';
+    const target = inputAssets[i].amount ? inputAssets[i].amount?.toString() : '0';
+    const name = inputMetas[i]?.name ? inputMetas[i]?.name : '';
+    return {
+      'asset': asset,
+      'target': target,
+      'current': userItemCount,
+      'name': name,
+    }
+  })!
+
+  const allowances = useAllowances(
+    inputAssets?.map(x => {
+      return {...x, operator: WORKBENCH_ADDRESSES[chainId ?? ChainId.MOONRIVER]}
+    }) ?? [],
+    account ?? undefined
+  )
+
+  let approvalNeeded = false 
+  allowances?.map((x, i) => {
+    if (BigNumber.from(inputAssets?.[i].amount ?? '0').gt(x ?? '0')) {
+      approvalNeeded = true
+    }
+  })
+
+  let userHasEnough = true 
+  inputsBalanceData?.map((x, i) => {
+    if (BigNumber.from(inputAssets?.[i].amount ?? '0').lt(x.userBalance ?? '0')) {
+      userHasEnough = false
+    }
+  })
+
+
+  console.log(lootboxMeta)
 
   return (
     <Paper className={container}>
@@ -131,25 +142,16 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         style={{ cursor: 'pointer' }}
       >
         <div role="button" className={imageContainer} tabIndex={0}>
-          <Media uri={meta?.image} className={image} />
+          <Media uri={lootboxMeta?.image} className={image} />
         </div>
         <GlitchText
           variant="h1"
           className={name}
         >
-          {meta?.name ??
-            meta?.title ??
+          {lootboxMeta?.name ??
+            lootboxMeta?.title ??
             truncateHexString(asset?.assetAddress)}
         </GlitchText>
-        {/* <div className={nameContainer}>
-          <GlitchText
-            className={tokenName}
-            variant="h2"
-            style={{ margin: '12px 0' }}
-          >
-            {meta?.description}
-          </GlitchText>
-        </div> */}
 
         <Box className={price}>
           {
@@ -162,19 +164,22 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         <Box className={price}>
           {
             <Typography color="textSecondary" variant="subtitle1">
-              {`Mintable ${mintable}${totalSupplyString ? ` OF ${totalSupplyString}` : ''
-                }`}
+              {`Still available: ${mintable}`}
             </Typography>
           }
         </Box>
 
         <div>
-          <Typography color="textSecondary" variant="subtitle1">
-            Require:
-          </Typography>
-          { items?.map((item, index) =>
+          <GlitchText
+            variant="h1"
+            className={name}
+          >
+            Crafting cost
+          </GlitchText>
+          {console.log(items)}
+          {items?.map((item, index) =>
             <Typography color="textSecondary" variant="subtitle1" key={index}>
-              {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
+              {`${item?.target} ${item?.name}`}
             </Typography>)
           }
         </div>
@@ -205,10 +210,10 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
 
         <div>
           {
-            notEnough ?
+            userHasEnough ?
               <NavLink href="/collection/ERC1155/0x1b30a3b5744e733d8d2f19f0812e3f79152a8777/0">
                 <Button
-                  startIcon={<SyncAltIcon />}
+                  startIcon={<DoDisturb />}
                   variant="outlined"
                   color="primary"
                   className={newSellButton}
@@ -216,7 +221,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                   Not enough resources to craft↗
                 </Button>
               </NavLink>
-              : approve ?
+              : approvalNeeded ?
                 <Box
                   className={buttonsContainer}
                   style={{ justifyContent: 'space-around' }}
@@ -224,9 +229,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                   <Button
                     onClick={() => {
                       setApproveDialogOpen(true);
-                      // setApproveData({ asset, decimals });
                     }}
-                    startIcon={<MoneyIcon />}
                     variant="contained"
                     color="primary"
                     className={transferButton}
@@ -245,7 +248,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                     variant="contained"
                     color="primary"
                   >
-                    Craft Lootbox
+                    Craft
                   </Button>
                 </Box>
           }
