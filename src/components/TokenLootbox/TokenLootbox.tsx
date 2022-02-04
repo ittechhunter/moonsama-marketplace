@@ -1,6 +1,5 @@
 import { Paper, Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import MoneyIcon from '@mui/icons-material/Money';
 import {DoDisturb} from '@mui/icons-material';
 import { Media } from 'components';
 import { GlitchText, NavLink } from 'ui';
@@ -18,7 +17,6 @@ import {
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
-import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
 import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
 import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
