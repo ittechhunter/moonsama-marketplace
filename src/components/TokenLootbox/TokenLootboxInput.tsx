@@ -33,7 +33,6 @@ export const TokenLootboxInput = (asset: Asset) => {
     userItemCount = account ? userItemCount : '0';
 
 
-
     return (
         <Typography color="textSecondary" variant="subtitle1">
             {`${metas[0]?.name} : ${userItemCount}`}
