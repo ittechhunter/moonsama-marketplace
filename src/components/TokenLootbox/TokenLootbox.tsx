@@ -91,9 +91,9 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
       amount: input.amount,
     }))
 
-    const staticData = useTokenStaticData(assets!);
+    const staticData = useTokenStaticData(assets! || []);
     const metas = useFetchTokenUri(staticData);
-    const balanceData = useTokenBasicData(assets!);
+    const balanceData = useTokenBasicData(assets! || []);
     return assets?.map((asset, i) => {
       const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
       const isFungible = decimals > 0;
@@ -159,7 +159,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           }
         </Box>
 
-        {/* <div>
+        <div>
           <Typography color="textSecondary" variant="subtitle1">
             Require:
           </Typography>
@@ -169,7 +169,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
               {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
             </Typography>)
           }
-        </div> */}
+        </div>
 
         <div>
           {
