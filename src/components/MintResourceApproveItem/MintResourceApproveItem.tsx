@@ -7,7 +7,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { AllowanceQuery } from 'hooks/useApproveCallback/useApproveCallback.types';
 import {styles} from './MintResourceApproveItem.styles'
 import { useActiveWeb3React, useClasses } from 'hooks';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
 
 export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amount, assetName}: AllowanceQuery & { amount?: string | BigNumber, assetName?: string }) => {
@@ -20,14 +20,6 @@ export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amoun
     amountToApprove: amount,
     operator: WORKBENCH_ADDRESSES[chainId ?? ChainId.MOONRIVER]
   });
-  const [approvalSubmitted, setApprovalSubmitted] = useState(false)
-
-  useEffect(() => {
-    console.log('approvalState', approvalState)
-    if (approvalState === ApprovalState.PENDING) {
-      setApprovalSubmitted(true);
-    }
-  }, [approvalState, approvalSubmitted]);
 
   const showApproveFlow =
     approvalState === ApprovalState.NOT_APPROVED
@@ -51,7 +43,6 @@ export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amoun
       <Button
         onClick={() => {
           approveCallback();
-          setApprovalSubmitted(true);
         }}
         variant="contained"
         color="primary"

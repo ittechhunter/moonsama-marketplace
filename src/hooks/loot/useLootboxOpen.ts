@@ -53,7 +53,8 @@ export function useLootboxOpen(
         try {
             const resp = await axios.request<RewardData>({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND_API_URL}/lootbox/open`,
+                // url: `${process.env.REACT_APP_BACKEND_API_URL}/lootbox/open`,
+                url: `${'https://samabox-api.moonsama.com/api/v1'}/lootbox/open`,
                 data: {
                     lootboxId,
                     amount: '1',
