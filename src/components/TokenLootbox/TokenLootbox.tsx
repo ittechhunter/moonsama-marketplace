@@ -82,39 +82,39 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
 
   let mintable = blueprint?.availableToMint.toString() ?? '0'
 
-  // const TokenLootboxInput = (): Item[] => {
-  //   const assets = blueprint?.inputs.map(input => ({
-  //     id: input.assetAddress + input.assetId,
-  //     assetId: input.assetId,
-  //     assetType: input.assetType,
-  //     assetAddress: input.assetAddress,
-  //     amount: input.amount,
-  //   }))
+  const TokenLootboxInput = (): Item[] => {
+    const assets = blueprint?.inputs.map(input => ({
+      id: input.assetAddress + input.assetId,
+      assetId: input.assetId,
+      assetType: input.assetType,
+      assetAddress: input.assetAddress,
+      amount: input.amount,
+    }))
 
-  //   const staticData = useTokenStaticData(assets!);
-  //   const metas = useFetchTokenUri(staticData);
-  //   const balanceData = useTokenBasicData(assets!);
-  //   return assets?.map((asset, i) => {
-  //     const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
-  //     const isFungible = decimals > 0;
-  //     let userItemCount = isFungible
-  //       ? Fraction.from(
-  //         balanceData?.[i]?.userBalance?.toString() ?? '0',
-  //         decimals
-  //       )?.toFixed(2) ?? '0'
-  //       : balanceData?.[i]?.userBalance?.toString() ?? '0';
-  //     userItemCount = account ? userItemCount : '0';
-  //     const target = assets[i].amount ? assets[i].amount?.toString() : '0';
-  //     const name = metas[i]?.name ? metas[i]?.name : '';
-  //     if (!notEnough && target && target >= userItemCount) notEnough = true;
-  //     return {
-  //       'target': target,
-  //       'current': userItemCount,
-  //       'name': name,
-  //     }
-  //   })!
-  // };
-  // let items: Item[] = TokenLootboxInput();
+    const staticData = useTokenStaticData(assets!);
+    const metas = useFetchTokenUri(staticData);
+    const balanceData = useTokenBasicData(assets!);
+    return assets?.map((asset, i) => {
+      const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
+      const isFungible = decimals > 0;
+      let userItemCount = isFungible
+        ? Fraction.from(
+          balanceData?.[i]?.userBalance?.toString() ?? '0',
+          decimals
+        )?.toFixed(2) ?? '0'
+        : balanceData?.[i]?.userBalance?.toString() ?? '0';
+      userItemCount = account ? userItemCount : '0';
+      const target = assets[i].amount ? assets[i].amount?.toString() : '0';
+      const name = metas[i]?.name ? metas[i]?.name : '';
+      if (!notEnough && target && target >= userItemCount) notEnough = true;
+      return {
+        'target': target,
+        'current': userItemCount,
+        'name': name,
+      }
+    })!
+  };
+  let items: Item[] = TokenLootboxInput();
 
   return (
     <Paper className={container}>
@@ -213,7 +213,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                     variant="contained"
                     color="primary"
                   >
-                    Buy
+                    Craft Lootbox
                   </Button>
                 </Box>
           }
