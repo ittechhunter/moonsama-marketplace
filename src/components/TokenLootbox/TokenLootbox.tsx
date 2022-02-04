@@ -2,8 +2,8 @@ import { Paper, Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import MoneyIcon from '@mui/icons-material/Money';
 import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
-import { Media } from 'components';
-import { GlitchText, NavLink } from 'ui';
+import { Media, MintResourceApproveItem } from 'components';
+import { GlitchText, NavLink, Dialog } from 'ui';
 import { truncateHexString } from 'utils';
 import { styles } from './TokenLootbox.styles';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
@@ -14,6 +14,11 @@ import { useActiveWeb3React, useClasses } from 'hooks';
 import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
 import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
 import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
+
+import {
+  ApprovalState,
+  useApproveCallback,
+} from 'hooks/useApproveCallback/useApproveCallback';
 import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 import {
   StringAssetType,
@@ -32,6 +37,7 @@ export interface TokenData {
 }
 
 interface Item {
+  asset: any;
   target: string | undefined;
   current: string;
   name: string | undefined;
@@ -47,13 +53,15 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
     name,
     newSellButton,
     transferButton,
+    dialogContainer,
   } = useClasses(styles);
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const { chainId, account } = useActiveWeb3React();
   const decimalOverrides = useDecimalOverrides();
   const blueprint = useBlueprint("1"); // 2 for prod
   let notEnough = false;
   let approve = true;
-  const { setApproveData, setApproveDialogOpen } = useApproveDialog();
+  // const { setApproveData, setApproveDialogOpen } = useApproveDialog();
 
   const asset = staticData.asset;
   const balanceData = useTokenBasicData([asset]);
@@ -108,6 +116,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
       const name = metas[i]?.name ? metas[i]?.name : '';
       if (!notEnough && target && target >= userItemCount) notEnough = true;
       return {
+        'asset': asset,
         'target': target,
         'current': userItemCount,
         'name': name,
@@ -163,13 +172,31 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           <Typography color="textSecondary" variant="subtitle1">
             Require:
           </Typography>
-          {console.log(items)}
           { items?.map((item, index) =>
             <Typography color="textSecondary" variant="subtitle1" key={index}>
               {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
             </Typography>)
           }
         </div>
+
+        <Dialog
+          fullWidth={true}
+          open={approveDialogOpen}
+          onClose={() => {
+            setApproveDialogOpen(false)
+          }}
+          title={"Approve Resources"}
+        >
+          <div className={dialogContainer}>
+          { items?.map((item, index) =>
+            <MintResourceApproveItem
+              {...item.asset}
+              assetName={item.name}
+            />
+            )
+          }
+            </div>
+        </Dialog>
 
         <div>
           {
@@ -192,7 +219,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                   <Button
                     onClick={() => {
                       setApproveDialogOpen(true);
-                      setApproveData({ asset, decimals });
+                      // setApproveData({ asset, decimals });
                     }}
                     startIcon={<MoneyIcon />}
                     variant="contained"
