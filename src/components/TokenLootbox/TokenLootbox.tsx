@@ -12,7 +12,6 @@ import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrid
 import {
   StringAssetType,
 } from '../../utils/subgraph';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
 import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
@@ -21,6 +20,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Media, MintResourceApproveItem } from 'components';
 import { useState } from 'react';
 import { GlitchText, NavLink } from 'ui';
+import { CraftCallbackState, useCraftCallback } from 'hooks/loot/useCraftCallback';
 
 export const TokenLootbox = (asset: Asset) => {
   const {
@@ -37,7 +37,9 @@ export const TokenLootbox = (asset: Asset) => {
   const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const { chainId, account } = useActiveWeb3React();
   const decimalOverrides = useDecimalOverrides();
-  const blueprint = useBlueprint("1"); // 2 for prod
+  const blueprintId = '2'
+  const blueprint = useBlueprint(blueprintId); // 2 for prod
+  const craftCallback = useCraftCallback({amount: '1', blueprintId})
 
   const balanceData = useTokenBasicData([asset]);
   const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
@@ -72,7 +74,7 @@ export const TokenLootbox = (asset: Asset) => {
     id: input.assetAddress + input.assetId,
     assetId: input.assetId,
     assetType: input.assetType,
-    assetAddress: input.assetAddress,
+    assetAddress: input.assetAddress.toLowerCase(),
     amount: input.amount,
   }))
 
@@ -81,22 +83,21 @@ export const TokenLootbox = (asset: Asset) => {
   const inputsBalanceData = useTokenBasicData(inputAssets ?? []);
 
   const items = inputAssets?.map((asset, i) => {
-    const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
+    const decimals = decimalOverrides[asset.assetAddress] ?? inputsBalanceData?.[i]?.decimals ?? 0;
+    console.log({decimals})
     const isFungible = decimals > 0;
-    let userItemCount = isFungible
+    let target = isFungible
       ? Fraction.from(
-        balanceData?.[i]?.userBalance?.toString() ?? '0',
+        asset.amount?.toString() ?? '0',
         decimals
-      )?.toFixed(2) ?? '0'
-      : balanceData?.[i]?.userBalance?.toString() ?? '0';
-    userItemCount = account ? userItemCount : '0';
-    const target = inputAssets[i].amount ? inputAssets[i].amount?.toString() : '0';
+      )?.toSignificant(5) ?? '0'
+      : asset.amount?.toString() ?? '0';
     const name = inputMetas[i]?.name ? inputMetas[i]?.name : '';
     return {
-      'asset': asset,
-      'target': target,
-      'current': userItemCount,
-      'name': name,
+      asset,
+      target,
+      name,
+      decimals
     }
   })!
 
@@ -110,6 +111,7 @@ export const TokenLootbox = (asset: Asset) => {
   let approvalNeeded = false 
   allowances?.map((x, i) => {
     if (BigNumber.from(inputAssets?.[i].amount ?? '0').gt(x ?? '0')) {
+      console.log('YOLO',inputAssets?.[i].amount, x)
       approvalNeeded = true
     }
   })
@@ -182,7 +184,7 @@ export const TokenLootbox = (asset: Asset) => {
         >
           <div className={dialogContainer}>
           { items?.map((item, index) => {
-            console.log('item map shin', item)
+            //console.log('item map shin', item)
             return (
             <MintResourceApproveItem
               key={index}
@@ -205,7 +207,7 @@ export const TokenLootbox = (asset: Asset) => {
                   color="primary"
                   className={newSellButton}
                 >
-                  Not enough resources to craft↗
+                  Not enough resources↗
                 </Button>
               </NavLink>
               : approvalNeeded ?
@@ -231,9 +233,12 @@ export const TokenLootbox = (asset: Asset) => {
                 >
                   <Button
                     style={{ background: 'green' }}
-                    startIcon={<AccountBalanceWalletIcon />}
                     variant="contained"
                     color="primary"
+                    onClick={async () => {
+                      await craftCallback?.callback?.()
+                    }}
+                    disabled={craftCallback.state === CraftCallbackState.INVALID}
                   >
                     Craft
                   </Button>

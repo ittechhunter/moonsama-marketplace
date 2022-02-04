@@ -118,8 +118,9 @@ export const tryMultiCallCore = async (
 
     const retarray = await multi.callStatic.tryAggregate(
       requireSuccess,
-      calls.map((call, i: number) => {
+      calls.map((call) => {
         const itf = new Interface(call[0]);
+        console.log(call)
         return [
           call[1].toLowerCase(),
           itf.encodeFunctionData(call[2], call[3]),
@@ -127,6 +128,7 @@ export const tryMultiCallCore = async (
       }),
       options || {}
     );
+    console.log({retarray})
     const retval: any[] = retarray.map((resfrag: any, i: number) => {
       if (!resfrag[0]) {
         return undefined;

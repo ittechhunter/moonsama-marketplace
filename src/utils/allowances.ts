@@ -6,7 +6,7 @@ import { StringAssetType } from "./subgraph";
 
 export const getTokenAllowanceCalls = (assets: AllowanceQuery[], account?: string) => {
 
-    let calls: [any, string, string, any[]][]= [];
+    let calls: [any, string, string, any[]][] = [];
 
     if (!account) {
         return []
@@ -45,7 +45,7 @@ export const getTokenAllowanceCalls = (assets: AllowanceQuery[], account?: strin
                 [
                     [
                         new Interface([
-                            'function isApprovedForAll(address,bool) public view returns (bool)',
+                            'function isApprovedForAll(address,address) public view returns (bool)',
                         ]).getFunction('isApprovedForAll'),
                     ],
                     asset.assetAddress,
@@ -64,7 +64,7 @@ export const getTokenAllowanceCalls = (assets: AllowanceQuery[], account?: strin
                 [
                     [
                         new Interface([
-                            'function isApprovedForAll(address,bool) public view returns (bool)',
+                            'function isApprovedForAll(address,address) public view returns (bool)',
                         ]).getFunction('isApprovedForAll'),
                     ],
                     asset.assetAddress,
@@ -85,37 +85,39 @@ export const getTokenAllowanceCalls = (assets: AllowanceQuery[], account?: strin
 };
 
 export const processTokenAllowanceCalls = (
-  queries: AllowanceQuery[],
-  results: any[]
+    queries: AllowanceQuery[],
+    results: any[]
 ) => {
-  let res: ({allowance: BigNumber} | undefined)[] = [];
-  let offset = 0;
-  queries.map((query, i) => {
-    if(!query || !query.assetType || !query.assetAddress || !query.assetId ) {
-        offset -= 1
-        res.push(undefined)
-        return
-    }
-    if (query.assetType.valueOf() === StringAssetType.ERC20) {
-      res.push({
-        allowance: results[i + offset]?.[0],
-      });
-      return;
-    }
+    let res: ({ allowance: BigNumber } | undefined)[] = [];
+    let offset = 0;
+    queries.map((query, i) => {
+        if (!query || !query.assetType || !query.assetAddress || !query.assetId) {
+            offset -= 1
+            res.push(undefined)
+            return
+        }
 
-    if (query.assetType.valueOf() === StringAssetType.ERC721) {
-      res.push({
-        allowance: results[i + offset]?.[0] === true ? MaxUint256 : BigNumber.from(0)
-      });
-      return;
-    }
+        console.log('allowance', results)
+        if (query.assetType.valueOf() === StringAssetType.ERC20) {
+            res.push({
+                allowance: results[i + offset]?.[0],
+            });
+            return;
+        }
 
-    if (query.assetType.valueOf() === StringAssetType.ERC1155) {
-      res.push({
-        allowance: results[i + offset]?.[0] === true ? MaxUint256 : BigNumber.from(0)
-      });
-      return;
-    }
-  });
-  return res;
+        if (query.assetType.valueOf() === StringAssetType.ERC721) {
+            res.push({
+                allowance: results[i + offset]?.[0] === true ? MaxUint256 : BigNumber.from(0)
+            });
+            return;
+        }
+
+        if (query.assetType.valueOf() === StringAssetType.ERC1155) {
+            res.push({
+                allowance: results[i + offset]?.[0] === true ? MaxUint256 : BigNumber.from(0)
+            });
+            return;
+        }
+    });
+    return res;
 };

@@ -9,10 +9,8 @@ export const Footer = () => {
   const { footerWrapper, iconsWrapper, copyrightText, icon } =
     useClasses(styles);
   return (
-    <Container maxWidth={false}>
-      <div className={footerWrapper}>
+    <Container maxWidth={false} className={footerWrapper}>
         <Typography variant="h6">Join the community</Typography>
-
         <div className={iconsWrapper}>
           <a href="https://twitter.com/moonsamaNFT" target="_blank">
             <Twitter className={icon} />
@@ -31,7 +29,6 @@ export const Footer = () => {
         >
           &copy; 2021 Moonsama
         </Typography>
-      </div>
     </Container>
   );
 };

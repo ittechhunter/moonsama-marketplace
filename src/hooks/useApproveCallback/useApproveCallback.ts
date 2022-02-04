@@ -309,16 +309,19 @@ export function useAllowances(
       return;
     }
     //console.log('yolo tryMultiCallCore res', results);
+    //console.log('results', results)
     const x = processTokenAllowanceCalls(queries, results);
 
+    //console.log('processed', x)
+
     setAllowances(x.map(x => x?.allowance));
-  }, [chainId, blockumber, owner, multi, calls]);
+  }, [chainId, blockumber, owner]);
 
   useEffect(() => {
     if (owner) {
       allowanceCheck();
     }
-  }, [chainId, blockumber, owner, multi, calls]);
+  }, [chainId, blockumber, owner]);
 
   return allowances;
 }
