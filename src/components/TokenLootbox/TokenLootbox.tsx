@@ -1,8 +1,6 @@
-import { Paper, Typography, Button } from '@mui/material';
+import { Paper, Typography, Button, Dialog } from '@mui/material';
 import Box from '@mui/material/Box';
 import {DoDisturb} from '@mui/icons-material';
-import { Media } from 'components';
-import { GlitchText, NavLink } from 'ui';
 import { truncateHexString } from 'utils';
 import { styles } from './TokenLootbox.styles';
 import { Fraction } from 'utils/Fraction';
@@ -20,7 +18,9 @@ import { Asset } from 'hooks/marketplace/types';
 import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
 import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
-
+import { Media, MintResourceApproveItem } from 'components';
+import { useState } from 'react';
+import { GlitchText, NavLink } from 'ui';
 
 export const TokenLootbox = (asset: Asset) => {
   const {
@@ -32,7 +32,9 @@ export const TokenLootbox = (asset: Asset) => {
     name,
     newSellButton,
     transferButton,
+    dialogContainer,
   } = useClasses(styles);
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const { chainId, account } = useActiveWeb3React();
   const decimalOverrides = useDecimalOverrides();
   const blueprint = useBlueprint("1"); // 2 for prod
@@ -91,6 +93,7 @@ export const TokenLootbox = (asset: Asset) => {
     const target = inputAssets[i].amount ? inputAssets[i].amount?.toString() : '0';
     const name = inputMetas[i]?.name ? inputMetas[i]?.name : '';
     return {
+      'asset': asset,
       'target': target,
       'current': userItemCount,
       'name': name,
@@ -169,10 +172,33 @@ export const TokenLootbox = (asset: Asset) => {
           }
         </div>
 
+        <Dialog
+          fullWidth={true}
+          open={approveDialogOpen}
+          onClose={() => {
+            setApproveDialogOpen(false)
+          }}
+          title={"Approve Resources"}
+        >
+          <div className={dialogContainer}>
+          { items?.map((item, index) => {
+            console.log('item map shin', item)
+            return (
+            <MintResourceApproveItem
+              key={index}
+              {...item.asset}
+              assetName={item.name}
+            />
+            );
+          }
+            )
+          }
+            </div>
+        </Dialog>
+
         <div>
           {
-            userHasEnough ?
-              <NavLink href="/collection/ERC1155/0x1b30a3b5744e733d8d2f19f0812e3f79152a8777/0">
+            userHasEnough ? <NavLink href="/collection/ERC1155/0x1b30a3b5744e733d8d2f19f0812e3f79152a8777/0">
                 <Button
                   startIcon={<DoDisturb />}
                   variant="outlined"
@@ -189,8 +215,7 @@ export const TokenLootbox = (asset: Asset) => {
                 >
                   <Button
                     onClick={() => {
-                      //setTransferDialogOpen(true);
-                      //setTransferData({ asset, decimals });
+                      setApproveDialogOpen(true);
                     }}
                     variant="contained"
                     color="primary"

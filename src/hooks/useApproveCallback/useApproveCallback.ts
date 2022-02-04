@@ -36,7 +36,7 @@ export function useAllowance(
   const blockumber = useBlockNumber();
   const [allowance, setAllowance] = useState<BigNumber | undefined>();
 
-  const { assetAddress, assetType } = query;
+  const { assetAddress, assetType, assetId } = query;
 
   const erc20 = useERC20Contract(assetAddress, true);
   const erc1155 = useERC1155Contract(assetAddress, true);
@@ -96,7 +96,7 @@ export function useAllowance(
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useApproveCallback(
-  query: AllowanceQuery & { amountToApprove?: string | BigNumber }
+  query: AllowanceQuery & { amountToApprove?: string | BigNumber },
 ): [ApprovalState, () => Promise<void>] {
   const { chainId, account } = useActiveWeb3React();
 
@@ -116,7 +116,8 @@ export function useApproveCallback(
   const pendingApproval = useHasPendingApproval(
     assetAddress,
     operator,
-    assetType
+    assetType,
+    assetId
   );
 
   // check the current approval status
@@ -200,7 +201,7 @@ export function useApproveCallback(
             approval: {
               tokenAddress: assetAddress,
               tokenType: assetType,
-              spender: operator,
+              spender: operator
             },
           });
         })
@@ -230,6 +231,7 @@ export function useApproveCallback(
               tokenAddress: assetAddress,
               tokenType: assetType,
               spender: operator,
+              //tokenId: tokenId
             },
           });
         })

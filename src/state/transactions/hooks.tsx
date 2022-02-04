@@ -160,7 +160,8 @@ export function useSortedTransactions() {
 export function useHasPendingApproval(
   tokenAddress: string | undefined,
   spender: string | undefined,
-  tokenType: StringAssetType | undefined
+  tokenType: StringAssetType | undefined,
+  tokenId: string | undefined
 ): boolean {
   const allTransactions = useAllTransactions();
   return useMemo(
@@ -180,6 +181,7 @@ export function useHasPendingApproval(
             approval.spender === spender &&
             approval.tokenAddress === tokenAddress &&
             approval.tokenType.valueOf() === tokenType.valueOf() &&
+            //approval.tokenId === tokenId &&
             isTransactionRecent(tx)
           );
         }
