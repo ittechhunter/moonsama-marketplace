@@ -56,7 +56,8 @@ export function useLootboxOpen(
                 url: `${process.env.REACT_APP_BACKEND_API_URL}/lootbox/open`,
                 data: {
                     lootboxId,
-                    amount: '1'
+                    amount: '1',
+                    recipient: account
                 }
             });
             console.log(resp.data)
