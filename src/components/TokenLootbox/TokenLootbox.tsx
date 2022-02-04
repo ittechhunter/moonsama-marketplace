@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import MoneyIcon from '@mui/icons-material/Money';
 import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
 import { Media } from 'components';
-import { GlitchText } from 'ui';
+import { GlitchText, NavLink } from 'ui';
 import { truncateHexString } from 'utils';
 import { styles } from './TokenLootbox.styles';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
@@ -22,7 +22,6 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
 
 export interface TokenData {
@@ -105,19 +104,17 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         : balanceData?.[i]?.userBalance?.toString() ?? '0';
       userItemCount = account ? userItemCount : '0';
       const target = assets[i].amount ? assets[i].amount?.toString() : '0';
+      const name = metas[i]?.name ? metas[i]?.name : '';
       if (!notEnough && target && target >= userItemCount) notEnough = true;
       return {
         'target': target,
         'current': userItemCount,
-        'name': metas[i]?.name,
+        'name': name,
       }
     })!
   };
   let items: Item[] = TokenLootboxInput();
-  const { push } = useHistory();
-  const linkResource = () => {
-    push(`/collection/${blueprint?.inputs[0].assetType}/${blueprint?.inputs[0].assetAddress}/0`);
-  };
+
   return (
     <Paper className={container}>
       <div
@@ -166,7 +163,8 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           <Typography color="textSecondary" variant="subtitle1">
             Require:
           </Typography>
-          {items && items.map((item, index) =>
+          {console.log(items)}
+          { items?.map((item, index) =>
             <Typography color="textSecondary" variant="subtitle1" key={index}>
               {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
             </Typography>)
@@ -176,14 +174,16 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         <div>
           {
             notEnough ?
-              <Button
-                startIcon={<SyncAltIcon />}
-                variant="outlined"
-                color="primary"
-                className={newSellButton}
-              >
-                Not enough resources to craft
-              </Button>
+              <NavLink href="/collection/ERC1155/0x1b30a3b5744e733d8d2f19f0812e3f79152a8777/0">
+                <Button
+                  startIcon={<SyncAltIcon />}
+                  variant="outlined"
+                  color="primary"
+                  className={newSellButton}
+                >
+                  Not enough resources to craft↗
+                </Button>
+              </NavLink>
               : approve ?
                 <Box
                   className={buttonsContainer}
