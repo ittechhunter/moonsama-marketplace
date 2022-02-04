@@ -9,8 +9,9 @@ import FreshTradesPage from './freshtrades';
 import { PurchaseDialog, BidDialog } from 'components';
 import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
+import { ApproveDialog } from 'components/ApproveDialog/ApproveDialog';
 import { CollectionListPage } from './collection-list';
-import MintListPage from './mint-list';
+import MintPage from './mint';
 import MyNFTsPage from './mynfts';
 import { SubcollectionListPage } from './subcollection-list';
 import AuctionListPage from './auctions';
@@ -34,14 +35,12 @@ export const Routing = () => (
       <TokenPage />
     </Route>
     <Route path="/tokenLootbox/:type/:address/:id">
-      <CancelDialog />
-      <PurchaseDialog />
-      <BidDialog />
       <TransferDialog />
+      <ApproveDialog />
       <LootboxPage />
     </Route>
     <Route path="/mints">
-      <MintListPage />
+      <MintPage />
     </Route>
     <Route path="/freshoffers">
       <PurchaseDialog />

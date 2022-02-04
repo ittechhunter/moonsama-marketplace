@@ -30,7 +30,7 @@ import { styles } from './styles';
 const DEFAULT_PAGE_SIZE = 10;
 const SEARCH_PAGE_SIZE = 50;
 
-const MintListPage = () => {
+const MintPage = () => {
   const [collection, setCollection] = useState<
     {
       meta: TokenMeta | undefined;
@@ -276,4 +276,4 @@ const MintListPage = () => {
   );
 };
 
-export default MintListPage;
+export default MintPage;

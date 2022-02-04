@@ -1,5 +1,7 @@
 import { Paper, Typography, Button } from '@mui/material';
 import Box from '@mui/material/Box';
+import MoneyIcon from '@mui/icons-material/Money';
+import SyncAltIcon from '@mui/icons-material/SyncAltSharp';
 import { Media } from 'components';
 import { GlitchText } from 'ui';
 import { truncateHexString } from 'utils';
@@ -20,7 +22,8 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
 import React, { useEffect, useState } from 'react';
-import { BigNumber } from '@ethersproject/bignumber';
+import { useHistory } from 'react-router-dom';
+import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -39,20 +42,24 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
     container,
     image,
     imageContainer,
-    nameContainer,
-    stockContainer,
     price,
     buttonsContainer,
     name,
+    newSellButton,
+    transferButton,
   } = useClasses(styles);
   const { chainId, account } = useActiveWeb3React();
   const decimalOverrides = useDecimalOverrides();
   const blueprint = useBlueprint("1"); // 2 for prod
+  let notEnough = false;
+  let approve = true;
+  const { setTransferData, setTransferDialogOpen } = useTransferDialog();
 
   const asset = staticData.asset;
   const balanceData = useTokenBasicData([asset]);
   const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
   const isFungible = decimals > 0;
+
 
   let userBalanceString = isFungible
     ? Fraction.from(
@@ -97,15 +104,20 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         )?.toFixed(2) ?? '0'
         : balanceData?.[i]?.userBalance?.toString() ?? '0';
       userItemCount = account ? userItemCount : '0';
+      const target = assets[i].amount ? assets[i].amount?.toString() : '0';
+      if (!notEnough && target && target >= userItemCount) notEnough = true;
       return {
-        'target': assets[i].amount ? assets[i].amount?.toString() : '',
+        'target': target,
         'current': userItemCount,
         'name': metas[i]?.name,
       }
     })!
   };
   let items: Item[] = TokenLootboxInput();
-
+  const { push } = useHistory();
+  const linkResource = () => {
+    push(`/collection/${blueprint?.inputs[0].assetType}/${blueprint?.inputs[0].assetAddress}/0`);
+  };
   return (
     <Paper className={container}>
       <div
@@ -161,19 +173,51 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           }
         </div>
 
-        <Box
-          className={buttonsContainer}
-          style={{ justifyContent: 'space-around' }}
-        >
-          <Button
-            style={{ background: 'green' }}
-            startIcon={<AccountBalanceWalletIcon />}
-            variant="contained"
-            color="primary"
-          >
-            Buy
-          </Button>
-        </Box>
+        <div>
+          {
+            notEnough ?
+              <Button
+                startIcon={<SyncAltIcon />}
+                variant="outlined"
+                color="primary"
+                className={newSellButton}
+              >
+                Not enough resources to craft
+              </Button>
+              : approve ?
+                <Box
+                  className={buttonsContainer}
+                  style={{ justifyContent: 'space-around' }}
+                >
+                  <Button
+                    onClick={() => {
+                      setTransferDialogOpen(true);
+                      setTransferData({ asset, decimals });
+                    }}
+                    startIcon={<MoneyIcon />}
+                    variant="contained"
+                    color="primary"
+                    className={transferButton}
+                  >
+                    Approve
+                  </Button>
+                </Box>
+                :
+                <Box
+                  className={buttonsContainer}
+                  style={{ justifyContent: 'space-around' }}
+                >
+                  <Button
+                    style={{ background: 'green' }}
+                    startIcon={<AccountBalanceWalletIcon />}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Buy
+                  </Button>
+                </Box>
+          }
+        </div>
       </div>
     </Paper >
   );

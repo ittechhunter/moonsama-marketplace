@@ -6,7 +6,7 @@ export const styles = (theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     marginTop: theme.spacing(2),
-    padding: theme.spacing(1.5),
+    padding: theme.spacing(0.1),
     borderRadius: 0,
   },
   imageContainer: {
@@ -26,39 +26,13 @@ export const styles = (theme: Theme) => ({
     background: '#111',
     backgroundSize: 'cover',
   },
-  nameContainer: {
-    // marginTop: 20,
-    display: 'flex',
-    fontSize: 16,
-    justifyContent: 'space-between',
-  },
-  stockContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    // marginTop: 12,
-  },
-  lastPriceContainer: {
-    display: 'flex',
-    justifyContent: 'normal',
-    marginTop: 12,
-  },
-  bidContainer: {
-    display: 'flex',
-    marginTop: 12,
-  },
-  tokenName: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    fontSize: 14,
-  },
   mr: {
-    marginRight: theme.spacing(1),
+    marginRight: theme.spacing(0.5),
   },
   price: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(0.5),
   },
   buttonsContainer: {
     display: 'flex',
@@ -68,12 +42,24 @@ export const styles = (theme: Theme) => ({
     gap: 16,
   },
   name: {
-    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(4),
     fontWeight: fontWeight.bolder,
     lineHeight: 1,
     letterSpacing: '-.02em',
     [theme.breakpoints.down('md')]: {
       textAlign: 'center',
+    },
+  },  
+  newSellButton: {
+    '&:hover': {
+      backgroundColor: '#dcdcdc',
+      color: 'black',
+    },
+  },
+  transferButton: {
+    '&:hover': {
+      backgroundColor: '#dcdcdc',
+      color: 'black',
     },
   },
 });
