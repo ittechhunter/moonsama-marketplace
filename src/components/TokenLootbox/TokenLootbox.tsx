@@ -20,6 +20,7 @@ import {
 } from '../../utils/subgraph';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useBlueprint } from 'hooks/loot/useBlueprint'
+import { useCraftCallback } from 'hooks/loot/useCraftCallback'
 import { Asset } from 'hooks/marketplace/types';
 import React, { useEffect, useState } from 'react';
 import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
@@ -126,7 +127,6 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
         <GlitchText
           variant="h1"
           className={name}
-          style={{ textAlign: 'left', margin: 0 }}
         >
           {meta?.name ??
             meta?.title ??

@@ -42,7 +42,8 @@ export const styles = (theme: Theme) => ({
     gap: 16,
   },
   name: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
     fontWeight: fontWeight.bolder,
     lineHeight: 1,
     letterSpacing: '-.02em',
