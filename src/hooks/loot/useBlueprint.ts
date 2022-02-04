@@ -40,12 +40,11 @@ export function useBlueprint(
 
   const cb = useCallback(async () => {
       const blueprint = await contract?.blueprint(blueprintId)
-
       if (!!blueprint) {
           setBlueprint({
               inputs: blueprint.inputs.map((x: any, i: number) => {
                   return {
-                    assetAddress: x.assetAddress.toLowercase(),
+                    assetAddress: x.assetAddress.toString().toLowerCase(),
                     assetId: x.assetId.toString(),
                     assetType: assetTypeToStringAssetType(x.assetType),
                     amount: blueprint.amounts[i]
