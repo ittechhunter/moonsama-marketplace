@@ -19,12 +19,6 @@ export const styles = (theme: Theme) => ({
     borderRadius: 0,
     justifyContent: 'center',
   },
-  dialogContainer: {
-    display: 'flex',
-    padding: theme.spacing(4),
-    flexDirection: 'column',
-    minWidth: 500,
-  },
   image: {
     width: '100%',
     height: 'auto',

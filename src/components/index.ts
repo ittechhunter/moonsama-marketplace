@@ -9,4 +9,3 @@ export { Account } from './Account/Account';
 export { AccountDialog } from './AccountDialog/AccountDialog';
 export { Web3ReactManager } from './Web3ReactManager/Web3ReactManager';
 export { Media } from './Media/Media';
-export { MintResourceApproveItem } from './MintResourceApproveItem/MintResourceApproveItem'
