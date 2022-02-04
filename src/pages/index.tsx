@@ -33,14 +33,9 @@ export const Routing = () => (
       <TransferDialog />
       <TokenPage />
     </Route>
-    <Route path="/tokenLootbox/:type/:address/:id">
-      <CancelDialog />
-      <PurchaseDialog />
-      <BidDialog />
+    <Route path="/mints">
       <TransferDialog />
       <ApproveDialog />
-    </Route>
-    <Route path="/mints">
       <MintPage />
     </Route>
     <Route path="/freshoffers">

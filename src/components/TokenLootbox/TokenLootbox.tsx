@@ -23,7 +23,7 @@ import { useBlueprint } from 'hooks/loot/useBlueprint'
 import { useCraftCallback } from 'hooks/loot/useCraftCallback'
 import { Asset } from 'hooks/marketplace/types';
 import React, { useEffect, useState } from 'react';
-import { useTransferDialog } from 'hooks/useTransferDialog/useTransferDialog';
+import { useApproveDialog } from 'hooks/useApproveDialog/useApproveDialog';
 
 export interface TokenData {
   meta: TokenMeta | undefined;
@@ -53,7 +53,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
   const blueprint = useBlueprint("1"); // 2 for prod
   let notEnough = false;
   let approve = true;
-  const { setTransferData, setTransferDialogOpen } = useTransferDialog();
+  const { setApproveData, setApproveDialogOpen } = useApproveDialog();
 
   const asset = staticData.asset;
   const balanceData = useTokenBasicData([asset]);
@@ -82,39 +82,39 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
 
   let mintable = blueprint?.availableToMint.toString() ?? '0'
 
-  const TokenLootboxInput = (): Item[] => {
-    const assets = blueprint?.inputs.map(input => ({
-      id: input.assetAddress + input.assetId,
-      assetId: input.assetId,
-      assetType: input.assetType,
-      assetAddress: input.assetAddress,
-      amount: input.amount,
-    }))
+  // const TokenLootboxInput = (): Item[] => {
+  //   const assets = blueprint?.inputs.map(input => ({
+  //     id: input.assetAddress + input.assetId,
+  //     assetId: input.assetId,
+  //     assetType: input.assetType,
+  //     assetAddress: input.assetAddress,
+  //     amount: input.amount,
+  //   }))
 
-    const staticData = useTokenStaticData(assets!);
-    const metas = useFetchTokenUri(staticData);
-    const balanceData = useTokenBasicData(assets!);
-    return assets?.map((asset, i) => {
-      const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
-      const isFungible = decimals > 0;
-      let userItemCount = isFungible
-        ? Fraction.from(
-          balanceData?.[i]?.userBalance?.toString() ?? '0',
-          decimals
-        )?.toFixed(2) ?? '0'
-        : balanceData?.[i]?.userBalance?.toString() ?? '0';
-      userItemCount = account ? userItemCount : '0';
-      const target = assets[i].amount ? assets[i].amount?.toString() : '0';
-      const name = metas[i]?.name ? metas[i]?.name : '';
-      if (!notEnough && target && target >= userItemCount) notEnough = true;
-      return {
-        'target': target,
-        'current': userItemCount,
-        'name': name,
-      }
-    })!
-  };
-  let items: Item[] = TokenLootboxInput();
+  //   const staticData = useTokenStaticData(assets!);
+  //   const metas = useFetchTokenUri(staticData);
+  //   const balanceData = useTokenBasicData(assets!);
+  //   return assets?.map((asset, i) => {
+  //     const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
+  //     const isFungible = decimals > 0;
+  //     let userItemCount = isFungible
+  //       ? Fraction.from(
+  //         balanceData?.[i]?.userBalance?.toString() ?? '0',
+  //         decimals
+  //       )?.toFixed(2) ?? '0'
+  //       : balanceData?.[i]?.userBalance?.toString() ?? '0';
+  //     userItemCount = account ? userItemCount : '0';
+  //     const target = assets[i].amount ? assets[i].amount?.toString() : '0';
+  //     const name = metas[i]?.name ? metas[i]?.name : '';
+  //     if (!notEnough && target && target >= userItemCount) notEnough = true;
+  //     return {
+  //       'target': target,
+  //       'current': userItemCount,
+  //       'name': name,
+  //     }
+  //   })!
+  // };
+  // let items: Item[] = TokenLootboxInput();
 
   return (
     <Paper className={container}>
@@ -159,7 +159,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           }
         </Box>
 
-        <div>
+        {/* <div>
           <Typography color="textSecondary" variant="subtitle1">
             Require:
           </Typography>
@@ -169,7 +169,7 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
               {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
             </Typography>)
           }
-        </div>
+        </div> */}
 
         <div>
           {
@@ -191,8 +191,8 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
                 >
                   <Button
                     onClick={() => {
-                      setTransferDialogOpen(true);
-                      setTransferData({ asset, decimals });
+                      setApproveDialogOpen(true);
+                      setApproveData({ asset, decimals });
                     }}
                     startIcon={<MoneyIcon />}
                     variant="contained"
