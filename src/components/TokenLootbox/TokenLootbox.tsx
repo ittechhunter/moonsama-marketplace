@@ -75,72 +75,36 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
 
   let mintable = blueprint?.availableToMint.toString() ?? '0'
 
-  // const TokenLootboxInput = (): Item[] => {
-  //   const assets = blueprint?.inputs.map(input => ({
-  //     id: input.assetAddress + input.assetId,
-  //     assetId: input.assetId,
-  //     assetType: input.assetType,
-  //     assetAddress: input.assetAddress,
-  //     amount: input.amount,
-  //   }))
+  const TokenLootboxInput = (): Item[] => {
+    const assets = blueprint?.inputs.map(input => ({
+      id: input.assetAddress + input.assetId,
+      assetId: input.assetId,
+      assetType: input.assetType,
+      assetAddress: input.assetAddress,
+      amount: input.amount,
+    }))
 
-  //   const staticData = useTokenStaticData(assets!);
-  //   const metas = useFetchTokenUri(staticData);
-  //   const balanceData = useTokenBasicData(assets!);
-  //   return assets?.map((asset, i) => {
-  //     const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
-  //     const isFungible = decimals > 0;
-  //     let userItemCount = isFungible
-  //       ? Fraction.from(
-  //         balanceData?.[0]?.userBalance?.toString() ?? '0',
-  //         decimals
-  //       )?.toFixed(2) ?? '0'
-  //       : balanceData?.[0]?.userBalance?.toString() ?? '0';
-  //     userItemCount = account ? userItemCount : '0';
-  //     return {
-  //       'target': assets[i].amount ? assets[i].amount?.toString() : '',
-  //       'current': userItemCount,
-  //       'name': metas[0]?.name,
-  //     }
-  //   })!
-  // };
-  // let items: Item[] = TokenLootboxInput();
-
-
-  // const TokenLootboxInput = (asset: Asset, amount: string): Item => {
-  //   const staticData = useTokenStaticData([asset]);
-  //   const metas = useFetchTokenUri(staticData);
-  //   const balanceData = useTokenBasicData([asset]);
-  //   const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
-  //   const isFungible = decimals > 0;
-  //   let userItemCount = isFungible
-  //     ? Fraction.from(
-  //       balanceData?.[0]?.userBalance?.toString() ?? '0',
-  //       decimals
-  //     )?.toFixed(2) ?? '0'
-  //     : balanceData?.[0]?.userBalance?.toString() ?? '0';
-  //   userItemCount = account ? userItemCount : '0';
-  //   return {
-  //     'target': amount,
-  //     'current': userItemCount,
-  //     'name': metas[0]?.name,
-  //   }
-  // };
-
-  // let items: Item[]
-  // blueprint?.inputs.map(input => {
-  //   const asset = {
-  //     id: input.assetAddress + input.assetId,
-  //     assetId: input.assetId,
-  //     assetType: input.assetType,
-  //     assetAddress: input.assetAddress,
-  //   }
-  //   const item: Item = TokenLootboxInput(asset, input.amount ? input.amount?.toString() : '');
-  //   items.push(item)
-  //   console.log(items)
-  // });
-
-  // console.log(items)
+    const staticData = useTokenStaticData(assets!);
+    const metas = useFetchTokenUri(staticData);
+    const balanceData = useTokenBasicData(assets!);
+    return assets?.map((asset, i) => {
+      const decimals = decimalOverrides[asset.assetAddress] ?? balanceData?.[i]?.decimals ?? 0;
+      const isFungible = decimals > 0;
+      let userItemCount = isFungible
+        ? Fraction.from(
+          balanceData?.[i]?.userBalance?.toString() ?? '0',
+          decimals
+        )?.toFixed(2) ?? '0'
+        : balanceData?.[i]?.userBalance?.toString() ?? '0';
+      userItemCount = account ? userItemCount : '0';
+      return {
+        'target': assets[i].amount ? assets[i].amount?.toString() : '',
+        'current': userItemCount,
+        'name': metas[i]?.name,
+      }
+    })!
+  };
+  let items: Item[] = TokenLootboxInput();
 
   return (
     <Paper className={container}>
@@ -190,11 +154,11 @@ export const TokenLootbox = ({ meta, staticData, order }: TokenData) => {
           <Typography color="textSecondary" variant="subtitle1">
             Require:
           </Typography>
-          {/* {items && items.map((item, index) =>
+          {items && items.map((item, index) =>
             <Typography color="textSecondary" variant="subtitle1" key={index}>
               {`Need ${item?.target} OF ${item?.current} ${item?.name}`}
             </Typography>)
-          } */}
+          }
         </div>
 
         <Box
