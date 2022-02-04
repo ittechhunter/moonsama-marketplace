@@ -40,7 +40,7 @@ export const Routing = () => (
       <TransferDialog />
       <ApproveDialog />
     </Route>
-    <Route path="/mints">
+    <Route path="/workbench">
       <MintPage />
     </Route>
     <Route path="/freshoffers">
