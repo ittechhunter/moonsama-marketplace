@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import { useActiveWeb3React } from '../../hooks';
 import axios, { AxiosError } from 'axios';
 import { StringAssetType } from 'utils/subgraph';
+import { useFetchTokenUriCallback  } from 'hooks/useFetchTokenUri.ts/useFetchTokenUriCallback';
 
 
 export type OpenData = {
@@ -14,6 +15,7 @@ export type Reward = {
     amount: string
     assetType: StringAssetType;
     tokenURI: string;
+    meta?: any;
 }
 
 export enum LootboxOpenStatus {
@@ -32,6 +34,8 @@ export function useLootboxOpen(
   callback: undefined | (() => Promise<[RewardData | undefined, Error | undefined]>);
 } {
   const { account, chainId } = useActiveWeb3React();
+
+  const tokenURICB = useFetchTokenUriCallback()
 
   const {lootboxId} = data
 
@@ -58,15 +62,24 @@ export function useLootboxOpen(
                 data: {
                     lootboxId,
                     amount: '1',
-                    recipient: account
+                    recipient: account,
+                    difficulty: '745944601324485'
                 }
             });
             console.log(resp.data)
+
+            const metas = await tokenURICB(resp.data.rewards)
+            resp.data.rewards = resp.data.rewards.map((x,i) => {
+              return {
+                meta: metas[i],
+                ...x
+              }
+            })
             return [resp.data as RewardData, undefined]
         } catch(e) {
             const err = e as AxiosError;
-            console.error('Error summoning. Try again later.')
-            return [undefined, err]
+            console.error('Error opening the box. Try again later.')
+            return [undefined, new Error(err.response?.data?.message ?? 'Error')]
         }
       }
     };

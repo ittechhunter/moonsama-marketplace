@@ -15,12 +15,12 @@ import { BlueprintAsset, useBlueprint } from 'hooks/loot/useBlueprint'
 import { Asset } from 'hooks/marketplace/types';
 import { useState, useRef } from 'react';
 import { useAllowances } from 'hooks/useApproveCallback/useApproveCallback';
-import { useLootboxOpen, OpenData } from 'hooks/loot/useLootboxOpen';
+import { useLootboxOpen, OpenData, LootboxOpenStatus, RewardData } from 'hooks/loot/useLootboxOpen';
 import { WORKBENCH_ADDRESSES, ChainId, LOOTBOX_CRAFTING } from '../../constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { CraftCallbackState, useCraftCallback } from 'hooks/loot/useCraftCallback';
 import samaboxOpenVideo from 'assets/samabox/samabox.mp4';
-import { Box, Button, Grow, Paper, Typography } from '@mui/material';
+import { Box, Button, Grow, Link, Paper, Typography, useTheme } from '@mui/material';
 import { Media, MintResourceApproveItem } from 'components';
 import { DoDisturb } from '@mui/icons-material';
 import DialogUI from '@mui/material/Dialog';
@@ -45,6 +45,9 @@ export const TokenLootbox = () => {
     legendaryLoot,
     lootboxResultContainer,
   } = useClasses(styles);
+
+  const theme = useTheme();
+
   const [approveDialogOpen, setApproveDialogOpen] = useState(false)
   const [openBoxDialogOpen, setOpenBoxDialogOpen] = useState(false)
   const { chainId, account } = useActiveWeb3React();
@@ -54,6 +57,8 @@ export const TokenLootbox = () => {
   const craftCallback = useCraftCallback({ amount: '1', blueprintId })
 
   let asset: Asset = blueprintOutput
+
+  const openCallback = useLootboxOpen({ lootboxId })
 
   const balanceData = useTokenBasicData([asset as Asset]);
   const decimals = decimalOverrides[asset?.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
@@ -141,7 +146,12 @@ export const TokenLootbox = () => {
   const { callback } = useLootboxOpen({ lootboxId } as OpenData);
   const openVidRef = useRef<any>(null)
   const [videoPlay, setvideoPlay] = useState(false)
+  const [openError, setOpenError] = useState<string | undefined>(undefined)
+  const [openResult, setOpenResult] = useState<RewardData | undefined>(undefined)
   const [confirmButtonShow, setConfirmButtonShow] = useState(false)
+
+
+  console.log({ openError })
 
   return (
     <Paper className={container}>
@@ -170,25 +180,25 @@ export const TokenLootbox = () => {
           }
         </Box>
 
-          <Box
-            className={buttonsContainer}
-            style={{ justifyContent: 'space-around' }}
+        <Box
+          className={buttonsContainer}
+          style={{ justifyContent: 'space-around' }}
+        >
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => {
+              if (callback)
+                callback().then((res) => {
+                  console.log(res)
+                  setOpenBoxDialogOpen(true)
+                })
+            }}
+            disabled={userBalanceString === '0'}
           >
-            <Button
-              variant="contained"
-              color="warning"
-              onClick={() => {
-                if (callback)
-                  callback().then((res) => {
-                    console.log(res)
-                    setOpenBoxDialogOpen(true)
-                  })
-              }}
-              disabled={userBalanceString === '0'}
-            >
-              Open one
-            </Button>
-          </Box>
+            Open one
+          </Button>
+        </Box>
 
         <div>
           <GlitchText
@@ -200,12 +210,12 @@ export const TokenLootbox = () => {
 
 
           <Box className={price}>
-          {
-            <Typography color="textSecondary" variant="subtitle1">
-              {`Cost:`}
-            </Typography>
-          }
-        </Box>
+            {
+              <Typography color="textSecondary" variant="subtitle1">
+                {`Cost:`}
+              </Typography>
+            }
+          </Box>
 
           {items?.map((item, index) => <Box
             key={index}
@@ -319,56 +329,104 @@ export const TokenLootbox = () => {
           fullWidth={true}
           open={openBoxDialogOpen}
           onClose={() => {
+            setvideoPlay(false)
             setOpenBoxDialogOpen(false)
+            setConfirmButtonShow(false)
+            setOpenError(undefined)
+            setOpenResult(undefined)
           }}
           maxWidth="lg"
         >
           <video ref={openVidRef} style={{ width: '100%' }} playsInline src={samaboxOpenVideo} poster="samabox_unopened.jpg">
           </video>
-          {!videoPlay ?
-            <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+          {!videoPlay && !openResult ?
+            <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', flexDirection: 'column' }}
             >
-              <Button onClick={() => {
-                openVidRef?.current?.play();
-                setvideoPlay(true)
-                setTimeout(() => {
-                  setConfirmButtonShow(true)
-                }, 5500)
-              }}
+              {!openError && <Button
+                onClick={async () => {
+                  let rewardData
+                  let error: Error | undefined
+                  try {
+                    if (openCallback?.callback) {
+                      const res = await openCallback?.callback?.()
+                      rewardData = res[0]
+                      error = res[1]
+                    } else {
+                      rewardData = undefined
+                      error = new Error('Sama box could not be opened')
+                    }
+                  } catch (err) {
+                    error = new Error('Sama box could not be opened')
+                  }
+
+                  console.error(error, openError)
+                  if (!error) {
+                    setOpenResult(rewardData)
+                    openVidRef?.current?.play();
+                    setvideoPlay(true)
+                    setTimeout(() => {
+                      setConfirmButtonShow(true)
+                    }, 5500)
+                  } else {
+                    setOpenError(error?.message)
+                  }
+                }}
               >
                 <GlitchText
                   style={{ width: '100%', color: 'white' }}
                   variant="h1">
-                  Click to Open</GlitchText></Button>
+                  Click to Open
+                </GlitchText>
+              </Button>}
+              {openError && <Box style={{ display: 'flex', padding: theme.spacing(2) }}><Typography variant="body2">{openError}</Typography></Box>}
             </div> :
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', textAlign: 'center', height: '100%', flexDirection: 'column' }}>
               <div className={lootboxResultContainer} style={{ width: '60%' }}>
 
+
                 <Grow style={{ marginLeft: 30, transitionDelay: `5000ms` }} in={true}>
                   <div className={`${lootCardContainer} ${rareLoot}`}>
-                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmXdPz7YgmtiHnEY58MxAqRxGncqvsuc3KBnyuXU9vHub8" />
-                    <span className="name">Moonshine Moonbrella</span>
-                    <span className="asset-id">#5</span>
-                  </div></Grow>
+                    <Link target={'_blank'} href={`/token/${openResult?.rewards[0].assetType}/${openResult?.rewards[0].assetAddress}/${openResult?.rewards[0].assetId}`}>
+                      <img className={imageContainer} src={openResult?.rewards[0].meta?.image} />
+                    </Link>
+                    <span className="name">{openResult?.rewards[0].meta?.name}</span>
+                    <span className="asset-id">{`#${openResult?.rewards[0].assetId}`}</span>
+                  </div>
+                </Grow>
                 <Grow style={{ marginLeft: 30, transitionDelay: `5200ms` }} in={true}>
                   <div className={`${lootCardContainer} ${epicLoot}`}>
-                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmP99Umwc4GbVNcxqKh9agywJHRBv9N1YnepaEjECRSKfc" />
-                    <span className="name">Blood Moon Sword</span>
-                    <span className="asset-id">#30</span>
-                  </div></Grow>
-
+                    <Link target={'_blank'} href={`/token/${openResult?.rewards[1].assetType}/${openResult?.rewards[1].assetAddress}/${openResult?.rewards[1].assetId}`}>
+                      <img className={imageContainer} src={openResult?.rewards[1].meta?.image} />
+                    </Link>
+                    <span className="name">{openResult?.rewards[1].meta?.name}</span>
+                    <span className="asset-id">{`#${openResult?.rewards[1].assetId}`}</span>
+                  </div>
+                </Grow>
                 <Grow style={{ marginLeft: 30, transitionDelay: `5400ms` }} in={true}>
                   <div className={`${lootCardContainer} ${commonLoot}`}>
-                    <img className={imageContainer} src="https://moonsama.mypinata.cloud/ipfs/QmejQBPzsmXVXhdHudbvcihYoR5rX4wD3U2ArgHR7aMF4x" />
-                    <span className="name">Amethyst Short Sword</span>
-                    <span className="asset-id">#49</span>
-                  </div></Grow>
+                    <Link target={'_blank'} href={`/token/${openResult?.rewards[2].assetType}/${openResult?.rewards[2].assetAddress}/${openResult?.rewards[2].assetId}`}>
+                      <img className={imageContainer} src={openResult?.rewards[2].meta?.image} />
+                    </Link>
+                    <span className="name">{openResult?.rewards[2].meta?.name}</span>
+                    <span className="asset-id">{`#${openResult?.rewards[2].assetId}`}</span>
+                  </div>
+                </Grow>
               </div>
-              {confirmButtonShow &&
-                <Button onClick={() => { setOpenBoxDialogOpen(false) }} variant="contained"
+              {confirmButtonShow && <>
+                <Box style={{ display: 'flex', padding: theme.spacing(2) }}><Typography variant="body2">Loot landing in your wallet soon. You will not be able to open a new box in the meantime.</Typography></Box>
+                <Button onClick={() => {
+                  setvideoPlay(false)
+                  setOpenBoxDialogOpen(false)
+                  setConfirmButtonShow(false)
+                  setOpenError(undefined)
+                  setOpenResult(undefined)
+                }} variant="contained"
                   color="primary"
-                ><Typography variant="h4">Nice!</Typography></Button>}
+                  style={{ padding: theme.spacing(2) }}
+                ><Typography variant="body1">Nice!</Typography></Button>
+
+              </>}
             </div>
           }
         </DialogUI>
