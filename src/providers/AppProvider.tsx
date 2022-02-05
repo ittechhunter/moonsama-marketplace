@@ -15,7 +15,6 @@ import TransactionUpdater from '../state/transactions/updater';
 import store from '../state';
 import { CancelDialogContextController } from 'context/cancelDialog/cancelDialogContextController/CancelDialogContextController';
 import { TransferDialogContextController } from 'context/transferDialog/transferDialogContextController/TransferDialogContextController';
-import { ApproveDialogContextController } from 'context/approveDialog/approveDialogContextController/ApproveDialogContextController';
 
 function Updaters() {
   return (
@@ -38,11 +37,9 @@ export const AppProviders = ({ children }: AppProvidersProps) => (
                 <BidDialogContextController>
                   <PurchaseDialogContextController>
                     <TransferDialogContextController>
-                      <ApproveDialogContextController>
                         <Router>
                           <Theme>{children}</Theme>
                         </Router>
-                      </ApproveDialogContextController>
                     </TransferDialogContextController>
                   </PurchaseDialogContextController>
                 </BidDialogContextController>

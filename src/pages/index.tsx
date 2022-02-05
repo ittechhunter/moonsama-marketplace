@@ -8,7 +8,6 @@ import FreshTradesPage from './freshtrades';
 import { PurchaseDialog, BidDialog } from 'components';
 import { CancelDialog } from 'components/CancelDialog/CancelDialog';
 import { TransferDialog } from 'components/TransferDiaog/TransferDialog';
-import { ApproveDialog } from 'components/ApproveDialog/ApproveDialog';
 import { CollectionListPage } from './collection-list';
 import MintPage from './mint';
 import MyNFTsPage from './mynfts';
@@ -32,10 +31,6 @@ export const Routing = () => (
       <BidDialog />
       <TransferDialog />
       <TokenPage />
-    </Route>
-    <Route path="/mints">
-      <TransferDialog />
-      <ApproveDialog />
     </Route>
     <Route path="/workbench">
       <MintPage />
