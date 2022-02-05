@@ -103,7 +103,7 @@ export const TokenLootbox = () => {
 
   const items = inputAssets?.map((asset, i) => {
     const decimals = decimalOverrides[asset.assetAddress] ?? inputsBalanceData?.[i]?.decimals ?? 0;
-    console.log({ decimals })
+    //console.log({ decimals })
     const isFungible = decimals > 0;
     const target = isFungible
       ? Fraction.from(
@@ -130,7 +130,7 @@ export const TokenLootbox = () => {
   let approvalNeeded = false
   allowances?.map((x, i) => {
     if (BigNumber.from(inputAssets?.[i].amount ?? '0').gt(x ?? '0')) {
-      console.log('YOLO', inputAssets?.[i].amount, x)
+      //console.log('YOLO', inputAssets?.[i].amount, x)
       approvalNeeded = true
     }
   })
@@ -151,7 +151,7 @@ export const TokenLootbox = () => {
   const [confirmButtonShow, setConfirmButtonShow] = useState(false)
 
 
-  console.log({ openError })
+  //console.log({ openError })
 
   return (
     <Paper className={container}>
@@ -244,6 +244,7 @@ export const TokenLootbox = () => {
                   key={index}
                   {...item.asset}
                   assetName={item.name}
+                  decimals={item.decimals}
                 />
               );
             })

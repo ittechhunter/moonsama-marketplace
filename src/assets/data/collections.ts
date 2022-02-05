@@ -1,3 +1,5 @@
+import { subgraph } from "utils";
+
 export const collections = {
   name: 'MoonSama List',
   timestamp: '2021-08-18T00:00:00.000Z',
@@ -103,7 +105,7 @@ export const collections = {
       display_name: 'Multiverse Asset Factory',
       symbol: 'MMAF',
       minId: 1,
-      maxId: 6,
+      maxId: 10,
       idSearchOn: true,
       type: 'ERC1155',
       contractURI: 'ipfs://Qmc97e79xzzrdNuU3RumGXcK5FYh8PWTb6GyxxHMyRvUYm',
@@ -244,7 +246,8 @@ export const collections = {
       minId: 1,
       maxId: 2,
       type: 'ERC1155',
-      contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM'
+      contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM',
+      subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-samabox'
     },
     {
       chainId: 1285,
