@@ -7,10 +7,10 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { AllowanceQuery } from 'hooks/useApproveCallback/useApproveCallback.types';
 import {styles} from './MintResourceApproveItem.styles'
 import { useActiveWeb3React, useClasses } from 'hooks';
-import {useEffect} from 'react';
 import { WORKBENCH_ADDRESSES, ChainId } from '../../constants';
+import { Fraction } from 'utils/Fraction';
 
-export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amount, assetName}: AllowanceQuery & { amount?: string | BigNumber, assetName?: string }) => {
+export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amount, assetName, decimals}: AllowanceQuery & { amount?: string | BigNumber, assetName?: string, decimals: number }) => {
   const {chainId} = useActiveWeb3React()
   
   const [approvalState, approveCallback] = useApproveCallback({
@@ -34,10 +34,15 @@ export const MintResourceApproveItem = ({assetAddress, assetId, assetType, amoun
 
   console.log(approvalState, )
 
+  const formattedAmount = Fraction.from(
+        amount?.toString() ?? '0',
+        decimals
+      )?.toSignificant(5) ?? '0'
+
   return (
     <div className={approveItemContainer}>
       <Typography color="textSecondary" variant="subtitle1">
-        {`${amount} ${assetName}`}
+        {`${formattedAmount} ${assetName}`}
       </Typography>
       {showApproveFlow ? (
       <Button
