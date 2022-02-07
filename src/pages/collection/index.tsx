@@ -19,6 +19,7 @@ import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Filters, GlitchText, Loader, Sort } from 'ui';
+import { SortOption } from 'ui/Sort/Sort'
 import { truncateHexString } from 'utils';
 import {
   getAssetEntityId,
@@ -63,6 +64,7 @@ const CollectionPage = () => {
 
   const [take, setTake] = useState<number>(minId);
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<SortOption>(SortOption.TOKEN_ID_ASC);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [searchCounter, setSearchCounter] = useState<number>(0);
@@ -85,11 +87,13 @@ const CollectionPage = () => {
     ? recognizedCollection.display_name
     : `Collection ${truncateHexString(address)}`;
 
-  const getItemsWithFilter = useTokenStaticDataCallbackArrayWithFilter(
+
+  const getItemsWithFilterAndSort = useTokenStaticDataCallbackArrayWithFilter(
     asset,
     filters,
     maxId,
-    subcollectionId
+    subcollectionId,
+    sortBy,
   ); //useTokenStaticDataCallback(asset)//
   /*
   const f = x(['Black Bird', 'White Shades'])
@@ -123,7 +127,7 @@ const CollectionPage = () => {
       if (!!tokenID) {
         setPaginationEnded(true);
         setPageLoading(true);
-        const data = await getItemsWithFilter(
+        const data = await getItemsWithFilterAndSort(
           1,
           BigNumber.from(tokenID),
           setTake
@@ -133,7 +137,7 @@ const CollectionPage = () => {
       } else {
         setPaginationEnded(false);
         setPageLoading(true);
-        const data = await getItemsWithFilter(
+        const data = await getItemsWithFilterAndSort(
           searchSize,
           BigNumber.from(take),
           setTake
@@ -142,7 +146,7 @@ const CollectionPage = () => {
         setCollection(data);
       }
     },
-    [searchSize]
+    [searchSize, sortBy]
   );
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
@@ -152,7 +156,7 @@ const CollectionPage = () => {
     const getCollectionById = async () => {
       setPageLoading(true);
       console.log('FETCH', { searchSize, address, take, paginationEnded });
-      const data = await getItemsWithFilter(
+      const data = await getItemsWithFilterAndSort(
         searchSize,
         BigNumber.from(take),
         setTake
@@ -180,6 +184,7 @@ const CollectionPage = () => {
     paginationEnded,
     searchSize,
     JSON.stringify(filters?.traits),
+    sortBy,
   ]);
 
   if (assetType.valueOf() === StringAssetType.UNKNOWN) {
@@ -194,6 +199,15 @@ const CollectionPage = () => {
     setCollection([]);
     setTake(minId);
     setFilters(filters);
+    setPageLoading(true);
+    setPaginationEnded(false);
+    setSearchCounter((state) => (state += 1));
+  }, []);
+
+  const handleSortUpdate = useCallback(async (sortBy: SortOption) => {
+    setCollection([]);
+    setTake(minId);
+    setSortBy(sortBy);
     setPageLoading(true);
     setPaginationEnded(false);
     setSearchCounter((state) => (state += 1));
@@ -248,9 +262,7 @@ const CollectionPage = () => {
           )}
           <div>
             <Sort
-              onSortUpdate={(param) => {
-                // Call SubQuery
-              }}
+              onSortUpdate={handleSortUpdate}
             />
           </div>
         </Stack>

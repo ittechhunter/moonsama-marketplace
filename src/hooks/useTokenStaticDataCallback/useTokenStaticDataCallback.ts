@@ -21,11 +21,12 @@ import {
 import { Filters } from 'ui/Filters/Filters';
 import { useMoonsamaAttrIds } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsamaAttrIdsCallback';
 import { parseEther } from '@ethersproject/units';
-import { QUERY_ACTIVE_ORDERS_FOR_FILTER } from 'subgraph/orderQueries';
+import { QUERY_ACTIVE_ORDERS_FOR_FILTER, QUERY_ORDERS_FOR_TOKEN } from 'subgraph/orderQueries';
 import request from 'graphql-request';
 import { DEFAULT_CHAIN, MARKETPLACE_SUBGRAPH_URLS } from '../../constants';
 import { TEN_POW_18 } from 'utils';
 import { useRawcollection } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
+import { SortOption } from 'ui/Sort/Sort'
 
 export interface StaticTokenData {
   asset: Asset;
@@ -201,7 +202,8 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
   { assetAddress, assetType }: TokenStaticCallbackInput,
   filter?: Filters,
   maxId?: number,
-  subcollectionId?: string
+  subcollectionId?: string,
+  sortBy?: SortOption,
 ) => {
   console.log("useTokenStaticDataCallbackArrayWithFilter", {assetAddress, assetType, filter, maxId, subcollectionId})
   const { chainId } = useActiveWeb3React();
@@ -232,24 +234,6 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
         console.log({ assetAddress, assetType });
         return [];
       }
-
-      let chosenAssets = chooseAssets(
-        assetType,
-        assetAddress,
-        offset,
-        num,
-        ids,
-        maxId
-      );
-
-      console.log('SEARCH', {
-        assetAddress,
-        assetType,
-        ids,
-        num,
-        offset: offset?.toString(),
-        chosenAssets,
-      });
 
       const fetchStatics = async (assets: Asset[], orders?: Order[]) => {
         console.log('fetch statistics');
@@ -285,41 +269,126 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
         });
       };
 
-      // if we don't have a price range, it's just business as usual
-      if (
-        !priceRange ||
-        priceRange.length === 0 ||
-        priceRange.length !== 2 ||
-        !selectedOrderType
-      ) {
-        console.log('no price range');
-        const statics = await fetchStatics(chosenAssets);
-        console.log('statistics', statics);
-        return statics;
-      }
-
-      const rangeInWei = priceRange.map((x) =>
-        parseEther(x.toString()).mul(TEN_POW_18)
-      );
-
-      let canStop = false;
       let ordersFetch: any[] = [];
-      let pager = offset;
-      do {
-        const sgAssets = chosenAssets.map((x) => {
-          return x.id;
+      // if we don't have a price range, it's just business as usual
+      if (sortBy == SortOption.TOKEN_ID_ASC) {
+        if (
+          !priceRange ||
+          priceRange.length === 0 ||
+          priceRange.length !== 2 ||
+          !selectedOrderType) {
+          let chosenAssets = chooseAssets(
+            assetType,
+            assetAddress,
+            offset,
+            num,
+            ids,
+            maxId
+          );
+          console.log('DEFAULT SEARCH', {
+            assetAddress,
+            assetType,
+            ids,
+            num,
+            offset: offset?.toString(),
+            chosenAssets,
+          });
+    
+          console.log('no price range');
+          const statics = await fetchStatics(chosenAssets);
+          console.log('statistics', statics);
+          return statics;
+        }
+
+        let chosenAssets = chooseAssets(
+          assetType,
+          assetAddress,
+          offset,
+          // num,
+          1000,
+          ids,
+          maxId
+        );
+
+        console.log('SEARCH', {
+          assetAddress,
+          assetType,
+          ids,
+          num,
+          offset: offset?.toString(),
+          chosenAssets,
         });
 
-        let query = QUERY_ACTIVE_ORDERS_FOR_FILTER(
-          selectedOrderType,
-          JSON.stringify(sgAssets),
-          rangeInWei[0].toString(),
-          rangeInWei[1].toString()
+        const rangeInWei = priceRange.map((x) =>
+          parseEther(x.toString()).mul(TEN_POW_18)
         );
+
+        let canStop = false;
+        let pager = offset;
+        do {
+          const sgAssets = chosenAssets.map((x) => {
+            return x.id;
+          });
+
+          let query = QUERY_ACTIVE_ORDERS_FOR_FILTER(
+            selectedOrderType,
+            JSON.stringify(sgAssets),
+            rangeInWei[0].toString(),
+            rangeInWei[1].toString()
+          );
+
+          const result = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
+          console.log('YOLO getOrders', result);
+          const orders = result?.orders;
+
+          //console.debug('YOLO getOrders', { orders });
+
+          if (orders && orders.length > 0) {
+            ordersFetch = ordersFetch.concat(orders);
+          }
+
+          console.log('INDICES 3', {
+            orders,
+            ordersLength: orders.length,
+            ordersFetch,
+            ordersFetchLength: ordersFetch.length,
+            sgAssets,
+            num,
+            pager: pager.toString(),
+            ids,
+            maxId,
+          });
+
+          if (ordersFetch.length >= num) {
+            canStop = true;
+            setTake?.(pager.toNumber());
+            continue;
+          }
+
+          pager = pager.add(BigNumber.from(num));
+          chosenAssets = chooseAssets(
+            assetType,
+            assetAddress,
+            pager,
+            num,
+            ids,
+            maxId
+          );
+
+          //chosenAssets = []
+          if (!chosenAssets || chosenAssets.length == 0) {
+            canStop = true;
+            setTake?.(pager.toNumber());
+          }
+        } while (!canStop);
+      } else {
+        let query = QUERY_ORDERS_FOR_TOKEN(assetAddress, 
+          sortBy == SortOption.PRICE_ASC || sortBy == SortOption.PRICE_DESC ? 'price' : 'id',
+          sortBy == SortOption.PRICE_ASC,
+          offset.toNumber(), num);
 
         const result = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
         console.log('YOLO getOrders', result);
-
         const orders = result?.orders;
 
         //console.debug('YOLO getOrders', { orders });
@@ -327,41 +396,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
         if (orders && orders.length > 0) {
           ordersFetch = ordersFetch.concat(orders);
         }
-
-        console.log('INDICES 3', {
-          orders,
-          ordersLength: orders.length,
-          ordersFetch,
-          ordersFetchLength: ordersFetch.length,
-          sgAssets,
-          num,
-          pager: pager.toString(),
-          ids,
-          maxId,
-        });
-
-        if (ordersFetch.length >= num) {
-          canStop = true;
-          setTake?.(pager.toNumber());
-          continue;
-        }
-
-        pager = pager.add(BigNumber.from(num));
-        chosenAssets = chooseAssets(
-          assetType,
-          assetAddress,
-          pager,
-          num,
-          ids,
-          maxId
-        );
-
-        //chosenAssets = []
-        if (!chosenAssets || chosenAssets.length == 0) {
-          canStop = true;
-          setTake?.(pager.toNumber());
-        }
-      } while (!canStop);
+      }
 
       const theAssets: Asset[] = [];
       const orders = ordersFetch.map((x) => {
@@ -380,11 +415,11 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       });
 
       const result = await fetchStatics(theAssets, orders);
-
+      console.log('final rfesult', result)
+      return result;
       return result.sort(
-        (a, b) =>
-          Number.parseInt(a.staticData.asset.assetId) -
-          Number.parseInt(b.staticData.asset.assetId)
+        (a, b) => 
+          a.order && b.order && a.order.askPerUnitNominator.lt(b.order.askPerUnitNominator) ? 1 : -1
       );
     },
     [
@@ -394,6 +429,7 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       JSON.stringify(ids),
       JSON.stringify(priceRange),
       JSON.stringify(selectedOrderType),
+      sortBy,
     ]
   );
 

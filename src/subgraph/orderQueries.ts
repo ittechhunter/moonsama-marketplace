@@ -321,3 +321,20 @@ export const QUERY_LATEST_BUY_ORDERS_WITHOUT_TOKEN = (
     }
   }
 `;
+
+export const QUERY_ORDERS_FOR_TOKEN = (
+  assetAddress: string,
+  orderBy: string,
+  orderDirection: boolean,
+  from: number,
+  num: number,
+) => gql`
+  query getUserActiveOrders {
+    ${META}
+    orders: orders(where: {active: true, sellAsset_starts_with: "${assetAddress?.toLowerCase()}"}, orderBy: ${orderBy == 'price' ? 'askPerUnitNominator' : 'createdAt'}, orderDirection: ${orderDirection ? 'asc' : 'desc'}, skip: ${from}, first: ${
+      num ?? DEFAULT_ORDERBOOK_PAGINATION
+    }) {
+      ${ORDER_FIELDS}
+    }
+  }
+`;
