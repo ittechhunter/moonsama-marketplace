@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { Filters, GlitchText, Loader } from 'ui';
+import { Filters, GlitchText, Loader, Sort } from 'ui';
 import { truncateHexString } from 'utils';
 import {
   getAssetEntityId,
@@ -246,6 +246,13 @@ const CollectionPage = () => {
               />
             </div>
           )}
+          <div>
+            <Sort
+              onSortUpdate={(param) => {
+                // Call SubQuery
+              }}
+            />
+          </div>
         </Stack>
       </div>
       <Grid container alignContent="center">

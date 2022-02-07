@@ -1,4 +1,5 @@
 import { SortSharp } from '@mui/icons-material';
+import MenuItem from '@mui/material/MenuItem';
 import { useClasses } from 'hooks';
 import React, { useState } from 'react';
 import { Select } from 'ui/Select/Select';
@@ -17,13 +18,10 @@ export enum SortOption {
 }
 
 export const Sort = ({ onSortUpdate }: Props) => {
-  const [selectedSort, setSelectedSort] = useState<SortOption>(
-    SortOption.UNSELECTED
-  );
   const { sortElement } = useClasses(styles);
 
-  const handleApplySort = () => {
-    onSortUpdate(selectedSort);
+  const handleApplySort = (event:any) => {
+    onSortUpdate(event.target.value as SortOption);
   };
 
   return (
@@ -37,12 +35,12 @@ export const Sort = ({ onSortUpdate }: Props) => {
         name: 'sort',
         id: 'uncontrolled-native',
       }}
-      onSelect={handleApplySort}
+      onChange={handleApplySort}
     >
-      <option value={SortOption.PRICE_ASC}>Price ascending</option>
-      <option value={SortOption.PRICE_DESC}>Price descending</option>
-      <option value={SortOption.TOKEN_ID_ASC}>Token ID ascending</option>
-      <option value={SortOption.TOKEN_ID_DESC}>Token ID descending</option>
+      <MenuItem value={SortOption.PRICE_ASC}>Price ascending</MenuItem>
+      <MenuItem value={SortOption.PRICE_DESC}>Price descending</MenuItem>
+      <MenuItem value={SortOption.TOKEN_ID_ASC}>Token ID ascending</MenuItem>
+      <MenuItem value={SortOption.TOKEN_ID_DESC}>Token ID descending</MenuItem>
     </Select>
   );
 };
