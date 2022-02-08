@@ -150,9 +150,11 @@ const chooseAssets = (
   offset: BigNumber,
   num: number,
   ids: number[],
-  maxId?: number
+  minId: number,
+  maxId: number,
+  direction: SortOption,
 ) => {
-  const offsetNum = BigNumber.from(offset).toNumber();
+  let offsetNum = BigNumber.from(offset).toNumber();
   let chosenAssets: Asset[];
 
   // in this case offsetnum should be substracted one
@@ -162,7 +164,11 @@ const chooseAssets = (
       return [];
     }
     const to = offsetNum + num >= ids.length ? ids.length : offsetNum + num;
-    const chosenIds = ids.slice(offsetNum, to);
+    let chosenIds = [];
+    if (direction == SortOption.TOKEN_ID_ASC)
+      chosenIds = ids.slice(offsetNum, to);
+    else
+      chosenIds = ids.reverse().slice(offsetNum, to);
 
     console.log('xxxx', { ids, offsetNum, num, to, chosenIds });
     chosenAssets = chosenIds.map((x) => {
@@ -183,7 +189,12 @@ const chooseAssets = (
     }
 
     chosenAssets = Array.from({ length: rnum }, (_, i) => {
-      const x = offset.add(i).toString();
+      let x;
+      if (direction == SortOption.TOKEN_ID_ASC)
+        x = offset.add(i).toString();
+      else
+        x = ((maxId - (offsetNum - minId)) - i).toString();
+
       return {
         assetId: x,
         assetType,
@@ -200,8 +211,9 @@ const chooseAssets = (
 
 export const useTokenStaticDataCallbackArrayWithFilter = (
   { assetAddress, assetType }: TokenStaticCallbackInput,
+  minId: number,
+  maxId: number,
   filter?: Filters,
-  maxId?: number,
   subcollectionId?: string,
   sortBy?: SortOption,
 ) => {
@@ -271,20 +283,25 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
 
       let ordersFetch: any[] = [];
       // if we don't have a price range, it's just business as usual
-      if (sortBy == SortOption.TOKEN_ID_ASC) {
+      if (sortBy == SortOption.TOKEN_ID_ASC || sortBy == SortOption.TOKEN_ID_DESC) {
+        console.log('shinshin', offset)
+        
+        let chosenAssets = chooseAssets(
+          assetType,
+          assetAddress,
+          offset,
+          num,
+          ids,
+          minId,
+          maxId,
+          sortBy
+        );
+
         if (
           !priceRange ||
           priceRange.length === 0 ||
           priceRange.length !== 2 ||
           !selectedOrderType) {
-          let chosenAssets = chooseAssets(
-            assetType,
-            assetAddress,
-            offset,
-            num,
-            ids,
-            maxId
-          );
           console.log('DEFAULT SEARCH', {
             assetAddress,
             assetType,
@@ -299,16 +316,6 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
           console.log('statistics', statics);
           return statics;
         }
-
-        let chosenAssets = chooseAssets(
-          assetType,
-          assetAddress,
-          offset,
-          // num,
-          1000,
-          ids,
-          maxId
-        );
 
         console.log('SEARCH', {
           assetAddress,
@@ -364,15 +371,17 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
             setTake?.(pager.toNumber());
             continue;
           }
-
           pager = pager.add(BigNumber.from(num));
+
           chosenAssets = chooseAssets(
             assetType,
             assetAddress,
             pager,
             num,
             ids,
-            maxId
+            minId,
+            maxId,
+            sortBy
           );
 
           //chosenAssets = []
@@ -417,10 +426,6 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       const result = await fetchStatics(theAssets, orders);
       console.log('final rfesult', result)
       return result;
-      return result.sort(
-        (a, b) => 
-          a.order && b.order && a.order.askPerUnitNominator.lt(b.order.askPerUnitNominator) ? 1 : -1
-      );
     },
     [
       chainId,

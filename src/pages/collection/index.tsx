@@ -90,8 +90,9 @@ const CollectionPage = () => {
 
   const getItemsWithFilterAndSort = useTokenStaticDataCallbackArrayWithFilter(
     asset,
-    filters,
+    minId,
     maxId,
+    filters,
     subcollectionId,
     sortBy,
   ); //useTokenStaticDataCallback(asset)//
