@@ -62,7 +62,7 @@ export const MULTICALL_NETWORKS: { [chainId: number]: string } = {
 };
 
 export const WORKBENCH_ADDRESSES: { [chainId: number]: string } = {
-  [ChainId.MOONRIVER]: '0x694665f738fA1D9349744098D6cECDCCc2Adbfb4'
+  [ChainId.MOONRIVER]: '0xb9AbB5fd9eFe40ec95655122012e2b6267B99754'
 };
 
 export enum SUPPORTED_CONTRACTS {
