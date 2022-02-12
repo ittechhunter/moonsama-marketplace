@@ -21,7 +21,9 @@ import {
 import { Filters } from 'ui/Filters/Filters';
 import { useMoonsamaAttrIds } from 'hooks/useMoonsamaAttrIdsCallback/useMoonsamaAttrIdsCallback';
 import { parseEther } from '@ethersproject/units';
-import { QUERY_ACTIVE_ORDERS_FOR_FILTER, QUERY_ORDERS_FOR_TOKEN } from 'subgraph/orderQueries';
+import { QUERY_USER_ERC721 } from 'subgraph/erc721Queries';
+import { QUERY_USER_ERC1155 } from 'subgraph/erc1155Queries';
+import { QUERY_ACTIVE_ORDERS_FOR_FILTER, QUERY_ORDERS_FOR_TOKEN, QUERY_ASSETS_BY_PRICE } from 'subgraph/orderQueries';
 import request from 'graphql-request';
 import { DEFAULT_CHAIN, MARKETPLACE_SUBGRAPH_URLS } from '../../constants';
 import { TEN_POW_18 } from 'utils';
@@ -211,13 +213,11 @@ const chooseAssets = (
 
 export const useTokenStaticDataCallbackArrayWithFilter = (
   { assetAddress, assetType }: TokenStaticCallbackInput,
-  minId: number,
-  maxId: number,
-  filter?: Filters,
-  subcollectionId?: string,
-  sortBy?: SortOption,
+  subcollectionId: string,
+  filter: Filters | undefined,
+  sortBy: SortOption,
 ) => {
-  console.log("useTokenStaticDataCallbackArrayWithFilter", {assetAddress, assetType, filter, maxId, subcollectionId})
+  console.log("useTokenStaticDataCallbackArrayWithFilter", {assetAddress, assetType, filter, subcollectionId})
   const { chainId } = useActiveWeb3React();
   const multi = useMulticall2Contract();
 
@@ -227,7 +227,13 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
   let coll = useRawcollection(assetAddress ?? '');
   if (!!subcollectionId && subcollectionId !== '0') {
     ids =
-      coll?.subcollections?.find((c) => c.id === subcollectionId)?.tokens ?? [];
+      coll?.subcollections?.find((c:any) => c.id === subcollectionId)?.tokens ?? [];
+  }
+  const minId = subcollectionId !== '0' ? 0 : coll?.minId ?? 1;
+  const maxId = coll?.maxId ?? 1000;
+
+  if (!ids?.length) {
+    for (let i=minId; i<=maxId; i++) ids.push(i);
   }
 
   console.log("ids", ids)
@@ -246,6 +252,8 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
         console.log({ assetAddress, assetType });
         return [];
       }
+
+      console.log({offset})
 
       const fetchStatics = async (assets: Asset[], orders?: Order[]) => {
         console.log('fetch statistics');
@@ -282,9 +290,24 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       };
 
       let ordersFetch: any[] = [];
+
+      // let assetIdsJSONString = JSON.stringify(ids);
+      
+      // if (coll?.type === 'ERC721') {
+      //   const query = QUERY_USER_ERC721(assetIdsJSONString);
+      //   const response = await request(coll?.subgraph, query);
+      //   return response;
+      // } 
+      // if (coll?.type === 'ERC1155') {
+      //   const query = QUERY_USER_ERC1155(assetIdsJSONString);
+      //   const response = await request(coll?.subgraph, query);
+      //   return response;
+      // }
+      // return [];
+
+
       // if we don't have a price range, it's just business as usual
       if (sortBy == SortOption.TOKEN_ID_ASC || sortBy == SortOption.TOKEN_ID_DESC) {
-        console.log('shinshin', offset)
         
         let chosenAssets = chooseAssets(
           assetType,

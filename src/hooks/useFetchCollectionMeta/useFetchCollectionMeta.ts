@@ -84,7 +84,7 @@ export function useFetchSubcollectionMeta(
     if (uris) {
       fetchMetas();
     }
-  }, [uris]);
+  }, [JSON.stringify(uris)]);
 
   return metas;
 }

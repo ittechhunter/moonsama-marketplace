@@ -1,7 +1,7 @@
 import { isAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import SearchIcon from '@mui/icons-material/SearchSharp';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { Token as TokenComponent } from 'components';
@@ -14,7 +14,7 @@ import {
   StaticTokenData,
   useTokenStaticDataCallbackArrayWithFilter,
 } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -25,8 +25,20 @@ import {
   getAssetEntityId,
   StringAssetType,
   stringToStringAssetType,
+  stringToOrderType,
+  getDisplayUnitPrice,
 } from 'utils/subgraph';
 import { styles } from './styles';
+import { Order } from 'hooks/marketplace/types';
+
+
+import { useFloorOrder } from 'hooks/useFloorOrder/useFloorOrder';
+import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
+import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
+import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
+import { useTokenBasicData } from 'hooks/useTokenBasicData.ts/useTokenBasicData';
+import { useApprovedPaymentCurrency } from 'hooks/useApprovedPaymentCurrencies/useApprovedPaymentCurrencies';
+import { useDecimalOverrides } from 'hooks/useDecimalOverrides/useDecimalOverrides';
 
 const DEFAULT_PAGE_SIZE = 10;
 const SEARCH_PAGE_SIZE = 50;
@@ -48,7 +60,6 @@ const CollectionPage = () => {
     id: getAssetEntityId(address?.toLowerCase(), '0'),
   };
   const recognizedCollection = useRawcollection(asset.assetAddress);
-  const maxId = recognizedCollection?.maxId ?? 1000;
   const searchBarOn = recognizedCollection?.idSearchOn ?? true;
   const subcollection = recognizedCollection?.subcollections?.find(
     (x) => x.id === subcollectionId
@@ -62,7 +73,7 @@ const CollectionPage = () => {
 
   const minId = isSubcollection ? 0 : recognizedCollection?.minId ?? 1;
 
-  const [take, setTake] = useState<number>(minId);
+  const [take, setTake] = useState<number>(0);
   const [filters, setFilters] = useState<Filters | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortOption>(SortOption.TOKEN_ID_ASC);
   const [paginationEnded, setPaginationEnded] = useState<boolean>(false);
@@ -90,10 +101,8 @@ const CollectionPage = () => {
 
   const getItemsWithFilterAndSort = useTokenStaticDataCallbackArrayWithFilter(
     asset,
-    minId,
-    maxId,
-    filters,
     subcollectionId,
+    filters,
     sortBy,
   ); //useTokenStaticDataCallback(asset)//
   /*
@@ -126,11 +135,12 @@ const CollectionPage = () => {
   const handleTokenSearch = useCallback(
     async ({ tokenID }) => {
       if (!!tokenID) {
+        console.log('shhin', tokenID)
         setPaginationEnded(true);
         setPageLoading(true);
         const data = await getItemsWithFilterAndSort(
           1,
-          BigNumber.from(tokenID),
+          BigNumber.from(tokenID-1),
           setTake
         );
         setPageLoading(false);
@@ -214,6 +224,38 @@ const CollectionPage = () => {
     setSearchCounter((state) => (state += 1));
   }, []);
 
+
+  const { setPurchaseData, setPurchaseDialogOpen } = usePurchaseDialog();
+  const floorAssetOrder = useFloorOrder(asset);
+  const floorAssets = useMemo(() => {
+    if (floorAssetOrder?.sellAsset) {
+      return [floorAssetOrder.sellAsset] as Asset[];
+    }
+    return [] as Asset[];
+  }, [floorAssetOrder])
+
+  const approvedPaymentCurrency = useApprovedPaymentCurrency(floorAssetOrder?.sellAsset || {} as Asset);
+  const staticData = useTokenStaticData(floorAssets);
+  const balanceData = useTokenBasicData(floorAssets);
+  const metas = useFetchTokenUri(staticData);
+  const decimalOverrides = useDecimalOverrides();
+
+  const assetMeta = metas?.[0];
+
+  const decimals =
+    decimalOverrides[asset.assetAddress] ?? balanceData?.[0]?.decimals ?? 0;
+  const tokenName = staticData?.[0]?.name;
+  const tokenSymbol = staticData?.[0]?.symbol;
+
+  const displayPPU = getDisplayUnitPrice(
+    decimals,
+    5,
+    stringToOrderType(floorAssetOrder?.orderType),
+    floorAssetOrder?.askPerUnitNominator,
+    floorAssetOrder?.askPerUnitDenominator,
+    true
+  );
+
   return (
     <>
       <div className={container}>
@@ -267,6 +309,38 @@ const CollectionPage = () => {
             />
           </div>
         </Stack>
+        {floorAssetOrder && assetMeta && (
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={{ xs: 1, sm: 2, md: 4 }}
+            sx={{
+              marginTop: '10px',
+              padding: '16px',
+            }}
+            justifyContent="flex-end"
+            alignItems="center"
+          >
+            <GlitchText>Floor NFT</GlitchText>: {assetMeta.name} ({displayPPU} {approvedPaymentCurrency.symbol})
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => {
+                setPurchaseDialogOpen(true);
+                setPurchaseData({
+                  order: floorAssetOrder,
+                  orderType: stringToOrderType(floorAssetOrder.orderType),
+                  decimals,
+                  symbol: tokenSymbol,
+                  name: tokenName,
+                  approvedPaymentCurrency
+                });
+              }}
+            >
+            {" "} Fill
+            </Button>
+          </Stack>
+        )}
       </div>
       <Grid container alignContent="center">
         {collection.map(

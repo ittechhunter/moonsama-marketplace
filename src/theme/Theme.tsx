@@ -25,6 +25,18 @@ const getDefaultOptions = (colors: PaletteOptions): ThemeOptions => ({
     },
   },
   components: {
+    MuiMenuItem: {
+      styleOverrides: {
+        root: { 
+          "&.Mui-selected": { backgroundColor: "rgb(210, 2, 62) !important" },
+          "&.Mui-selected:hover": { backgroundColor: "rgb(210, 2, 62)" },
+          "backgroundColor": "#000",
+          "&:hover": {
+            background: "#602",
+          },
+        }
+      }
+    },
     MuiCssBaseline: {
       styleOverrides: {
         '*::-webkit-scrollbar': {

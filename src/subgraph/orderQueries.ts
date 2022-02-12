@@ -150,6 +150,15 @@ export const QUERY_ASSET_ORDERS_AT_BLOCK = (
   }
 `;
 
+export const QUERY_FLOOR_ORDER = (assetAddress: string) => gql`
+  query getFloorOrder {
+    ${META}
+    orders(where: {active: true, sellAsset_starts_with: "${assetAddress.toLowerCase()}"}, orderBy: pricePerUnit, orderDirection: asc, first: 1) {
+      ${ORDER_FIELDS}
+    }
+  }
+`
+
 export const QUERY_TOKEN_PAGE_ORDERS = (
   onlyActive: boolean,
   assetId: string,
@@ -335,6 +344,35 @@ export const QUERY_ORDERS_FOR_TOKEN = (
       num ?? DEFAULT_ORDERBOOK_PAGINATION
     }) {
       ${ORDER_FIELDS}
+    }
+  }
+`;
+
+export const QUERY_ASSETS_BY_PRICE = (
+  assetIdsJSONString: string,
+  from: number,
+  num: number,
+  orderDirection: boolean,
+) => gql`
+  query getAssesByPriceOrder {
+    ${META}
+    orders(groupBy: {
+      query: {
+        pricePerUnit: {
+          as: "minOfPricePerUnit",
+          fn: {
+            aggregate: MIN
+          }
+        }
+      },
+      sort: [
+        { alias: "minOfPricePerUnit", direction: ${orderDirection ? 'ASC' : 'DESC'} }
+      ],
+      having: {active: true, sellAsset_in: ${assetIdsJSONString}}
+    }, skip: ${from}, first: ${num}) {
+      groups {
+        minOfPricePerUnit
+      }
     }
   }
 `;

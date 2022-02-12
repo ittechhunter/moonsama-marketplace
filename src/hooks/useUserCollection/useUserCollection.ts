@@ -8,10 +8,10 @@ import {
   useTokenStaticDataCallbackArray,
 } from 'hooks/useTokenStaticDataCallback/useTokenStaticDataCallback';
 import { QUERY_USER_ERC721 } from 'subgraph/erc721Queries';
+import { QUERY_USER_ERC1155 } from 'subgraph/erc1155Queries';
 import { getAssetEntityId, StringAssetType } from 'utils/subgraph';
 import { useRawCollectionsFromList } from 'hooks/useRawCollectionsFromList/useRawCollectionsFromList';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
-import { QUERY_USER_ERC1155 } from 'subgraph/erc1155Queries';
 
 export interface OwnedTokens {
   id: string;

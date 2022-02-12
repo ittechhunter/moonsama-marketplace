@@ -18,7 +18,7 @@ export enum SortOption {
 }
 
 export const Sort = ({ onSortUpdate }: Props) => {
-  const { sortElement, liElement } = useClasses(styles);
+  const { sortElement} = useClasses(styles);
 
   const handleApplySort = (event:any) => {
     onSortUpdate(event.target.value as SortOption);
@@ -37,10 +37,10 @@ export const Sort = ({ onSortUpdate }: Props) => {
       }}
       onChange={handleApplySort}
     >
-      <MenuItem className={liElement} value={SortOption.PRICE_ASC}>Price ascending</MenuItem>
-      <MenuItem className={liElement} value={SortOption.PRICE_DESC}>Price descending</MenuItem>
-      <MenuItem className={liElement} value={SortOption.TOKEN_ID_ASC}>Token ID ascending</MenuItem>
-      <MenuItem className={liElement} value={SortOption.TOKEN_ID_DESC}>Token ID descending</MenuItem>
+      <MenuItem value={SortOption.PRICE_ASC}>Price ascending</MenuItem>
+      <MenuItem value={SortOption.PRICE_DESC}>Price descending</MenuItem>
+      <MenuItem value={SortOption.TOKEN_ID_ASC}>Token ID ascending</MenuItem>
+      <MenuItem value={SortOption.TOKEN_ID_DESC}>Token ID descending</MenuItem>
     </Select>
   );
 };

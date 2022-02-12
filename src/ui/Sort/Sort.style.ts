@@ -9,10 +9,4 @@ export const styles = (theme: Theme) => ({
     borderColor: theme.palette.grey[900],
     maxHeight: 'auto',
   },
-  liElement:{
-    background: '#000',
-    color: '#fff',
-  },
-
-
 });
