@@ -13,6 +13,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import { GlitchText, Loader } from 'ui';
 import { styles } from './styles';
+import { SortSharp } from '@mui/icons-material';
+import MenuItem from '@mui/material/MenuItem';
+import { Select } from 'ui/Select/Select';
+import { styles as sortStyles } from 'ui/Sort/Sort.style';
 
 const PAGE_SIZE = 10;
 
@@ -63,14 +67,20 @@ const FreshTradesPage = () => {
       ? undefined
       : collections[selectedIndex]?.address?.toLowerCase();
 
+  const { sortElement} = useClasses(sortStyles);
+  const [sortBy, setSortBy] = useState('time');
+  const [sortDirection, setSortDirection] = useState('desc');
+
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
       let data = await getPaginatedItems(
         PAGE_SIZE,
         take,
+        sortBy,
+        sortDirection,
         selectedTokenAddress,
-        setTake
+        setTake,
       );
       data = data.filter((x) =>
         whitelist.includes(x.staticData.asset.assetAddress.toLowerCase())
@@ -94,7 +104,7 @@ const FreshTradesPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchCounter, paginationEnded, selectedTokenAddress]);
+  }, [searchCounter, paginationEnded, selectedTokenAddress, sortBy, sortDirection]);
 
   const handleSelection = (i: number | undefined) => {
     if (i !== selectedIndex) {
@@ -141,6 +151,33 @@ const FreshTradesPage = () => {
             );
           })}
         </Stack>
+      </Grid>
+      <Grid container display="flex" justifyContent="flex-end">
+        <Select
+          className={sortElement}
+          variant="outlined"
+          color="primary"
+          IconComponent={SortSharp}
+          defaultValue={'time,desc'}
+          inputProps={{
+            name: 'sort',
+            id: 'uncontrolled-native',
+          }}
+          onChange={(event: any) => {
+            setCollection([]);
+            setTake(0);
+            setSearchCounter(0);
+            setPaginationEnded(false);
+            const value = event.target.value.split(',');
+            setSortBy(value[0]);
+            setSortDirection(value[1]);
+          }}
+        >
+        <MenuItem value={'time,asc'}>Time ascending</MenuItem>
+        <MenuItem value={'time,desc'}>Time descending</MenuItem>
+        <MenuItem value={'price,asc'}>Price ascending</MenuItem>
+        <MenuItem value={'price,desc'}>Price descending</MenuItem>
+      </Select>
       </Grid>
       <Grid container spacing={1}>
         {collection

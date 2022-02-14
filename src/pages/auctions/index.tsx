@@ -55,6 +55,8 @@ const AuctionListPage = () => {
       let data = await getPaginatedItems(
         PAGE_SIZE,
         take,
+        'time',
+        'desc',
         selectedTokenAddress,
         setTake
       );

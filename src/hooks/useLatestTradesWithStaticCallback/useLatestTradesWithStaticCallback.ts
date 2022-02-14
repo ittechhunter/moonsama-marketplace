@@ -15,8 +15,10 @@ export const useLatestTradesWithStaticCallback = () => {
     async (
       num: number,
       offset: number,
+      sortBy: string,
+      sortDirection: string,
       tokenAddress?: string,
-      setOffset?: (newOffset: number) => void
+      setOffset?: (newOffset: number) => void,
     ) => {
       let assets: Asset[] = [];
       let fills: FillWithOrder[] = [];
@@ -24,7 +26,7 @@ export const useLatestTradesWithStaticCallback = () => {
       let skip = offset;
 
       while (fills.length < num) {
-        const query = QUERY_LATEST_FILLS(skip, num);
+        const query = QUERY_LATEST_FILLS(skip, num, sortBy, sortDirection);
         const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
 
         console.debug('YOLO useLatestTradesWithStaticCallback', response);
@@ -93,7 +95,7 @@ export const useLatestTradesForTokenWithStaticCallback = () => {
 
   const fetchLatestTradesWithStatic = useCallback(
     async (num: number, offset: number) => {
-      const query = QUERY_LATEST_FILLS(offset, num);
+      const query = QUERY_LATEST_FILLS(offset, num, 'time', 'asc');
       const response = await request(MARKETPLACE_SUBGRAPH_URLS[chainId ?? DEFAULT_CHAIN], query);
 
       console.debug('YOLO useLatestTradesForTokenWithStaticCallback', response);

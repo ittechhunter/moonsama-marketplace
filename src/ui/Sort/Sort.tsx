@@ -1,8 +1,8 @@
 import { SortSharp } from '@mui/icons-material';
 import MenuItem from '@mui/material/MenuItem';
+import { Select } from 'ui/Select/Select';
 import { useClasses } from 'hooks';
 import React, { useState } from 'react';
-import { Select } from 'ui/Select/Select';
 import { styles } from './Sort.style';
 
 interface Props {

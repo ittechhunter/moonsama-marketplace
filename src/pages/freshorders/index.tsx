@@ -1,6 +1,5 @@
 import { Chip, Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import {
@@ -173,7 +172,7 @@ const FreshOrdersPage = () => {
   useBottomScrollListener(handleScrollToBottom, { offset: 400 });
 
   const [sortBy, setSortBy] = useState("time");
-  const [sortDirection, setSortDirection] = useState('asc' as SortDirection);
+  const [sortDirection, setSortDirection] = useState('desc' as SortDirection);
 
   useEffect(() => {
     const getCollectionById = async () => {
