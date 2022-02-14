@@ -9,7 +9,7 @@ export const Video = (props: VideoHTMLAttributes<any>) => {
       autoPlay
       muted
       loop
-      controls
+      // controls
       {...props}
       className={`${video} ${props.className || ''}`}
     />
