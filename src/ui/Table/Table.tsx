@@ -2,6 +2,7 @@ import { ReactNode, useState, createContext, useContext } from 'react';
 import MaterialTable, { TableProps } from '@mui/material/Table';
 import MaterialTableBody, { TableBodyProps } from '@mui/material/TableBody';
 import MaterialTableCell, { TableCellProps } from '@mui/material/TableCell';
+import MaterialTableSortLabel, { TableSortLabelProps } from '@mui/material/TableSortLabel';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead, { TableHeadProps } from '@mui/material/TableHead';
 import MaterialTableRow, { TableRowProps } from '@mui/material/TableRow';
@@ -17,6 +18,9 @@ const TableContext = createContext<{ isExpandable?: boolean }>({});
 
 export const TableCell = ({ children, ...props }: TableCellProps) => {
   return <MaterialTableCell {...props}>{children}</MaterialTableCell>;
+};
+export const TableSortLabel = ({ children, ...props }: TableSortLabelProps) => {
+  return <MaterialTableSortLabel {...props}>{children}</MaterialTableSortLabel>;
 };
 
 export const TableRow = ({

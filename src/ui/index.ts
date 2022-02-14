@@ -14,6 +14,7 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  TableSortLabel
 } from './Table/Table';
 export { Video } from './Video/Video';
 export { Image } from './Image/Image';

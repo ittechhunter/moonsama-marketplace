@@ -80,6 +80,7 @@ export const TokenOrder = ({
 
   const expiration = formatExpirationDateString(order?.expiresAt);
   const strategyType = StrategyMap[order.strategyType.toLowerCase()];
+  const createdAt = new Date(Number(order.createdAt) * 1000).toLocaleString();
 
   return (
     <TableRow>
@@ -120,6 +121,7 @@ export const TokenOrder = ({
         </ExternalLink>
       </TableCell>
       <TableCell>{strategyType}</TableCell>
+      <TableCell>{createdAt}</TableCell>
       <TableCell>{expiration}</TableCell>
       <TableCell>
         <Button

@@ -1,5 +1,6 @@
 import { Chip, Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import { Order } from 'hooks/marketplace/types';
 import { TokenMeta } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri.types';
 import {
@@ -18,6 +19,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableSortLabel,
   TableHeader,
   TableRow,
   Tabs,
@@ -27,18 +29,51 @@ import { useActiveWeb3React, useClasses } from '../../hooks';
 import { styles } from './styles';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
+type SortDirection = 'asc' | 'desc';
 
 const PAGE_SIZE = 10;
+const ExtendedTableHeader = ({ handleSort, sortDirection, sortBy }:
+  { handleSort: ((sortBy: string) => void), sortDirection: SortDirection, sortBy: string }) => {
 
-const geTableHeader = () => {
   return (
     <TableHeader>
       <TableRow>
         <TableCell>Item</TableCell>
-        <TableCell>Unit Price</TableCell>
-        <TableCell>Quantity</TableCell>
+        <TableCell sortDirection={sortBy === 'price' ? sortDirection : false}>
+          <TableSortLabel
+            active={sortBy === 'price'}
+            direction={sortBy === 'price' ? sortDirection : 'asc'} 
+            onClick={() => {
+              handleSort('price');
+            }}
+          >
+            Unit Price
+          </TableSortLabel>
+        </TableCell>
+        <TableCell sortDirection={sortBy === 'quantity' ? sortDirection : false}>
+          <TableSortLabel
+            active={sortBy === 'quantity'}
+            direction={sortBy === 'quantity' ? sortDirection : 'asc'} 
+            onClick={() => {
+              handleSort('quantity');
+            }}
+          >
+          Quantity
+          </TableSortLabel>
+        </TableCell>
         <TableCell>From</TableCell>
         <TableCell>Strategy</TableCell>
+        <TableCell sortDirection={sortBy === 'time' ? sortDirection : false}>
+          <TableSortLabel
+            active={sortBy === 'time'}
+            direction={sortBy === 'time' ? sortDirection : 'asc'} 
+            onClick={() => {
+              handleSort('time');
+            }}
+          >
+          Created
+          </TableSortLabel>
+        </TableCell>
         <TableCell>Expiration</TableCell>
         <TableCell></TableCell>
       </TableRow>
@@ -108,6 +143,19 @@ const FreshOrdersPage = () => {
   const selectedTokenAddress =
     collections[selectedIndex]?.address?.toLowerCase();
 
+  const handleSortUpdate = (_sortBy: string) => {
+    setBuyOrders([]);
+    setSellOrders([]);
+    setTake(0);
+    setPaginationEnded(false);
+    if (_sortBy != sortBy) {
+      setSortBy(_sortBy)
+      setSortDirection('asc');
+    } else {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    }
+  }
+
   const handleSelection = (i: number) => {
     if (i !== selectedIndex) {
       setBuyOrders([]);
@@ -124,6 +172,9 @@ const FreshOrdersPage = () => {
 
   useBottomScrollListener(handleScrollToBottom, { offset: 400 });
 
+  const [sortBy, setSortBy] = useState("time");
+  const [sortDirection, setSortDirection] = useState('asc' as SortDirection);
+
   useEffect(() => {
     const getCollectionById = async () => {
       setPageLoading(true);
@@ -131,12 +182,16 @@ const FreshOrdersPage = () => {
       let buyData = await getPaginatedBuyOrders(
         selectedTokenAddress,
         PAGE_SIZE,
-        take
+        take,
+        sortBy,
+        sortDirection,
       );
       let sellData = await getPaginatedSellOrders(
         selectedTokenAddress,
         PAGE_SIZE,
-        take
+        take,
+        sortBy,
+        sortDirection,
       );
 
       buyData = buyData.filter((x) =>
@@ -170,7 +225,7 @@ const FreshOrdersPage = () => {
       getCollectionById();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [take, paginationEnded, selectedTokenAddress]);
+  }, [take, paginationEnded, selectedTokenAddress, sortBy, sortDirection]);
 
   const getTableBody = (
     filteredCollection:
@@ -249,7 +304,7 @@ const FreshOrdersPage = () => {
               label: 'Sell Offers',
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                  {geTableHeader()}
+                  <ExtendedTableHeader handleSort={handleSortUpdate} sortDirection={sortDirection} sortBy={sortBy}/>
                   {getTableBody(sellOrders)}
                 </Table>
               ),
@@ -258,7 +313,7 @@ const FreshOrdersPage = () => {
               label: 'Buy Offers',
               view: (
                 <Table isExpandable style={{ whiteSpace: 'nowrap' }}>
-                  {geTableHeader()}
+                  <ExtendedTableHeader handleSort={handleSortUpdate} sortDirection={sortDirection} sortBy={sortBy}/>
                   {getTableBody(buyOrders)}
                 </Table>
               ),

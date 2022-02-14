@@ -271,11 +271,13 @@ export const QUERY_LATEST_SELL_ORDERS_FOR_TOKEN = (
   buyAssetId: string,
   sellAssetAddress: string,
   from: number,
-  num: number
+  num: number,
+  sortBy: string,
+  direction: string,
 ) => gql`
   query getUserActiveOrders {
     ${META}
-    latestOrders: orders(where: {active: true, buyAsset: "${buyAssetId}", sellAsset_starts_with: "${sellAssetAddress?.toLowerCase()}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+    latestOrders: orders(where: {active: true, buyAsset: "${buyAssetId}", sellAsset_starts_with: "${sellAssetAddress?.toLowerCase()}"}, orderBy: ${{'time': 'createdAt', 'price': 'pricePerUnit', 'quantity': 'quantity'}[sortBy]}, orderDirection: ${direction}, skip: ${from}, first: ${
   num ?? DEFAULT_ORDERBOOK_PAGINATION
 }) {
       ${ORDER_FIELDS}
@@ -287,11 +289,13 @@ export const QUERY_LATEST_BUY_ORDERS_FOR_TOKEN = (
   sellAssetId: string,
   buyAssetAddress: string,
   from: number,
-  num: number
+  num: number,
+  sortBy: string,
+  direction: string,
 ) => gql`
   query getUserActiveOrders {
     ${META}
-    latestOrders: orders(where: {active: true, sellAsset: "${sellAssetId}", buyAsset_starts_with: "${buyAssetAddress?.toLowerCase()}"}, orderBy: createdAt, orderDirection: desc, skip: ${from}, first: ${
+    latestOrders: orders(where: {active: true, sellAsset: "${sellAssetId}", buyAsset_starts_with: "${buyAssetAddress?.toLowerCase()}"}, orderBy: ${{'time': 'createdAt', 'price': 'pricePerUnit', 'quantity': 'quantity'}[sortBy]}, orderDirection: ${direction}, skip: ${from}, first: ${
   num ?? DEFAULT_ORDERBOOK_PAGINATION
 }) {
       ${ORDER_FIELDS}
