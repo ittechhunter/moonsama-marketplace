@@ -41,6 +41,7 @@ export type RawCollection = {
   auction?: AuctionParams;
   plot?: boolean;
   plotMap?: string;
+  floorDisplay?: boolean;
 };
 
 export type RawCollectionList = {
@@ -57,6 +58,7 @@ const collectionListSchema = yup.object<RawCollectionList>({
         .object<RawCollection>({
           min_items: yup.number().required(),
           chainId: yup.number().required(),
+          floorDisplay: yup.boolean().notRequired().default(false),
           address: yup
             .string()
             .isAddress('Expected a valid Ethereum address.')

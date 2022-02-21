@@ -309,7 +309,7 @@ const CollectionPage = () => {
             />
           </div>
         </Stack>
-        {floorAssetOrder && assetMeta && (
+        {floorAssetOrder && assetMeta && recognizedCollection?.floorDisplay && (
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2, md: 4 }}
