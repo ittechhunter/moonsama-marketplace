@@ -208,7 +208,7 @@ const CollectionPage = () => {
   const handleFiltersUpdate = useCallback(async (filters: Filters) => {
     console.log('FILTER', filters);
     setCollection([]);
-    setTake(minId);
+    setTake(0);
     setFilters(filters);
     setPageLoading(true);
     setPaginationEnded(false);
@@ -217,7 +217,7 @@ const CollectionPage = () => {
 
   const handleSortUpdate = useCallback(async (sortBy: SortOption) => {
     setCollection([]);
-    setTake(minId);
+    setTake(0);
     setSortBy(sortBy);
     setPageLoading(true);
     setPaginationEnded(false);
