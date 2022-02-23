@@ -54,11 +54,12 @@ const FreshTradesPage = () => {
   const collections = useRawCollectionsFromList();  
 
   const handleScrollToBottom = useCallback(() => {
+    if (pageLoading) return;
     setTake((state) => (state += PAGE_SIZE));
     setSearchCounter((state) => (state += 1));
   }, []);
 
-  useBottomScrollListener(handleScrollToBottom, { offset: 400 });
+  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 1000 });
 
   const whitelist = useWhitelistedAddresses(); // REMOVEME later
 

@@ -127,6 +127,7 @@ const CollectionPage = () => {
       : SEARCH_PAGE_SIZE;
 
   const handleScrollToBottom = useCallback(() => {
+    if (pageLoading) return;
     console.log('SCROLLBOTTOM');
     setTake((state) => (state += searchSize));
     setSearchCounter((state) => (state += 1));
@@ -160,7 +161,7 @@ const CollectionPage = () => {
     [searchSize, sortBy]
   );
 
-  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 300 });
+  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 1000 });
 
   //console.log('before FETCH', { searchSize, address, take, paginationEnded, searchCounter, filters });
   useEffect(() => {

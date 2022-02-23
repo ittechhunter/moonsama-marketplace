@@ -79,7 +79,7 @@ export const collections = {
       display_name: 'Moonsama',
       floorDisplay: true,
       minId: 1,
-      maxId: 1001,
+      maxId: 1000,
       idSearchOn: true,
       symbol: 'MSAMA',
       type: 'ERC721',

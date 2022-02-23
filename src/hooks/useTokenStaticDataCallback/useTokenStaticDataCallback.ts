@@ -167,10 +167,11 @@ const chooseAssets = (
     }
     const to = offsetNum + num >= ids.length ? ids.length : offsetNum + num;
     let chosenIds = [];
+    
     if (direction == SortOption.TOKEN_ID_ASC)
       chosenIds = ids.slice(offsetNum, to);
     else
-      chosenIds = ids.reverse().slice(offsetNum, to);
+      chosenIds = [...ids].reverse().slice(offsetNum, to);
 
     console.log('xxxx', { ids, offsetNum, num, to, chosenIds });
     chosenAssets = chosenIds.map((x) => {
@@ -304,7 +305,6 @@ export const useTokenStaticDataCallbackArrayWithFilter = (
       //   return response;
       // }
       // return [];
-
 
       // if we don't have a price range, it's just business as usual
       if (sortBy == SortOption.TOKEN_ID_ASC || sortBy == SortOption.TOKEN_ID_DESC) {

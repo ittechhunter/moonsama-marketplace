@@ -166,10 +166,11 @@ const FreshOrdersPage = () => {
   };
 
   const handleScrollToBottom = useCallback(() => {
+    if (pageLoading) return;
     setTake((state) => (state += PAGE_SIZE));
   }, []);
 
-  useBottomScrollListener(handleScrollToBottom, { offset: 400 });
+  useBottomScrollListener(handleScrollToBottom, { offset: 400, debounce: 1000 });
 
   const [sortBy, setSortBy] = useState("time");
   const [sortDirection, setSortDirection] = useState('desc' as SortDirection);
