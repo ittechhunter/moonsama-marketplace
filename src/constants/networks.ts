@@ -17,7 +17,7 @@ export const SUPPORTED_METAMASK_NETWORKS: {[key: number]: AddEthereumChainParame
     [ChainId.MOONRIVER]: {
         chainId: '0x505',
         chainName: 'Moonriver',
-        rpcUrls: ['https://rpc.moonriver.moonbeam.network'],
+        rpcUrls: ['https://rpc.api.moonriver.moonbeam.network'],
         blockExplorerUrls: ['https://moonriver.moonscan.io'],
         nativeCurrency: {
             name: 'Moonriver',

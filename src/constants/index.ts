@@ -31,7 +31,7 @@ export const PERMISSIONED_CHAINS = [ChainId.MOONRIVER, ChainId.MOONBEAM]
 export const DEFAULT_CHAIN = ChainId.MOONRIVER
 
 export const RPC_URLS: { [chainId: number]: string } = {
-  [ChainId.MOONRIVER]: 'https://rpc.moonriver.moonbeam.network',
+  [ChainId.MOONRIVER]: 'https://rpc.api.moonriver.moonbeam.network',
   [ChainId.MOONBEAM]: 'https://moonbeam-rpc.moonsama.com'
 };
 
