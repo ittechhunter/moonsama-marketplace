@@ -1,15 +1,26 @@
 import { appStyles } from '../../app.styles';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { usePurchaseDialog } from '../../hooks/usePurchaseDialog/usePurchaseDialog';
+import { useTokenStaticData } from 'hooks/useTokenStaticData/useTokenStaticData';
+import { useFetchTokenUri } from 'hooks/useFetchTokenUri.ts/useFetchTokenUri';
+
+import { Media } from 'components';
 import { Dialog, Button } from 'ui';
+import { Asset } from 'hooks/marketplace/types';
 import { styles } from './PurchaseDialog.styles';
 import { SuccessIcon } from 'icons';
-import { ChainId, DEFAULT_CHAIN, FRACTION_TO_BPS, NATIVE_TOKEN_SYMBOL, PROTOCOL_FEE_BPS } from '../../constants';
+import {
+  ChainId,
+  DEFAULT_CHAIN,
+  FRACTION_TO_BPS,
+  NATIVE_TOKEN_SYMBOL,
+  PROTOCOL_FEE_BPS,
+} from '../../constants';
 import { useActiveWeb3React, useClasses } from 'hooks';
 import {
   getQuantity,
@@ -58,8 +69,13 @@ export const PurchaseDialog = () => {
 
   const { chainId, account } = useActiveWeb3React();
 
-  const { dialogContainer, loadingContainer, successIcon, successContainer, columGap } =
-    useClasses(styles);
+  const {
+    dialogContainer,
+    loadingContainer,
+    successIcon,
+    successContainer,
+    image,
+  } = useClasses(styles);
 
   //console.log({ orderLoaded, purchaseData });
   const handleClose = () => {
@@ -78,6 +94,23 @@ export const PurchaseDialog = () => {
   if (!orderLoaded && account && order && orderType) {
     setOrderLoaded(true);
   }
+
+  const Assets = useMemo(() => {
+    if (orderType == OrderType.BUY) {
+      if (order?.buyAsset) {
+        return [order.buyAsset] as Asset[];
+      }
+    }
+    if (orderType == OrderType.SELL) {
+      if (order?.sellAsset) {
+        return [order.sellAsset] as Asset[];
+      }
+    }
+    return [] as Asset[];
+  }, [order]);
+  const staticData = useTokenStaticData(Assets);
+  const metas = useFetchTokenUri(staticData);
+  const assetMeta = metas?.[0];
 
   const title = 'Take offer';
   let symbol: string | undefined = purchaseData?.symbol ?? 'NFT';
@@ -194,7 +227,7 @@ export const PurchaseDialog = () => {
 
       // we buy into a sell order, which is an NFT
     } else {
-      console.log('buyELSE', partialAllowed)
+      console.log('buyELSE', partialAllowed);
       meat = buyElse(
         ppu,
         total,
@@ -444,50 +477,62 @@ export const PurchaseDialog = () => {
 
             <Typography className={formSubheader}>Token Details</Typography>
 
-            <div className={row}>
-              <div className={col}>
-                <div className={formLabel}>Address</div>
-                <AddressDisplayComponent
-                  className={`${formValue} ${formValueTokenDetails}`}
-                  charsShown={5}
-                >
-                  {assetAddress ?? '?'}
-                </AddressDisplayComponent>
-              </div>
-              <div className={columGap}></div>
-              <div className={col}>
-                <div className={formLabel}>ID</div>
-                <div className={`${formValue} ${formValueTokenDetails}`}>
-                  {assetId}
+            <Grid container spacing={1} justifyContent="center">
+              <Grid item md={4} xs={12}>
+                <Media uri={assetMeta?.image} className={image} />
+              </Grid>
+              <Grid
+                item
+                md={8}
+                xs={12}
+                justifyContent="flex-end"
+                display="flex"
+                flexDirection="column"
+              >
+                <div className={row}>
+                  <div className={formLabel}>Address</div>
+                  <AddressDisplayComponent
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    charsShown={5}
+                  >
+                    {assetAddress ?? '?'}
+                  </AddressDisplayComponent>
                 </div>
-              </div>
-              <div className={columGap}></div>
-              <div className={col}>
-                <div className={formLabel}>Price per unit</div>
-                <div
-                  className={`${formValue} ${formValueTokenDetails}`}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    flexWrap: 'nowrap'
-                  }}
-                >
-                  {`${displayppu} ${approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}`}
+                <div className={row}>
+                  <div className={formLabel}>ID</div>
+                  <div className={`${formValue} ${formValueTokenDetails}`}>
+                    {assetId}
+                  </div>
                 </div>
-              </div>
-              <div className={columGap}></div>
-              <div className={col}>
-                <div className={formLabel}>{availableLabel}</div>
-                <div
-                  className={`${formValue} ${formValueTokenDetails}`}
-                  style={{
-                    justifyContent: 'flex-end',
-                  }}
-                >
-                  {displayTotal ?? '?'} {symbolString}
+                <div className={row}>
+                  <div className={formLabel}>Price per unit</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      flexWrap: 'nowrap',
+                    }}
+                  >
+                    {`${displayppu} ${
+                      approvedPaymentCurrency?.symbol ??
+                      NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]
+                    }`}
+                  </div>
                 </div>
-              </div>
-            </div>
+                <div className={row}>
+                  <div className={formLabel}>{availableLabel}</div>
+                  <div
+                    className={`${formValue} ${formValueTokenDetails}`}
+                    style={{
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    {displayTotal ?? '?'} {symbolString}
+                  </div>
+                </div>
+              </Grid>
+            </Grid>
             <Divider
               variant="fullWidth"
               className={`${divider} ${borderStyleDashed}`}
@@ -547,7 +592,9 @@ export const PurchaseDialog = () => {
                 <div className={infoContainer}>
                   <Typography className={formLabel}>You get brutto</Typography>
                   <Typography className={formValueGet}>
-                    {userGetDisplay} {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                    {userGetDisplay}{' '}
+                    {approvedPaymentCurrency?.symbol ??
+                      NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
@@ -556,7 +603,8 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Protocol fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(protocolFee?.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                      {approvedPaymentCurrency?.symbol ??
+                        NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -566,7 +614,8 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>Royalty fee</Typography>
                     <Typography className={`${formValue}`}>
                       {Fraction.from(royaltyFee.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                      {approvedPaymentCurrency?.symbol ??
+                        NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -576,7 +625,8 @@ export const PurchaseDialog = () => {
                     <Typography className={formLabel}>You get netto</Typography>
                     <Typography className={`${formValueGet}`}>
                       {Fraction.from(netto.toString(), 18)?.toFixed(5)}{' '}
-                      {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                      {approvedPaymentCurrency?.symbol ??
+                        NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                     </Typography>
                   </div>
                 )}
@@ -631,7 +681,8 @@ export const PurchaseDialog = () => {
                   <Typography className={formLabel}>Your balance</Typography>
                   <Typography className={formValue}>
                     {displayBalance ?? '?'}{' '}
-                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                    {approvedPaymentCurrency?.symbol ??
+                      NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
 
@@ -639,7 +690,8 @@ export const PurchaseDialog = () => {
                   <Typography className={formValueGive}>You give</Typography>
                   <Typography className={formValue}>
                     {userGiveDisplay}{' '}
-                    {approvedPaymentCurrency?.symbol ?? NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
+                    {approvedPaymentCurrency?.symbol ??
+                      NATIVE_TOKEN_SYMBOL[chainId ?? DEFAULT_CHAIN]}
                   </Typography>
                 </div>
               </>

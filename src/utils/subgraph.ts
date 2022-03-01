@@ -233,7 +233,7 @@ export const formatExpirationDateString = (date?: string): string => {
   if (BigNumber.from(date).gt(now.div(1000).add(ONE_YEAR_IN_S))) {
     return 'never';
   }
-  return format(+(date.toString() as string) * 1000, 'dd-MM-yyyy hh:mm');
+  return format(+(date.toString() as string) * 1000, 'dd-MM-yyyy HH:mm');
 };
 
 export const getUnitPrice = (

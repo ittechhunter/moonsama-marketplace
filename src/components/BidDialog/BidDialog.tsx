@@ -19,6 +19,7 @@ import { ExternalLink } from 'components/ExternalLink/ExternalLink';
 import { AddressDisplayComponent } from 'components/form/AddressDisplayComponent';
 import { CoinQuantityField, UNIT } from 'components/form/CoinQuantityField';
 import 'date-fns';
+import { Media } from 'components';
 import { useActiveWeb3React, useBidDialog, useClasses } from 'hooks';
 import {
   ApprovalState,
@@ -141,6 +142,7 @@ export const BidDialog = () => {
     successContainer,
     successIcon,
     inputContainer,
+    imageContainer, detailContainer, image,
   } = useClasses(styles);
 
   const { chainId, account } = useActiveWeb3React();
@@ -163,6 +165,7 @@ export const BidDialog = () => {
     setOrderLoaded(true);
   }
 
+
   let title: string;
   let symbol: string | undefined = bidData?.symbol ?? 'NFT';
   let sellAssetType: StringAssetType | undefined;
@@ -174,6 +177,8 @@ export const BidDialog = () => {
 
   let sellAssetContract: Asset;
   let buyAssetContract: Asset;
+
+  const assetImage = bidData?.media;
 
   const assetAddress = bidData?.asset?.assetAddress;
   const assetId = bidData?.asset?.assetId;
@@ -225,7 +230,6 @@ export const BidDialog = () => {
   }
 
   let meat;
-
   if (orderType === OrderType.BUY) {
     title = 'Create buy offer';
     action = 'buy';
@@ -496,30 +500,34 @@ export const BidDialog = () => {
           <Grid item md={12} xs={12}>
             <Box className={formBox}>
               <Typography className="form-subheader">Token Details</Typography>
-              <div className={row}>
-                <div className={col}>
-                  <div className={formLabel}>Address</div>
-                  <AddressDisplayComponent
-                    className={`${formValue} ${formValueTokenDetails}`}
-                    charsShown={5}
-                  >
-                    {bidData?.asset?.assetAddress ?? '?'}
-                  </AddressDisplayComponent>
-                </div>
-                <div className={col}>
-                  <div className={formLabel}>ID</div>
-                  <div className={`${formValue} ${formValueTokenDetails}`}>
-                    {assetId}
+              <Grid container spacing={1} justifyContent="center">
+                <Grid item md={3} xs={12}>
+                  <Media uri={assetImage} className={image} />
+                </Grid>
+                <Grid item md={9} xs={12} justifyContent="flex-end" display="flex" flexDirection="column">
+                  <div className={row}>
+                    <div className={formLabel}>Address</div>
+                    <AddressDisplayComponent
+                      className={`${formValue} ${formValueTokenDetails}`}
+                      charsShown={5}
+                    >
+                      {bidData?.asset?.assetAddress ?? '?'}
+                    </AddressDisplayComponent>
                   </div>
-                </div>
-                <div className={col}>
-                  <div className={formLabel}>Type</div>
-                  <div className={`${formValue} ${formValueTokenDetails}`}>
-                    {assetType}
+                  <div className={row}>
+                    <div className={formLabel}>ID</div>
+                    <div className={`${formValue} ${formValueTokenDetails}`}>
+                      {assetId}
+                    </div>
                   </div>
-                </div>
-              </div>
-
+                  <div className={row}>
+                    <div className={formLabel}>Type</div>
+                    <div className={`${formValue} ${formValueTokenDetails}`}>
+                      {assetType}
+                    </div>
+                  </div>                
+                </Grid>
+              </Grid>
               <Divider variant="fullWidth" className={divider} />
 
               <div className={inputContainer}>

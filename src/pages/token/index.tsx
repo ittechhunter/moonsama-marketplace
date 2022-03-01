@@ -662,6 +662,7 @@ const TokenPage = () => {
                     name: tokenName,
                     symbol: tokenSymbol,
                     approvedPaymentCurrency,
+                    media: assetMeta?.image
                   });
                 }}
                 startIcon={<AccountBalanceWalletIcon />}
@@ -682,6 +683,7 @@ const TokenPage = () => {
                     name: tokenName,
                     symbol: tokenSymbol,
                     approvedPaymentCurrency,
+                    media: assetMeta?.image,
                   });
                 }}
                 startIcon={<MoneyIcon />}

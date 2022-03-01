@@ -10,6 +10,7 @@ export type BidData =
       name?: string;
       symbol?: string;
       approvedPaymentCurrency: ApprovedPaymentCurrency;
+      media?: string;
     }
   | undefined;
 
