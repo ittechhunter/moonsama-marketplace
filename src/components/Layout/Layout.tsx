@@ -9,7 +9,7 @@ import { Account } from 'components';
 import { ConnectedNetwork } from 'components/ConnectedNetwork/ConnectedNetwork';
 import { useClasses } from 'hooks';
 import { useState } from 'react';
-import { Drawer, Footer, Header, NavLink } from 'ui';
+import { Drawer, Footer, Header, NavLink, ExternalLink } from 'ui';
 import { MAX_WIDTH_TO_SHOW_NAVIGATION } from '../../constants';
 import { styles } from './Layout.styles';
 import { LayoutProps } from './Layout.types';
@@ -66,6 +66,9 @@ export const Layout = ({ children }: LayoutProps) => {
                   <NavLink href="/mynfts" className={navItem}>
                     My NFTs
                   </NavLink>
+                  <ExternalLink href="https://wiki.moonsama.com" className={navItem}>
+                    Docs↗
+                  </ExternalLink>
 
                   {/*<NavLink href="/explore" className={navItem}>
                   Explore
@@ -100,6 +103,9 @@ export const Layout = ({ children }: LayoutProps) => {
                     <NavLink href="/mynfts" className={navItemDrawer}>
                       My NFTs
                     </NavLink>
+                    <ExternalLink href="https://wiki.moonsama.com" className={navItemDrawer}>
+                      Docs↗
+                    </ExternalLink>
                   </Box>
                 </Drawer>
               )}

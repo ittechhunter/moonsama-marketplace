@@ -42,6 +42,8 @@ export type RawCollection = {
   plot?: boolean;
   plotMap?: string;
   floorDisplay?: boolean;
+  ordersDisabled?: boolean;
+  transferDisabled?: boolean;
 };
 
 export type RawCollectionList = {
@@ -85,6 +87,8 @@ const collectionListSchema = yup.object<RawCollectionList>({
           maxId: yup.number().optional(),
           subcollections: yup.array(),
           idSearchOn: yup.boolean().required(),
+          ordersDisabled: yup.boolean().optional().default(false),
+          transferDisabled: yup.boolean().optional().default(false),
           plot: yup.boolean().optional(),
           auction: yup
             .object<AuctionParams>({

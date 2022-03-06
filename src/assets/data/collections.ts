@@ -1,5 +1,3 @@
-import { subgraph } from "utils";
-
 export const collections = {
   name: 'MoonSama List',
   timestamp: '2021-08-18T00:00:00.000Z',
@@ -256,11 +254,12 @@ export const collections = {
       contractURI: 'ipfs://QmPisJNXRvd1h8BBiBs1PHu8666HTDWVJWkAf2AS7c4zkM',
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-samabox'
     },
-    /*
     {
       chainId: 1285,
       address: '0x0a54845AC3743C96E582E03f26c3636ea9c00C8A',
       display_name: 'Moonsama Embassy',
+      ordersDisabled: true,
+      transferDisabled: true,
       floorDisplay: false,
       symbol: 'MEMBASSY',
       minId: 1,
@@ -269,7 +268,6 @@ export const collections = {
       contractURI: 'ipfs://QmWzBDhV5nuPrud7XZo2vBLBWtTStwc6N8xSwCzuMdewd8',
       subgraph: 'https://moonriver-subgraph.moonsama.com/subgraphs/name/moonsama/nft-1155-embassy'
     },
-    */
     {
       chainId: 1285,
       address: '0xfEd9e29b276C333b2F11cb1427142701d0D9f7bf',

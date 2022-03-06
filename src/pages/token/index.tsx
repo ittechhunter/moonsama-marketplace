@@ -627,7 +627,8 @@ const TokenPage = () => {
             className={buttonsContainer}
             style={{ justifyContent: 'space-around' }}
           >
-            {!!ordersMap?.sellOrders &&
+            {!rawCollection?.ordersDisabled &&
+              !!ordersMap?.sellOrders &&
               ordersMap?.sellOrders.length > 0 &&
               (ordersMap.sellOrders[0].onlyTo === AddressZero ||
                 ordersMap.sellOrders[0].onlyTo === account?.toLowerCase()) && (
@@ -651,7 +652,7 @@ const TokenPage = () => {
                   Buy now
                 </Button>
               )}
-            {((!isOwner && isErc721) || !isErc721) && (
+            {!rawCollection?.ordersDisabled && ((!isOwner && isErc721) || !isErc721) && (
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
@@ -672,7 +673,7 @@ const TokenPage = () => {
                 Make an offer
               </Button>
             )}
-            {isOwner && (
+            {!rawCollection?.ordersDisabled && isOwner && (
               <Button
                 onClick={() => {
                   setBidDialogOpen(true);
@@ -694,7 +695,7 @@ const TokenPage = () => {
                 New sell offer
               </Button>
             )}
-            {isOwner && (
+            {!rawCollection?.transferDisabled && isOwner && (
               <Button
                 onClick={() => {
                   setTransferDialogOpen(true);

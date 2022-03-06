@@ -1,4 +1,5 @@
 export { NavLink } from './NavLink/NavLink';
+export { ExternalLink } from './ExternalLink/ExternalLink';
 export { Header } from './Header/Header';
 export { Footer } from './Footer/Footer';
 export { Input } from './Input/Input';
